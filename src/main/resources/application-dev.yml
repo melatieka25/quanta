@@ -1,0 +1,34 @@
+spring:
+
+  # konfigurasi untuk koneksi db
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+
+    # sesuaikan nama database anda dengan di bawah ini
+    url: jdbc:mysql://localhost:3306/quanta?useSSL=false&serverTimezone=Asia/Jakarta
+
+    # sesuaikan dengan NAMA dan PASSWORD anda dengan username password di bawah ini
+    username: root
+    password:
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        format_sql: true
+
+    # pembuatan database (create || create-drop || validate || update)
+    hibernate.ddl-auto: create-drop
+
+    show-sql: true
+
+
+  # Templates reloading during development
+  thymeleaf:
+    prefix: file:src/main/resources/templates/
+    cache: false
+
+  # Static resources reloading during development
+  web:
+    resources:
+      static-locations: file:src/main/resources/static/
