@@ -1,7 +1,3 @@
-server:
-  address: ${ADDRESS}
-  port: ${PORT}
-
 spring:
   # konfigurasi untuk koneksi db
   datasource:
