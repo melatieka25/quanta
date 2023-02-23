@@ -8,7 +8,7 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
 
     # sesuaikan nama database anda dengan di bawah ini
-    url: jdbc:mysql://${MYSQLHOST}:${MYSQLPORT}/${MYSQLDATABASE}?useSSL=false&serverTimezone=Asia/Jakarta
+    url: jdbc:mysql://${MYSQLHOST}:${MYSQLPORT}/${MYSQLDATABASE}
 
     # sesuaikan dengan NAMA dan PASSWORD anda dengan username password di bawah ini
     username: ${MYSQLUSER}
