@@ -1,6 +1,7 @@
 package com.projectpop.quanta.siswa.model;
 
 import com.projectpop.quanta.orangtua.model.OrtuModel;
+import com.projectpop.quanta.pesan.model.PesanModel;
 import com.projectpop.quanta.presensi.model.PresensiModel;
 import com.projectpop.quanta.siswajadwalkelas.model.SiswaJadwalModel;
 import com.projectpop.quanta.siswakelas.model.SiswaKelasModel;
@@ -46,6 +47,9 @@ public class SiswaModel extends UserModel {
 
     @OneToMany(mappedBy = "siswa", cascade = CascadeType.ALL)
     private List<SiswaKelasModel> listKelasSiswa;
+
+    @OneToMany(mappedBy = "siswaPesan", cascade = CascadeType.ALL)
+    private List<PesanModel> listPesanSiswa;
 
     @ManyToOne
     @JoinColumn(name= "ortu_id")

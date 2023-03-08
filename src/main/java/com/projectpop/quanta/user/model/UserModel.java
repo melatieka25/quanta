@@ -5,15 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.NotFound;
-import org.springframework.format.annotation.DateTimeFormat;
 
 
 import javax.persistence.*;
-//import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Setter
 @Getter
@@ -74,8 +70,11 @@ public class UserModel implements Serializable {
 
     @NotNull
     @Column(nullable = false)
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-    private LocalDateTime dob;
+    private LocalDate dob;
+
+    @NotNull
+    @Column(nullable = false)
+    private Boolean isActive;
 
     @NotNull
     @Column(nullable = false)
