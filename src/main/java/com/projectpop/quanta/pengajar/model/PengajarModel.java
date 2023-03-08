@@ -9,6 +9,7 @@ import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -31,6 +32,7 @@ public class PengajarModel extends UserModel {
     private StatusPernikahan status;
 
     @NotNull
+    @Enumerated(value=EnumType.STRING)
     @Column(name="last_edu" ,nullable = false)
     private Education lastEdu;
 
@@ -48,6 +50,7 @@ public class PengajarModel extends UserModel {
 
     @NotNull
     @Column(name="start_date", nullable = false)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
     @NotNull
