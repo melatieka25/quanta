@@ -33,10 +33,12 @@ public class KelasModel implements Serializable {
 
     @NotNull
     @Column(nullable = false)
+    @Enumerated(value=EnumType.STRING)
     private Jurusan jurusan;
 
     @NotNull
     @Column(nullable = false)
+    @Enumerated(value=EnumType.STRING)
     private JadwalAvail days;
 
     @ManyToOne

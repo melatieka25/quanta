@@ -36,7 +36,7 @@ public class UserModel implements Serializable {
 
     @NotNull
     @Column(nullable = false)
-    private Integer phone_num;
+    private Long phone_num;
 
     @NotNull
     @Column(nullable = false)
