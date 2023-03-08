@@ -1,5 +1,6 @@
 package com.projectpop.quanta.user.model;
 
+import com.projectpop.quanta.pesan.model.PesanModel;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 @Setter
 @Getter
@@ -82,4 +84,8 @@ public class UserModel implements Serializable {
     @Column(nullable = false)
     @Enumerated(value=EnumType.STRING)
     private Religion religion;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<PesanModel> listPesan;
+
 }

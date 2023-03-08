@@ -3,6 +3,7 @@ package com.projectpop.quanta.pesan.model;
 import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.siswa.model.SiswaModel;
+import com.projectpop.quanta.user.model.UserModel;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,4 +41,8 @@ public class PesanModel implements Serializable {
     @ManyToOne
     @JoinColumn(name="siswa_id", nullable=false)
     private SiswaModel siswaPesan;
+
+    @ManyToOne
+    @JoinColumn(name="user_id", nullable = false)
+    private UserModel user;
 }
