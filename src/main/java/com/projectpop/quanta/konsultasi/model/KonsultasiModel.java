@@ -52,6 +52,10 @@ public class KonsultasiModel implements Serializable {
     @Column(nullable = false)
     private StatusKonsul status;
 
+    @NotNull
+    @Column(name="jenjang_kelas", nullable = false)
+    private Integer jenjangKelas;
+
     @ManyToOne
     @JoinColumn(name="mapel_id")
     private MataPelajaranModel mapelKonsul;
