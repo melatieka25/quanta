@@ -55,3 +55,4 @@ public class SiswaModel extends UserModel {
     @JoinColumn(name= "ortu_id")
     private OrtuModel ortu;
 }
+
