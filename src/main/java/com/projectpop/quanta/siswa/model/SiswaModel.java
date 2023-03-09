@@ -49,6 +49,10 @@ public class SiswaModel extends UserModel {
     private List<SiswaKelasModel> listKelasSiswa;
 
     @OneToMany(mappedBy = "siswaPesan", cascade = CascadeType.ALL)
+    private List<PesanModel> listPesanSiswa;
+
     @ManyToOne
     @JoinColumn(name= "ortu_id")
+    private OrtuModel ortu;
 }
+

@@ -23,13 +23,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<UserModel> optionalUser = userDb.findByName(email);
-        if(!optionalUser.isPresent())
-            throw new UsernameNotFoundException("Email " + email + " not found!");
+        Optional<UserModel> optionalUser = userDb.findByEmail(email);
+        // if(!optionalUser.isPresent())
+        //     throw new UsernameNotFoundException("Email " + email + " not found!");
         UserModel user = optionalUser.get();
         
         Set<GrantedAuthority> grantedAuthorities = new HashSet<GrantedAuthority>();
         grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
-        return new User(user.getName(), user.getPassword(), grantedAuthorities);
+        return new User(user.getEmail(), user.getPassword(), grantedAuthorities);
     }
 }
