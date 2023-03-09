@@ -18,7 +18,7 @@ spring:
         format_sql: true
 
     # pembuatan database (create || create-drop || validate || update)
-    hibernate.ddl-auto: create-drop
+    hibernate.ddl-auto: update
 
     show-sql: true
 
