@@ -1,19 +1,17 @@
 package com.projectpop.quanta.user.model;
 
+import com.projectpop.quanta.pesan.model.PesanModel;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.NotFound;
 import org.springframework.format.annotation.DateTimeFormat;
 
-
 import javax.persistence.*;
-//import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.List;
 
 @Setter
 @Getter
@@ -39,7 +37,7 @@ public class UserModel implements Serializable {
 
     @NotNull
     @Column(nullable = false)
-    private Integer phone_num;
+    private Long phone_num;
 
     @NotNull
     @Column(nullable = false)
@@ -74,11 +72,18 @@ public class UserModel implements Serializable {
 
     @NotNull
     @Column(nullable = false)
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-    private LocalDateTime dob;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate dob;
+
+    @NotNull
+    @Column(nullable = false)
+    private Boolean isActive;
 
     @NotNull
     @Column(nullable = false)
     @Enumerated(value=EnumType.STRING)
     private Religion religion;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<PesanModel> listPesan;
 }

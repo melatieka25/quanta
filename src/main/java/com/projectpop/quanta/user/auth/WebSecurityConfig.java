@@ -36,14 +36,14 @@ public class WebSecurityConfig {
     public BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
 
-//    @Autowired
-//    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception{
-//        auth.inMemoryAuthentication()
-//                .passwordEncoder(encoder())
-//                .withUser("Puput")
-//                .password(encoder().encode("apapABC"))
-//                .roles("USER");
-//    }
+   @Autowired
+   public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception{
+       auth.inMemoryAuthentication()
+               .passwordEncoder(encoder)
+               .withUser("puput@gmail.com")
+               .password(encoder.encode("apapABC"))
+               .roles("USER");
+   }
 
     @Autowired
     private UserDetailsService userDetailsService;
