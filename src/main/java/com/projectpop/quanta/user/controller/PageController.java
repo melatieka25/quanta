@@ -35,8 +35,8 @@ public class PageController {
         return "auth/login";
     }
 
-    @GetMapping (value = "/logout-sso")
-    public ModelAndView logoutSSO(Principal principal) {
+    @GetMapping (value = "/logout")
+    public ModelAndView logout(Principal principal) {
         UserModel user = userService.getUserByEmail(principal.getName());
         System.out.println(user.getEmail());
         

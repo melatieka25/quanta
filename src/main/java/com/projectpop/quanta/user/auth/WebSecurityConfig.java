@@ -21,8 +21,6 @@ public class WebSecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/css/**").permitAll()
                 .antMatchers("/js/**").permitAll()
-                // .antMatchers("/user/viewall", "/user/add").hasAuthority("Admin")
-                // .antMatchers("/penyelenggara/add").hasAuthority("Manajer")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -36,16 +34,6 @@ public class WebSecurityConfig {
     }
 
     public BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
-
-//    @Autowired
-//    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception{
-//        auth.inMemoryAuthentication()
-//                .passwordEncoder(encoder())
-//                .withUser("Puput")
-//                .password(encoder().encode("apapABC"))
-//                .roles("USER");
-//    }
 
     @Autowired
     private UserDetailsService userDetailsService;
