@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <title>List Pengajar</title>
+    <object th:include="fragments/fragment :: css" th:remove="tag"></object>
+    <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+</head>
+<body>
+<nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
+<div class="container" style="width:75%; padding-top:50px;">
+    <div class="justify-content-center">
+        <div style="margin: auto; padding-top: 10px; width: 80%; padding: 20px; text-align: center">
+            <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
+            <h2 style="font-weight: bold; padding-top: 10px;" >List Pengajar</h2>
+            <div style="padding-top: 20px;">
+                <a class="btn btn-primary" href="/pengajar/create-pengajar" style="margin: 12px; background-color: #31318B; font-weight: bold; border: none; width:30%;">Tambah Pengajar +</a>
+            </div>
+            <br>
+        </div>
+        <table style="margin: 20px;" class="table table-striped" id="pengajar-table">
+            <thead style="background-color: #31318B; color: #ffffff">
+            <tr>
+                <th scope="col">No</th>
+                <th scope="col">Nama</th>
+                <th scope="col">Mata Pelajaran</th>
+                <th scope="col">Email</th>
+                <th scope="col">Nomor Telepon</th>
+                <th scope="col">Aksi</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="pengajar, iterationStatus : ${listPengajar}">
+                <th scope="row" th:text="${iterationStatus.index + 1}"></th>
+                <td th:text="${pengajar.name}"></td>
+                <td th:if="${pengajar.listPengajarMapel.size() == 0}">-</td>
+                <td th:if="${pengajar.listPengajarMapel.size() > 0}" th:text="${pengajar.listMapel}"></td>
+                <td th:text="${pengajar.email}"></td>
+                <td th:text="${pengajar.phone_num}"></td>
+                <td class="align-content-center">
+                    <a class="btn btn-outline-primary align-content-center" th:href="@{/pengajar/detail/} + ${pengajar.id}">Detail</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+    </div>
+</div>
+
+</div>
+<script>
+    $(document).ready(() => {
+        $('#pengajar-table').DataTable();
+    });
+</script>
+</body>
+</html>

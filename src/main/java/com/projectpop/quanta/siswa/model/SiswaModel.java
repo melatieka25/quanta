@@ -54,5 +54,7 @@ public class SiswaModel extends UserModel {
     @ManyToOne
     @JoinColumn(name= "ortu_id")
     private OrtuModel ortu;
+
+    private transient String kelasBimbel;
 }
 

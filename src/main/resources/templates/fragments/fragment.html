@@ -45,9 +45,9 @@
                         Manajemen Pengguna
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                        <li><a class="dropdown-item" th:href="@{/dokter}">Siswa SMP</a></li>
-                        <li><a class="dropdown-item" th:href="@{/apoteker}">Siswa SMA</a> </li>
-                        <li><a class="dropdown-item" th:href="@{/pasien}">Pengajar</a> </li>
+                        <li><a class="dropdown-item" th:href="@{/siswa-smp}">Siswa SMP</a></li>
+                        <li><a class="dropdown-item" th:href="@{/siswa-sma}">Siswa SMA</a> </li>
+                        <li><a class="dropdown-item" th:href="@{/pengajar}">Pengajar</a> </li>
                     </ul>
                 </li>
                 <a sec:authorize="hasAnyRole('Admin', 'Dokter')" class="nav-item nav-link" th:classappend="${onevar == 'appointment'} ? active : ''" th:href="@{/appointment}">
