@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
-    <title>Detail Pengajar</title>
+    <title>Detail Siswa</title>
     <object th:include="fragments/fragment :: css" th:remove="tag"></object>
     <object th:include="fragments/fragment :: js" th:remove="tag"></object>
     <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
@@ -13,9 +13,9 @@
 </head>
 <body>
   <nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
-  <a class="btn btn-link" style="color: #31318B" href="/pengajar"><- List Pengajar</a>
+  <a class="btn btn-link" style="color: #31318B" href="/siswa"><- List Siswa</a>
   <div class="container">
-    <h2 style="font-weight: bold; text-align:center; padding:20px">Detail Pengajar</h2>
+    <h2 style="font-weight: bold; text-align:center; padding:20px">Detail Siswa</h2>
     <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
     <div class="alert alert-danger" role="alert" th:text="${errorMessage}" th:if="${errorMessage}"></div>
     <div class="container" style="width:100%;">
@@ -25,10 +25,10 @@
           <br>
           <div class="row">
             <div class="col">
-              <h4 style="padding-bottom:20px; font-weight: bold;" >Data Utama</h4>
+              <h4 style="padding-bottom:20px; font-weight: bold;" >Data Pribadi</h4>
             </div>
             <div class="col">
-              <h4 style="padding-bottom:20px; font-weight: bold;">Data Pelengkap</h4>
+              <h4 style="padding-bottom:20px; font-weight: bold;">Data Akademik</h4>
             </div>
           </div>
           <div class="row">
@@ -36,13 +36,14 @@
               <p style="font-weight: bold; color: #31318B">Nama Lengkap</p>
             </div>
             <div class="col">
-              <p th:text="${pengajar.name}"></p>
+              <p th:text="${siswa.name}"></p>
             </div>
             <div class="col">
-              <p style="font-weight: bold; color: #31318B">No. KTP</p>
+              <p style="font-weight: bold; color: #31318B">Kelas</p>
             </div>
             <div class="col">
-              <p th:text="${pengajar.ktp}"></p>
+              <p th:if="${siswa.kelasBimbel != null}" th:text="${siswa.kelasBimbel.name}"></p>
+              <td th:if="${siswa.kelasBimbel == null}">-</td>
             </div>
           </div>
           <div class="row">
@@ -50,13 +51,13 @@
               <p style="font-weight: bold; color: #31318B">Nama Panggilan</p>
             </div>
             <div class="col">
-              <p th:text="${pengajar.nickname}"></p>
+              <p th:text="${siswa.nickname}"></p>
             </div>
             <div class="col">
-              <p style="font-weight: bold; color: #31318B">Status Pernikahan</p>
+              <p style="font-weight: bold; color: #31318B">Jenjang</p>
             </div>
             <div class="col">
-              <p th:text="${pengajar.status}"></p>
+              <p th:text="'Kelas '+ ${siswa.kelas}"></p>
             </div>
           </div>
           <div class="row">
@@ -64,13 +65,14 @@
               <p style="font-weight: bold; color: #31318B">Email</p>
             </div>
             <div class="col">
-              <p th:text="${pengajar.email}"></p>
+              <p th:text="${siswa.email}"></p>
             </div>
             <div class="col">
-              <p style="font-weight: bold; color: #31318B">Pendidikan Terakhir</p>
+              <p style="font-weight: bold; color: #31318B">Sesi</p>
             </div>
             <div class="col">
-              <p th:text="${pengajar.lastEdu}"></p>
+              <p th:if="${siswa.kelasBimbel != null}" th:text="${siswa.kelasBimbel.days}"></p>
+              <td th:if="${siswa.kelasBimbel == null}">-</td>
             </div>
           </div>
           <div class="row">
@@ -78,13 +80,13 @@
               <p style="font-weight: bold; color: #31318B">Alamat</p>
             </div>
             <div class="col">
-              <p th:text="${pengajar.address}"></p>
+              <p th:text="${siswa.address}"></p>
             </div>
             <div class="col">
-              <p style="font-weight: bold; color: #31318B">Perguruan Tinggi</p>
+              <p style="font-weight: bold; color: #31318B">Asal Sekolah</p>
             </div>
             <div class="col">
-              <p th:text="${pengajar.university}"></p>
+              <p th:text="${siswa.sekolah}"></p>
             </div>
           </div>
           <div class="row">
@@ -92,13 +94,28 @@
               <p style="font-weight: bold; color: #31318B">No. Telp</p>
             </div>
             <div class="col">
-              <p th:text="${pengajar.phone_num}"></p>
+              <p th:text="${siswa.phone_num}"></p>
             </div>
             <div class="col">
-              <p style="font-weight: bold; color: #31318B">Jurusan</p>
+              <p></p>
             </div>
             <div class="col">
-              <p th:text="${pengajar.jurusan}"></p>
+              <p></p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">Jenis Kelamin</p>
+            </div>
+            <div class="col">
+              <p th:text="${siswa.gender}"></p>
+            </div>
+            <div class="col">
+              <h4 style="padding-bottom:20px; font-weight: bold;">Data Wali</h4>
+            </div>
+            <div class="col">
+              <p></p>
+              <p></p>
             </div>
           </div>
           <div class="row">
@@ -106,14 +123,13 @@
               <p style="font-weight: bold; color: #31318B">Tempat Lahir</p>
             </div>
             <div class="col">
-              <p th:text="${pengajar.pob}"></p>
+              <p th:text="${siswa.pob}"></p>
             </div>
             <div class="col">
-              <p style="font-weight: bold; color: #31318B">Kelas Diasuh</p>
+              <p style="font-weight: bold; color: #31318B">Nama Wali</p>
             </div>
             <div class="col">
-              <p th:if="${pengajar.listKelasAsuh.size() != 0}" th:text="${pengajar.kelasDiasuh}"></p>
-              <p th:if="${pengajar.listKelasAsuh.size() == 0}">-</p>
+              <p th:text="${siswa.ortu.name}"></p>
             </div>
           </div>
           <div class="row">
@@ -121,28 +137,13 @@
               <p style="font-weight: bold; color: #31318B">Tanggal Lahir</p>
             </div>
             <div class="col">
-              <p th:text="${pengajar.dob}"></p>
+              <p th:text="${siswa.dob}"></p>
             </div>
             <div class="col">
-              <p style="font-weight: bold; color: #31318B">Mata Pelajaran Diajar</p>
+              <p style="font-weight: bold; color: #31318B">Email Wali</p>
             </div>
             <div class="col">
-              <p th:text="${pengajar.listMapel}"></p>
-            </div>
-          </div>
-          <div class="row">
-          </div>
-            <div class="col">
-              <p style="font-weight: bold; color: #31318B">Jenis Kelamin</p>
-            </div>
-            <div class="col">
-              <p th:text="${pengajar.gender}"></p>
-            </div>
-            <div class="col">
-              <p></p>
-            </div>
-            <div class="col">
-              <p></p>
+              <p th:text="${siswa.ortu.email}"></p>
             </div>
           </div>
           <div class="row">
@@ -150,13 +151,13 @@
               <p style="font-weight: bold; color: #31318B">Agama</p>
             </div>
             <div class="col">
-              <p th:text="${pengajar.religion}"></p>
+              <p th:text="${siswa.religion}"></p>
             </div>
             <div class="col">
-              <p></p>
+              <p style="font-weight: bold; color: #31318B">No. Telp Wali</p>
             </div>
             <div class="col">
-              <p></p>
+              <p th:text="${siswa.ortu.phone_num}"></p>
             </div>
           </div>
           <div class="row">
@@ -164,12 +165,12 @@
               <p></p>
             </div>
             <div class="col">
-              <p th:if="${pengajar.isActive}">
+              <p th:if="${siswa.isActive}">
                 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-nonaktif" style="display:block; width:100%; margin-top:20px;">
                     Non-Aktifkan
                 </button>
               </p>
-              <p th:if="${!pengajar.isActive}">
+              <p th:if="${!siswa.isActive}">
                 <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-aktif" style="display:block; width:100%; margin-top:20px;">
                     Aktifkan
                 </button>
@@ -192,22 +193,21 @@
     <div class="modal-dialog" role="document">
     <div class="modal-content">
         <div class="modal-header">
-        <h5 class="modal-title" id="popupLabel"><strong>Konfirmasi Nonaktifkan Pengajar</strong></h5>
+        <h5 class="modal-title" id="popupLabel"><strong>Konfirmasi Nonaktifkan Siswa</strong></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
         </div>
         <div class="modal-body">
-            Apakah Anda Yakin ingin menonaktifkan pengajar? </br> </br>  Berikut merupakan syarat agar pengajar dapat dinonaktifkan:
+            Apakah Anda Yakin ingin menonaktifkan siswa? </br> </br>  Berikut merupakan syarat agar siswa dapat dinonaktifkan:
             <ul>
-              <li>Pengajar tidak terdaftar sebagai kakak asuh </li>
-              <li>Pengajar tidak memiliki jadwal mengajar kelas wajib </li> 
-              <li>Pengajar tidak memiliki konsultasi yang aktif</li>
+              <li>Siswa tidak terdaftar di dalam suatu kelas</li>
+              <li>Siswa tidak memiliki konsultasi yang aktif </li> 
             </ul>
         </div>
         <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-        <a type="button" class="btn btn-primary btn-danger" th:href="@{/pengajar/} + ${pengajar.id} + @{/inactive}">Nonaktifkan</a>
+        <a type="button" class="btn btn-primary btn-danger" th:href="@{/siswa/} + ${siswa.id} + @{/inactive}">Nonaktifkan</a>
         </div>
     </div>
     </div>
@@ -224,11 +224,11 @@
       </button>
       </div>
       <div class="modal-body">
-          Apakah Anda Yakin ingin mengaktifkan kembali pengajar? </br> </br>  Pengajar yang sudah diaktifkan dapat masuk kembali ke sistem QUANTA menggunakan email dan passwordnya.
+          Apakah Anda Yakin ingin mengaktifkan kembali siswa? </br> </br>  Pengajar yang sudah diaktifkan dapat masuk kembali ke sistem QUANTA menggunakan email dan passwordnya.
       </div>
       <div class="modal-footer">
       <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-      <a type="button" class="btn btn-primary btn-warning" th:href="@{/pengajar/} + ${pengajar.id} + @{/active}">Aktifkan</a>
+      <a type="button" class="btn btn-primary btn-warning" th:href="@{/siswa/} + ${siswa.id} + @{/active}">Aktifkan</a>
       </div>
   </div>
   </div>

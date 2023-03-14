@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface SiswaDb extends JpaRepository<SiswaModel, Long> {
     Optional<SiswaModel> findByEmail(String email);
+
+    Optional<SiswaModel> findById(int id);
 }

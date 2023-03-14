@@ -1,5 +1,6 @@
 package com.projectpop.quanta.siswa.model;
 
+import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.orangtua.model.OrtuModel;
 import com.projectpop.quanta.pesan.model.PesanModel;
 import com.projectpop.quanta.presensi.model.PresensiModel;
@@ -55,6 +56,6 @@ public class SiswaModel extends UserModel {
     @JoinColumn(name= "ortu_id")
     private OrtuModel ortu;
 
-    private transient String kelasBimbel;
+    private transient KelasModel kelasBimbel;
 }
 

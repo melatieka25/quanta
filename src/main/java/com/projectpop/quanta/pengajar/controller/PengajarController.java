@@ -122,7 +122,7 @@ public class PengajarController {
             PengajarModel activatedPengajar = pengajarService.activePengajar(pengajar);
                 redirectAttrs.addFlashAttribute("message", "Pengajar dengan nama " + activatedPengajar.getName() + " berhasil diaktifkan kembali.");
         } else {
-            redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan id " + id + " tidak ditemukan. Gagal menonaktifkan pengajar.");
+            redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan id " + id + " tidak ditemukan. Gagal mengaktifkan pengajar.");
             return "redirect:/pengajar";
         }
 

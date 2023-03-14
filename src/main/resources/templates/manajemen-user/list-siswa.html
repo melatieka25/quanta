@@ -31,6 +31,7 @@
                 <th scope="col">Kelas</th>
                 <th scope="col">Email</th>
                 <th scope="col">Asal Sekolah</th>
+                <th scope="col">Status</th>
                 <th scope="col">Aksi</th>
             </tr>
             </thead>
@@ -38,9 +39,12 @@
             <tr th:each="siswa, iterationStatus : ${listSiswa}">
                 <th scope="row" th:text="${iterationStatus.index + 1}"></th>
                 <td th:text="${siswa.name}"></td>
-                <td th:text="${siswa.kelasBimbel}"></td>
+                <td th:if="${siswa.kelasBimbel != null}" th:text="${siswa.kelasBimbel.name}"></td>
+                <td th:if="${siswa.kelasBimbel == null}">-</td>
                 <td th:text="${siswa.email}"></td>
                 <td th:text="${siswa.sekolah}"></td>
+                <td th:if="${siswa.isActive}">Aktif</td>
+                <td th:if="${!siswa.isActive}">Non-Aktif</td>
                 <td class="align-content-center">
                     <a class="btn btn-outline-primary align-content-center" th:href="@{/siswa/detail/} + ${siswa.id}">Detail</a>
                 </td>

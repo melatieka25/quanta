@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -17,6 +18,7 @@ import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.user.service.UserService;
 import com.projectpop.quanta.user.auth.PasswordManager;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
@@ -63,6 +65,66 @@ public class SiswaController {
         }
         model.addAttribute("listSiswa", listSiswa);
         return "manajemen-user/list-siswa";
+    }
+
+    @GetMapping("/detail/{id}")
+    public String detailSiswa(@PathVariable int id, Model model, RedirectAttributes redirectAttrs) {
+        SiswaModel siswa = siswaService.getSiswaById(id);
+        String timePattern = "EEE, dd-MMM-yyyy";
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(timePattern);
+        String dateOfBirth = siswa.getDob().format(dateTimeFormatter);
+        siswa.setKelasBimbel(siswaService.getKelasBimbel(siswa));
+        model.addAttribute("siswa", siswa);
+        model.addAttribute("dateOfBirth", dateOfBirth);
+        return "manajemen-user/detail-siswa";
+    }
+
+    @GetMapping("{id}/inactive")
+    public String inactivateSiswaFormPage(@PathVariable int id, Model model, RedirectAttributes redirectAttrs){
+
+        SiswaModel siswa = siswaService.getSiswaById(id);
+        
+        
+        if (siswa != null){
+            model.addAttribute("siswa", siswa);
+            siswa.setKelasBimbel(siswaService.getKelasBimbel(siswa));
+
+            if (siswa.getKelasBimbel() == null){
+                SiswaModel inactivatedSiswa = siswaService.inactiveSiswa(siswa);
+                redirectAttrs.addFlashAttribute("message", "Siswa dengan nama " + inactivatedSiswa.getName() + " berhasil di-nonaktifkan.");
+            } else {
+                redirectAttrs.addFlashAttribute("errorMessage", "Siswa dengan nama " + siswa.getName() + " terdaftar pada kelas " + siswa.getKelasBimbel().getName() + ". Gagal menonaktifkan siswa.");
+                // } else if (!siswa.getListMapel().equals("-")){
+                //     redirectAttrs.addFlashAttribute("errorMessage", "Siswa dengan nama " + siswa.getName() + " merupakan siswa di satu atau lebih mata pelajaran. Gagal menonaktifkan siswa.");
+                // } 
+                // } else {
+                //     redirectAttrs.addFlashAttribute("errorMessage", "Siswa dengan nama " + siswa.getName() + " tidak dapat dinonaktifkan saat ini. Tunggu beberapa saat dan coba lagi.");
+                // }
+            }
+        } else {
+            redirectAttrs.addFlashAttribute("errorMessage", "Siswa dengan id " + id + " tidak ditemukan. Gagal menonaktifkan siswa.");
+            return "redirect:/siswa";
+        }
+
+        return "redirect:/siswa/detail/" + id;
+    }
+
+    @GetMapping("{id}/active")
+    public String activateSiswaFormPage(@PathVariable int id, Model model, RedirectAttributes redirectAttrs){
+
+        SiswaModel siswa = siswaService.getSiswaById(id);
+        
+        
+        if (siswa != null){
+            model.addAttribute("siswa", siswa);
+            SiswaModel activatedSiswa = siswaService.activeSiswa(siswa);
+                redirectAttrs.addFlashAttribute("message", "Siswa dengan nama " + activatedSiswa.getName() + " berhasil diaktifkan kembali.");
+        } else {
+            redirectAttrs.addFlashAttribute("errorMessage", "Siswa dengan id " + id + " tidak ditemukan. Gagal mengaktifkan siswa.");
+            return "redirect:/siswa";
+        }
+
+        return "redirect:/siswa/detail/" + id;
     }
 
 }

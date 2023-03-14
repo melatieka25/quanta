@@ -12,6 +12,7 @@ import static com.projectpop.quanta.user.auth.PasswordManager.encrypt;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -33,15 +34,37 @@ public class SiswaServiceImpl implements SiswaService {
     }
 
     @Override
-    public String getKelasBimbel(SiswaModel siswa){
-        String result = "";
+    public KelasModel getKelasBimbel(SiswaModel siswa){
+        KelasModel result = null;
         for (SiswaKelasModel siswaKelasModel: siswa.getListKelasSiswa()) {
             KelasModel kelas = siswaKelasModel.getKelasSiswa();
             if (kelas.getTahunAjar().getIsAktif()) {
-                result = kelas.getName();
+                result = kelas;
                 break;
             }
         }
         return result;
+    }
+
+    @Override
+    public SiswaModel getSiswaById(int id) {
+        Optional<SiswaModel> siswa = siswaDb.findById(id);
+        if(siswa.isPresent()) {
+            return siswa.get();
+        } else return null;
+    }
+
+    @Override
+    public SiswaModel inactiveSiswa(SiswaModel siswa) {
+        siswa.setIsActive(false);
+        siswaDb.save(siswa);
+        return siswa;
+    }
+
+    @Override
+    public SiswaModel activeSiswa(SiswaModel siswa) {
+        siswa.setIsActive(true);
+        siswaDb.save(siswa);
+        return siswa;
     }
 }
