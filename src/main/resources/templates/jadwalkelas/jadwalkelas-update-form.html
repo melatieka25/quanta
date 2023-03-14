@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <title>Quanta</title>
+    <object th:include="fragments/fragment :: css" th:remove="tag"></object>
+    <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+    <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
+
+<body>
+<style>
+body {
+    font-family: 'DM Sans';
+}
+</style>
+<nav th:replace="fragments/fragment :: navbar('')"></nav>
+
+<div class="container m-5">
+        <div class="card-body">
+            <div class="justify-content-center">
+                <h2 style="font-weight: bolder;">Tambah Jadwal Kelas</h2>
+                <br>
+                <div class="alert alert-danger" role="alert" th:text="${message}" th:if="${message}"></div>
+
+
+                <form th:action="@{/jadwal-kelas/add}" th:object="${jadwalKelas}" method="POST"> 
+
+                    <div class="row g-5">
+                        <div class="col">
+                            Tanggal: <br>
+                            <input class="form-control datepicker" id="tanggal" type="date" name="tanggal" th:value=""/>
+                            <br>
+        
+                            Jam <br>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <input class="form-control" type="time" name="jam_mulai"/>
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            -
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <input class="form-control" type="time" name="jam_selesai"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+        
+                            </table>
+                            <br>
+        
+                            Ruang Kelas : <br>
+                            <select class="form-select" name="ruangKelas">
+                                <option hidden disabled selected value>Pilih ruang kelas...</option>
+                                <option th:each="ruang, iterationStatus : ${listRuangKelas}"
+                                        th:value="${ruang}" 
+                                        th:text="${ruang}"></option>
+                            </select>  
+                            <br>
+                        </div>
+
+                        <div class="col">
+                            Kelas : <br>
+                            <select class="form-select" id="kelas-dropdown" name="kelasDiajar">
+                                <option hidden disabled selected value>Pilih kelas...</option>
+                                <option th:each="kelas, iterationStatus : ${listKelas}"
+                                        th:value="${kelas.id}" 
+                                        th:text="${kelas.name}"></option>
+                            </select>
+                            <br>
+                            
+                            Mata Pelajaran: <br>
+                            <select class="form-select" id="mapel-dropdown" name="mapel">
+                                <option hidden disabled selected value>Pilih mata pelajaran...</option>
+                                <option th:each="mapel, iterationStatus : ${listMapel}"
+                                        th:value="${mapel.id}" 
+                                        th:text="${mapel.name}"></option>
+                            </select>
+                            <br>
+        
+                            Pengajar: <br>
+                            <select class="form-select" id="pengajar-dropdown" name="pengajar" >
+                                <option hidden disabled selected value>Pilih pengajar...</option>
+                                <option th:each="pengajar, iterationStatus : ${listPengajar}"
+                                        th:value="${pengajar.id}" 
+                                        th:text="${pengajar.name}"></option>
+                            </select>
+                            <br>                        </div>
+                      </div>
+ 
+                   
+
+                   
+
+                    <a class="btn btn-secondary" th:href="@{/jadwal-kelas}">Kembali</a>
+                    <button class="btn" type="submit" name="save" style="background-color: #31318B; color: white;">Submit</button>
+                </form>
+            </div>
+        </div>
+</div>
+ 
+</body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#mapel-dropdown").change(function(){
+            // get id of selected team 
+            var mapel_id=$(this).find(':selected').val();
+            console.log(mapel_id);
+
+            // set json url
+            var json_url="/api/v1/jadwal-kelas/get-pengajar/mapel/" + mapel_id;
+            
+            // get json data
+            jQuery.getJSON(json_url, function(data){
+                $("#pengajar-dropdown").html("");
+                // $("#pengajar-dropdown").append("<option hidden disabled selected value>Pilih pengajar...</option>");
+                
+                // put new dropdown values to pengajar dropdown
+                jQuery.each(data, function(key, val){
+                    $("#pengajar-dropdown").append("<option value='" + val.id + "'>" + val.name + "</option>")
+                });
+                
+            });
+            
+        });
+
+        $("#pengajar-dropdown").change(function(){
+            // get id of selected team 
+            var pengajar_id=$(this).find(':selected').val();
+
+            // set json url
+            var json_url="/api/v1/jadwal-kelas/get-mapel/pengajar/" + pengajar_id;
+            
+            // get json data
+            jQuery.getJSON(json_url, function(data){
+                $("#mapel-dropdown").html("");
+                // $("#mapel-dropdown").append("<option hidden disabled selected value>Pilih mata pelajaran...</option>");
+                
+                // put new dropdown values to pengajar dropdown
+                jQuery.each(data, function(key, val){
+                    $("#mapel-dropdown").append("<option value='" + val.id + "'>" + val.name + "</option>")
+                });
+                
+            });
+            
+        });
+
+
+        var today = new Date().toISOString().split('T')[0];
+        $("#tanggal").attr('min', today);
+
+        // Everything except weekend days
+        const validate = dateString => {
+        const day = (new Date(dateString)).getDay();
+        if (day==0) {
+            alert('Kelas tidak bisa diadakan di hari Minggu! Silakan pilih hari lain.');
+            return false;
+        }
+        return true;
+        }
+
+        // Sets the value to '' in case of an invalid date
+        document.querySelector('#tanggal').onchange = evt => {
+            if (!validate(evt.target.value)) {
+                evt.target.value = '';
+            }
+        }
+
+
+        $("#tanggal").change(function(){
+            console.log("tes");
+            // get id of selected team 
+            var datetime=$(this).val();
+            const selectedDate = new Date(datetime);
+            let day = selectedDate.getDay();
+            //var pickedDay = datetime.getDay();
+            console.log(day)
+
+            // set json url
+            var json_url="/api/v1/jadwal-kelas/get-kelas/hari/" + day;
+            
+            // get json data
+            jQuery.getJSON(json_url, function(data){
+                $("#kelas-dropdown").html("");
+                $("#kelas-dropdown").append("<option hidden disabled selected value>Pilih kelas...</option>");
+                
+                // put new dropdown values to pengajar dropdown
+                jQuery.each(data, function(key, val){
+                    $("#kelas-dropdown").append("<option value='" + val.id + "'>" + val.name + "</option>")
+                });
+                
+            });
+            
+        });
+  })
+</script>
+
+
+</html>
