@@ -72,4 +72,5 @@ public class PengajarModel extends UserModel {
     private List<JadwalKelasModel> listJadwalKelas;
 
     private transient String listMapel;
+    private transient String kelasDiasuh;
 }

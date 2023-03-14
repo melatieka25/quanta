@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <title>Detail Pengajar</title>
+    <object th:include="fragments/fragment :: css" th:remove="tag"></object>
+    <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+    <script>
+        var modal = document.getElementById("confirmationModal");
+        var button = document.getElementById("confirmationButton");
+        var span = document.getElementsByClassName("close")[0];
+        var span2 = document.getElementsByClassName("btn btn-danger")[0];
+    
+        button.onclick = function() {
+            modal.style.display = "block";
+        }
+    
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+    
+        span2.onclick = function() {
+            modal.style.display = "none";
+        }
+    
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+        // var submitLink = document.getElementById("selesai")
+        // submitLink.addEventListener('click', function (e) {
+        //     if (!confirm('Apakah anda ingin menyelesaikan pengajar tanpa ada resep?')) {
+        //         e.preventDefault();
+        //     }
+        // });
+    </script>
+</head>
+<body>
+  <nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
+  <a class="btn btn-link" style="color: #31318B" href="/pengajar"><- List Pengajar</a>
+  <div class="container">
+    <h2 style="font-weight: bold; text-align:center; padding:20px">Detail Pengajar</h2>
+    <div class="container" style="width:100%;">
+    <div class="card mt-3" style="background-color:#F7FAFC">
+      <div class="card-body">
+        <div class="container">
+          <br>
+          <div class="row">
+            <div class="col">
+              <h4 style="padding-bottom:20px; font-weight: bold;" >Data Utama</h4>
+            </div>
+            <div class="col">
+              <h4 style="padding-bottom:20px; font-weight: bold;">Data Pelengkap</h4>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">Nama Lengkap</p>
+            </div>
+            <div class="col">
+              <p th:text="${pengajar.name}"></p>
+            </div>
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">No. KTP</p>
+            </div>
+            <div class="col">
+              <p th:text="${pengajar.ktp}"></p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">Nama Panggilan</p>
+            </div>
+            <div class="col">
+              <p th:text="${pengajar.nickname}"></p>
+            </div>
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">Status Pernikahan</p>
+            </div>
+            <div class="col">
+              <p th:text="${pengajar.status}"></p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">Email</p>
+            </div>
+            <div class="col">
+              <p th:text="${pengajar.email}"></p>
+            </div>
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">Pendidikan Terakhir</p>
+            </div>
+            <div class="col">
+              <p th:text="${pengajar.lastEdu}"></p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">Alamat</p>
+            </div>
+            <div class="col">
+              <p th:text="${pengajar.address}"></p>
+            </div>
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">Perguruan Tinggi</p>
+            </div>
+            <div class="col">
+              <p th:text="${pengajar.university}"></p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">No. Telp</p>
+            </div>
+            <div class="col">
+              <p th:text="${pengajar.phone_num}"></p>
+            </div>
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">Jurusan</p>
+            </div>
+            <div class="col">
+              <p th:text="${pengajar.jurusan}"></p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">Tempat Lahir</p>
+            </div>
+            <div class="col">
+              <p th:text="${pengajar.pob}"></p>
+            </div>
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">Kelas Diasuh</p>
+            </div>
+            <div class="col">
+              <p th:if="${pengajar.listKelasAsuh.size() != 0}" th:text="${pengajar.kelasDiasuh}"></p>
+              <p th:if="${pengajar.listKelasAsuh.size() == 0}">-</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">Jenis Kelamin</p>
+            </div>
+            <div class="col">
+              <p th:text="${pengajar.gender}"></p>
+            </div>
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">Mata Pelajaran Diajar</p>
+            </div>
+            <div class="col">
+              <p th:text="${pengajar.listMapel}"></p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">Tanggal Lahir</p>
+            </div>
+            <div class="col">
+              <p th:text="${pengajar.dob}"></p>
+            </div>
+            <div class="col">
+              <p></p>
+            </div>
+            <div class="col">
+              <p></p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">Agama</p>
+            </div>
+            <div class="col">
+              <p th:text="${pengajar.religion}"></p>
+            </div>
+            <div class="col">
+              <p></p>
+            </div>
+            <div class="col">
+              <p></p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <p></p>
+            </div>
+            <div class="col">
+              <p th:if="${pengajar.isActive}">
+                <button type="button" class="btn btn-danger" id="confirmationButton" style="display:block; width:100%; margin-top:20px;">
+                    Non-Aktifkan
+                </button>
+              </p>
+            </div>
+            <div class="col">
+              <button type="button" class="btn btn-primary" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B" >Ubah Data</button>
+            </div>
+            <div class="col">
+              <p></p>
+            </div>
+          </div>
+          <br>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

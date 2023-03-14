@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <title>Detail Pengajar</title>
+    <object th:include="fragments/fragment :: css" th:remove="tag"></object>
+    <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+    <script>
+        var modal = document.getElementById("confirmationModal");
+        var button = document.getElementById("confirmationButton");
+        var span = document.getElementsByClassName("close")[0];
+        var span2 = document.getElementsByClassName("btn btn-danger")[0];
+    
+        button.onclick = function() {
+            modal.style.display = "block";
+        }
+    
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+    
+        span2.onclick = function() {
+            modal.style.display = "none";
+        }
+    
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+        // var submitLink = document.getElementById("selesai")
+        // submitLink.addEventListener('click', function (e) {
+        //     if (!confirm('Apakah anda ingin menyelesaikan pengajar tanpa ada resep?')) {
+        //         e.preventDefault();
+        //     }
+        // });
+    </script>
+</head>
+<body>
+<nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
+<div class="container" style="width:75%; padding-top:50px;">
+    <div class="justify-content-center">
+        <div style="margin: auto; padding-top: 10px; width: 80%; padding: 20px; text-align: center">
+            <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
+            <div class="alert alert-danger" role="alert" th:text="${error}" th:if="${error}"></div>
+            <h2 style="font-weight: bold; padding-top: 10px;" >Detail Pengajar</h2>
+            <br>
+        </div>
+        <div style="margin: auto; padding-top: 10px; width: 80%; padding: 20px; text-align: center">
+            <h4>Data Utama</h4>
+            <p th:text="'Nama Lengkap: ' + ${pengajar.name}"></p>
+            <p th:text="'Nama Panggilan: ' + ${pengajar.nickname}"></p>
+            <p th:text="'Email: ' + ${pengajar.email}"></p>
+            <p th:text="'Alamat: ' + ${pengajar.address}"></p>
+            <p th:text="'No. Telepon: ' + ${pengajar.phone_num}"></p>
+            <p th:text="'Jenis Kelamin: ' + ${pengajar.gender}"></p>
+            <p th:text="'Tempat Lahir: ' + ${pengajar.pob}"></p>
+            <p th:text="'Tanggal Lahir: ' + ${dateOfBirth}"></p>
+            <p th:text="'Agama: ' + ${pengajar.religion}"></p>
+
+            <h4>Data Pelengkap</h4>
+            <p th:text="'No. KTP: ' + ${pengajar.ktp}"></p>
+            <p th:text="'Status Pernikahan: ' + ${pengajar.status}"></p>
+            <p th:text="'Pendidikan Terakhir: ' + ${pengajar.lastEdu}"></p>
+            <p th:text="'Perguruan Tinggi: ' + ${pengajar.university}"></p>
+            <p th:text="'Jurusan: ' + ${pengajar.jurusan}"></p>
+            <p th:if="${pengajar.listKelasAsuh.size() != 0}" th:text="'Kelas Diasuh: ' + ${pengajar.kelasDiasuh}"></p>
+            <p th:text="'Mata Pelajaran Diajar: ' + ${pengajar.listMapel}"></p>
+            <p th:if="${pengajar.isActive}">
+                <button type="button" class="btn btn-danger align-content-center" id="confirmationButton">
+                    Non-Aktifkan
+                </button>
+            </p>
+            <div class="modal" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="confirmationModalLabel">Konfirmasi Penghapusan Pengajar</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p th:text="'Apakah anda yakin ingin mengapus pengajar ' + ${pengajar.name} + '? Akun dari pengajar yang sudah dihapus akan dinonaktifkan'"> </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Tidak</button>
+                            <a class="btn btn-primary align-content-center"
+                                    th:href="@{/pengajar/detail/} + ${pengajar.id} + @{/delete}">Ya</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

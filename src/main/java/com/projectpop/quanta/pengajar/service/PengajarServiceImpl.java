@@ -3,6 +3,7 @@ package com.projectpop.quanta.pengajar.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
 import com.projectpop.quanta.mapel.repository.MataPelajaranDb;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
@@ -13,6 +14,7 @@ import static com.projectpop.quanta.user.auth.PasswordManager.encrypt;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -48,6 +50,34 @@ public class PengajarServiceImpl implements PengajarService {
 
         result = result.substring(0, result.length()-2);
         return result;
+        
         // return "test";
+    }
+
+    @Override
+    public String getKelasAsuh(PengajarModel pengajar){
+        String result = "";
+        for (KelasModel kelas: pengajar.getListKelasAsuh()) {
+            if(kelas.getTahunAjar().getIsAktif()){
+                result = result + kelas.getName() + ", ";
+            }
+        }
+
+        if (result.length() != 0){
+            result = result.substring(0, result.length()-2);
+        } else {
+            result = "-";
+        }
+        
+        return result;
+        // return "test";
+    }
+
+    @Override
+    public PengajarModel getDetailPengajar(int id) {
+        Optional<PengajarModel> pengajar = pengajarDb.findById(id);
+        if(pengajar.isPresent()) {
+            return pengajar.get();
+        } else return null;
     }
 }

@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface PengajarDb extends JpaRepository<PengajarModel, Long> {
     Optional<PengajarModel> findByEmail(String email);
+
+    Optional<PengajarModel> findById(int id);
 }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -17,6 +18,7 @@ import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.user.service.UserService;
 import com.projectpop.quanta.user.auth.PasswordManager;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
@@ -63,6 +65,19 @@ public class PengajarController {
         }
         model.addAttribute("listPengajar", listPengajar);
         return "manajemen-user/list-pengajar";
+    }
+
+    @GetMapping("/detail/{id}")
+    public String detailPengajar(@PathVariable int id, Model model, RedirectAttributes redirectAttrs) {
+        PengajarModel pengajar = pengajarService.getDetailPengajar(id);
+        String timePattern = "EEE, dd-MMM-yyyy";
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(timePattern);
+        String dateOfBirth = pengajar.getDob().format(dateTimeFormatter);
+        pengajar.setListMapel(pengajarService.getPengajarMapel(pengajar));
+        pengajar.setKelasDiasuh(pengajarService.getKelasAsuh(pengajar));
+        model.addAttribute("pengajar", pengajar);
+        model.addAttribute("dateOfBirth", dateOfBirth);
+        return "manajemen-user/detail-pengajar2";
     }
 
 }
