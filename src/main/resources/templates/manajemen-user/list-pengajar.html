@@ -4,13 +4,20 @@
     <title>List Pengajar</title>
     <object th:include="fragments/fragment :: css" th:remove="tag"></object>
     <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+    <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
+    <style>
+      body {
+          font-family: 'DM Sans';
+      }
+  </style> 
 </head>
 <body>
 <nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
+<div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
+<div class="alert alert-danger" role="alert" th:text="${errorMessage}" th:if="${errorMessage}"></div>
 <div class="container" style="width:75%; padding-top:50px;">
     <div class="justify-content-center">
         <div style="margin: auto; padding-top: 10px; width: 80%; padding: 20px; text-align: center">
-            <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
             <h2 style="font-weight: bold; padding-top: 10px;" >List Pengajar</h2>
             <div style="padding-top: 20px;">
                 <a class="btn btn-primary" href="/pengajar/create-pengajar" style="margin: 12px; background-color: #31318B; font-weight: bold; border: none; width:30%;">Tambah Pengajar +</a>
@@ -25,6 +32,7 @@
                 <th scope="col">Mata Pelajaran</th>
                 <th scope="col">Email</th>
                 <th scope="col">Nomor Telepon</th>
+                <th scope="col">Status</th>
                 <th scope="col">Aksi</th>
             </tr>
             </thead>
@@ -36,6 +44,8 @@
                 <td th:if="${pengajar.listPengajarMapel.size() > 0}" th:text="${pengajar.listMapel}"></td>
                 <td th:text="${pengajar.email}"></td>
                 <td th:text="${pengajar.phone_num}"></td>
+                <td th:if="${pengajar.isActive}">Aktif</td>
+                <td th:if="${!pengajar.isActive}">Non-Aktif</td>
                 <td class="align-content-center">
                     <a class="btn btn-outline-primary align-content-center" th:href="@{/pengajar/detail/} + ${pengajar.id}">Detail</a>
                 </td>

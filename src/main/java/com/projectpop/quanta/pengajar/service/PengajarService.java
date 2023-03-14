@@ -10,6 +10,8 @@ public interface PengajarService {
     List<PengajarModel> getListPengajar();
     String getPengajarMapel(PengajarModel pengajar);
     String getKelasAsuh(PengajarModel pengajar);
-    PengajarModel getDetailPengajar(int id);
+    PengajarModel getPengajarById(int id);
+    PengajarModel inactivePengajar(PengajarModel pengajar);
+    PengajarModel activePengajar(PengajarModel pengajar);
 
 }

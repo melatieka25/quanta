@@ -46,9 +46,12 @@ public class PengajarServiceImpl implements PengajarService {
             result = result + mapel.getAbbr() + ", ";
         }
 
-        System.out.println(result);
+        if (result.length() != 0){
+            result = result.substring(0, result.length()-2);
+        } else {
+            result = "-";
+        }
 
-        result = result.substring(0, result.length()-2);
         return result;
         
         // return "test";
@@ -74,10 +77,24 @@ public class PengajarServiceImpl implements PengajarService {
     }
 
     @Override
-    public PengajarModel getDetailPengajar(int id) {
+    public PengajarModel getPengajarById(int id) {
         Optional<PengajarModel> pengajar = pengajarDb.findById(id);
         if(pengajar.isPresent()) {
             return pengajar.get();
         } else return null;
+    }
+
+    @Override
+    public PengajarModel inactivePengajar(PengajarModel pengajar) {
+        pengajar.setIsActive(false);
+        pengajarDb.save(pengajar);
+        return pengajar;
+    }
+
+    @Override
+    public PengajarModel activePengajar(PengajarModel pengajar) {
+        pengajar.setIsActive(true);
+        pengajarDb.save(pengajar);
+        return pengajar;
     }
 }

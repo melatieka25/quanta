@@ -4,6 +4,12 @@
     <title>List Siswa</title>
     <object th:include="fragments/fragment :: css" th:remove="tag"></object>
     <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+    <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
+    <style>
+      body {
+          font-family: 'DM Sans';
+      }
+  </style> 
 </head>
 <body>
 <nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>

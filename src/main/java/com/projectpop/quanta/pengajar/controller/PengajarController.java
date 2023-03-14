@@ -69,7 +69,7 @@ public class PengajarController {
 
     @GetMapping("/detail/{id}")
     public String detailPengajar(@PathVariable int id, Model model, RedirectAttributes redirectAttrs) {
-        PengajarModel pengajar = pengajarService.getDetailPengajar(id);
+        PengajarModel pengajar = pengajarService.getPengajarById(id);
         String timePattern = "EEE, dd-MMM-yyyy";
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(timePattern);
         String dateOfBirth = pengajar.getDob().format(dateTimeFormatter);
@@ -78,6 +78,55 @@ public class PengajarController {
         model.addAttribute("pengajar", pengajar);
         model.addAttribute("dateOfBirth", dateOfBirth);
         return "manajemen-user/detail-pengajar2";
+    }
+
+    @GetMapping("{id}/inactive")
+    public String inactivatePengajarFormPage(@PathVariable int id, Model model, RedirectAttributes redirectAttrs){
+
+        PengajarModel pengajar = pengajarService.getPengajarById(id);
+        
+        
+        if (pengajar != null){
+            model.addAttribute("pengajar", pengajar);
+            pengajar.setKelasDiasuh(pengajarService.getKelasAsuh(pengajar));
+
+            if (pengajar.getKelasDiasuh().equals("-")){
+                PengajarModel inactivatedPengajar = pengajarService.inactivePengajar(pengajar);
+                redirectAttrs.addFlashAttribute("message", "Pengajar dengan nama " + inactivatedPengajar.getName() + " berhasil di-nonaktifkan.");
+            } else {
+                if (!pengajar.getKelasDiasuh().equals("-")){
+                    redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan nama " + pengajar.getName() + " merupakan kakak asuh. Gagal menonaktifkan pengajar.");
+                // } else if (!pengajar.getListMapel().equals("-")){
+                //     redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan nama " + pengajar.getName() + " merupakan pengajar di satu atau lebih mata pelajaran. Gagal menonaktifkan pengajar.");
+                // } 
+                } else {
+                    redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan nama " + pengajar.getName() + " tidak dapat dinonaktifkan saat ini. Tunggu beberapa saat dan coba lagi.");
+                }
+            }
+        } else {
+            redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan id " + id + " tidak ditemukan. Gagal menonaktifkan pengajar.");
+            return "redirect:/pengajar";
+        }
+
+        return "redirect:/pengajar/detail/" + id;
+    }
+
+    @GetMapping("{id}/active")
+    public String activatePengajarFormPage(@PathVariable int id, Model model, RedirectAttributes redirectAttrs){
+
+        PengajarModel pengajar = pengajarService.getPengajarById(id);
+        
+        
+        if (pengajar != null){
+            model.addAttribute("pengajar", pengajar);
+            PengajarModel activatedPengajar = pengajarService.activePengajar(pengajar);
+                redirectAttrs.addFlashAttribute("message", "Pengajar dengan nama " + activatedPengajar.getName() + " berhasil diaktifkan kembali.");
+        } else {
+            redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan id " + id + " tidak ditemukan. Gagal menonaktifkan pengajar.");
+            return "redirect:/pengajar";
+        }
+
+        return "redirect:/pengajar/detail/" + id;
     }
 
 }
