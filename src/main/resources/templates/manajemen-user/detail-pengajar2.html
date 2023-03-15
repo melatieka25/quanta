@@ -92,7 +92,7 @@
               <p style="font-weight: bold; color: #31318B">No. Telp</p>
             </div>
             <div class="col-4">
-              <p th:text="${pengajar.phone_num}"></p>
+              <p th:text="'(+62)' + ${pengajar.phone_num}"></p>
             </div>
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Jurusan</p>
@@ -121,7 +121,7 @@
               <p style="font-weight: bold; color: #31318B">Tanggal Lahir</p>
             </div>
             <div class="col-4">
-              <p th:text="${pengajar.dob}"></p>
+              <p th:text="${dateOfBirth}"></p>
             </div>
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Mata Pelajaran Diajar</p>
@@ -138,10 +138,10 @@
               <p th:text="${pengajar.gender}"></p>
             </div>
             <div class="col">
-              <p></p>
+              <p style="font-weight: bold; color: #31318B">Tanggal Mulai</p>
             </div>
             <div class="col-4">
-              <p></p>
+              <p th:text="${startDate}"></p>
             </div>
           </div>
           <div class="row">

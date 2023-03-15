@@ -27,11 +27,7 @@ public class SiswaModel extends UserModel {
     @NotNull
     @Column(nullable = false)
     @Enumerated(value=EnumType.STRING)
-    private Jurusan jurusan;
-
-    @NotNull
-    @Column(nullable = false)
-    private Integer kelas;
+    private Jenjang jenjang;
 
     @NotNull
     @Column(nullable = false)

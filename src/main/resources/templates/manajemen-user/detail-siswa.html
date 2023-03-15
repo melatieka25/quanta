@@ -57,7 +57,7 @@
               <p style="font-weight: bold; color: #31318B">Jenjang</p>
             </div>
             <div class="col">
-              <p th:text="'Kelas '+ ${siswa.kelas}"></p>
+              <p th:text="${siswa.jenjang}"></p>
             </div>
           </div>
           <div class="row">
@@ -94,7 +94,7 @@
               <p style="font-weight: bold; color: #31318B">No. Telp</p>
             </div>
             <div class="col">
-              <p th:text="${siswa.phone_num}"></p>
+              <p th:text="'(+62)' + ${siswa.phone_num}"></p>
             </div>
             <div class="col">
               <p></p>
@@ -137,7 +137,7 @@
               <p style="font-weight: bold; color: #31318B">Tanggal Lahir</p>
             </div>
             <div class="col">
-              <p th:text="${siswa.dob}"></p>
+              <p th:text="${dateOfBirth}"></p>
             </div>
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Email Wali</p>
@@ -157,7 +157,7 @@
               <p style="font-weight: bold; color: #31318B">No. Telp Wali</p>
             </div>
             <div class="col">
-              <p th:text="${siswa.ortu.phone_num}"></p>
+              <p th:text="'(+62)' + ${siswa.ortu.phone_num}"></p>
             </div>
           </div>
           <div class="row">

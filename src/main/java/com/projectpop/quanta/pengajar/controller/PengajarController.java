@@ -23,7 +23,6 @@ import com.projectpop.quanta.user.service.UserService;
 import com.projectpop.quanta.user.auth.PasswordManager;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -85,10 +84,12 @@ public class PengajarController {
         String timePattern = "EEE, dd-MMM-yyyy";
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(timePattern);
         String dateOfBirth = pengajar.getDob().format(dateTimeFormatter);
+        String startDate = pengajar.getStartDate().format(dateTimeFormatter);
         pengajar.setListMapel(pengajarService.getPengajarMapel(pengajar));
         pengajar.setKelasDiasuh(pengajarService.getKelasAsuh(pengajar));
         model.addAttribute("pengajar", pengajar);
         model.addAttribute("dateOfBirth", dateOfBirth);
+        model.addAttribute("startDate", startDate);
         return "manajemen-user/detail-pengajar2";
     }
 

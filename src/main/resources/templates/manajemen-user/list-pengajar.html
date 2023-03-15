@@ -43,7 +43,7 @@
                 <td th:if="${pengajar.listPengajarMapel.size() == 0}">-</td>
                 <td th:if="${pengajar.listPengajarMapel.size() > 0}" th:text="${pengajar.listMapel}"></td>
                 <td th:text="${pengajar.email}"></td>
-                <td th:text="${pengajar.phone_num}"></td>
+                <td th:text="'(+62)' + ${pengajar.phone_num}"></td>
                 <td th:if="${pengajar.isActive}">Aktif</td>
                 <td th:if="${!pengajar.isActive}">Non-Aktif</td>
                 <td class="align-content-center">
