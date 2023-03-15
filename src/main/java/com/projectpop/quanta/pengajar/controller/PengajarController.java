@@ -11,13 +11,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.projectpop.quanta.pengajar.model.Education;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
+import com.projectpop.quanta.pengajar.model.StatusPernikahan;
 import com.projectpop.quanta.pengajar.service.PengajarService;
+import com.projectpop.quanta.user.model.Gender;
+import com.projectpop.quanta.user.model.Religion;
 import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.user.service.UserService;
 import com.projectpop.quanta.user.auth.PasswordManager;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -33,26 +39,32 @@ public class PengajarController {
 
     @GetMapping("/create-pengajar")
     public String addPengajarFormPage(Model model) {
+        model.addAttribute("listStatusPernikahan", StatusPernikahan.values());
+        model.addAttribute("listLastEdu", Education.values());
+        model.addAttribute("listGender", Gender.values());
+        model.addAttribute("listReligion", Religion.values());
         model.addAttribute("pengajar", new PengajarModel());
-        return "pengajar/form-add-pengajar";
+        return "manajemen-user/form-create-pengajar";
     }
 
     @PostMapping("/create-pengajar")
     public String addPengajarSubmitPage(@ModelAttribute PengajarModel pengajar, Model model, RedirectAttributes redirectAttrs) {
         pengajar.setRole(UserRole.PENGAJAR);
         UserModel sameEmail = userService.getUserByEmail(pengajar.getEmail());
+        String password = PasswordManager.generateCommonTextPassword();
+        pengajar.setPassword(password);
 
         if (sameEmail == null){
-            if (PasswordManager.validationChecker(pengajar.getPassword())){
-                pengajarService.addPengajar(pengajar);
-                redirectAttrs.addFlashAttribute("message", "Pengajar dengan email " + pengajar.getEmail() + " telah berhasil ditambahkan!");
-                return "redirect:/pengajar";
-            } else {
-                redirectAttrs.addFlashAttribute("error", "Password tidak mengandung huruf besar/huruf kecil/angka/simbol atau kurang dari 8 karakter.");
-                return "redirect:/pengajar/create-pengajar";
-            }
+            pengajar.setPasswordPertama(password);
+            pengajar.setIsActive(true);
+            pengajar.setIsPassUpdated(false);
+            pengajar.setIsKakakAsuh(false);
+            pengajar.setStartDate(LocalDate.now());
+            pengajarService.addPengajar(pengajar);
+            redirectAttrs.addFlashAttribute("message", "Pengajar dengan email " + pengajar.getEmail() + "dan password " + pengajar.getPasswordPertama() + " telah berhasil ditambahkan!");
+            return "redirect:/pengajar";
         } else {
-            redirectAttrs.addFlashAttribute("error", "User dengan email " + pengajar.getEmail() + " sudah pernah ditambahkan sebelumnya. Coba lagi dengan email lain!");
+            redirectAttrs.addFlashAttribute("errorMessage", "User dengan email " + pengajar.getEmail() + " sudah pernah ditambahkan sebelumnya. Coba lagi dengan email lain!");
             return "redirect:/pengajar/create-pengajar";
         }
     }

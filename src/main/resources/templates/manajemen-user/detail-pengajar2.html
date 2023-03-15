@@ -35,13 +35,13 @@
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Nama Lengkap</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${pengajar.name}"></p>
             </div>
             <div class="col">
               <p style="font-weight: bold; color: #31318B">No. KTP</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${pengajar.ktp}"></p>
             </div>
           </div>
@@ -49,13 +49,13 @@
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Nama Panggilan</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${pengajar.nickname}"></p>
             </div>
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Status Pernikahan</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${pengajar.status}"></p>
             </div>
           </div>
@@ -63,13 +63,13 @@
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Email</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${pengajar.email}"></p>
             </div>
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Pendidikan Terakhir</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${pengajar.lastEdu}"></p>
             </div>
           </div>
@@ -77,13 +77,13 @@
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Alamat</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${pengajar.address}"></p>
             </div>
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Perguruan Tinggi</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${pengajar.university}"></p>
             </div>
           </div>
@@ -91,13 +91,13 @@
             <div class="col">
               <p style="font-weight: bold; color: #31318B">No. Telp</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${pengajar.phone_num}"></p>
             </div>
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Jurusan</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${pengajar.jurusan}"></p>
             </div>
           </div>
@@ -105,13 +105,13 @@
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Tempat Lahir</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${pengajar.pob}"></p>
             </div>
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Kelas Diasuh</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:if="${pengajar.listKelasAsuh.size() != 0}" th:text="${pengajar.kelasDiasuh}"></p>
               <p th:if="${pengajar.listKelasAsuh.size() == 0}">-</p>
             </div>
@@ -120,13 +120,13 @@
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Tanggal Lahir</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${pengajar.dob}"></p>
             </div>
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Mata Pelajaran Diajar</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${pengajar.listMapel}"></p>
             </div>
           </div>
@@ -134,13 +134,13 @@
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Jenis Kelamin</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${pengajar.gender}"></p>
             </div>
             <div class="col">
               <p></p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p></p>
             </div>
           </div>
@@ -148,13 +148,13 @@
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Agama</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${pengajar.religion}"></p>
             </div>
             <div class="col">
               <p></p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p></p>
             </div>
           </div>
@@ -162,7 +162,7 @@
             <div class="col">
               <p></p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:if="${pengajar.isActive}">
                 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-nonaktif" style="display:block; width:100%; margin-top:20px;">
                     Non-Aktifkan
@@ -174,7 +174,7 @@
                 </button>
               </p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <button type="button" class="btn btn-primary" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B" >Ubah Data</button>
             </div>
             <div class="col">
