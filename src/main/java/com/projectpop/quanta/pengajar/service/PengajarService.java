@@ -14,5 +14,7 @@ public interface PengajarService {
     PengajarModel inactivePengajar(PengajarModel pengajar);
     PengajarModel activePengajar(PengajarModel pengajar);
     PengajarModel updatePengajar(PengajarModel pengajar);
+    int getNumberOfKelasAktif(PengajarModel pengajar);
+    int getNumberOfKonsultasiAktif(PengajarModel pengajar);
 
 }

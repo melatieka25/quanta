@@ -102,16 +102,19 @@ public class PengajarController {
         if (pengajar != null){
             model.addAttribute("pengajar", pengajar);
             pengajar.setKelasDiasuh(pengajarService.getKelasAsuh(pengajar));
+            int jumlahKelasAktif = pengajarService.getNumberOfKelasAktif(pengajar);
+            int jumlahKonsultasiAktif = pengajarService.getNumberOfKonsultasiAktif(pengajar);
 
-            if (pengajar.getKelasDiasuh().equals("-")){
+            if (pengajar.getKelasDiasuh().equals("-") && jumlahKelasAktif == 0 && jumlahKonsultasiAktif == 0){
                 PengajarModel inactivatedPengajar = pengajarService.inactivePengajar(pengajar);
                 redirectAttrs.addFlashAttribute("message", "Pengajar dengan nama " + inactivatedPengajar.getName() + " berhasil di-nonaktifkan.");
             } else {
                 if (!pengajar.getKelasDiasuh().equals("-")){
                     redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan nama " + pengajar.getName() + " merupakan kakak asuh. Gagal menonaktifkan pengajar.");
-                // } else if (!pengajar.getListMapel().equals("-")){
-                //     redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan nama " + pengajar.getName() + " merupakan pengajar di satu atau lebih mata pelajaran. Gagal menonaktifkan pengajar.");
-                // } 
+                } else if (jumlahKelasAktif > 0){
+                    redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan nama " + pengajar.getName() + " memiliki jadwal kelas yang aktif. Gagal menonaktifkan pengajar.");
+                } else if (jumlahKonsultasiAktif > 0){
+                    redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan nama " + pengajar.getName() + " memiliki jadwal konsultasi yang aktif. Gagal menonaktifkan pengajar.");
                 } else {
                     redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan nama " + pengajar.getName() + " tidak dapat dinonaktifkan saat ini. Tunggu beberapa saat dan coba lagi.");
                 }

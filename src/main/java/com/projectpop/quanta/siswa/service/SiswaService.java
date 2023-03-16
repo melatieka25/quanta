@@ -14,5 +14,6 @@ public interface SiswaService {
     SiswaModel inactiveSiswa(SiswaModel siswa);
     SiswaModel activeSiswa(SiswaModel siswa);
     SiswaModel updateSiswa(SiswaModel siswa);
+    int getNumberOfKonsultasiAktif(SiswaModel siswa);
 
 }

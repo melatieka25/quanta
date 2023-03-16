@@ -113,18 +113,19 @@ public class SiswaController {
         if (siswa != null){
             model.addAttribute("siswa", siswa);
             siswa.setKelasBimbel(siswaService.getKelasBimbel(siswa));
+            int jumlahKonsultasiAktif = siswaService.getNumberOfKonsultasiAktif(siswa);
 
-            if (siswa.getKelasBimbel() == null){
+            if (siswa.getKelasBimbel() == null && jumlahKonsultasiAktif == 0){
                 SiswaModel inactivatedSiswa = siswaService.inactiveSiswa(siswa);
                 redirectAttrs.addFlashAttribute("message", "Siswa dengan nama " + inactivatedSiswa.getName() + " berhasil di-nonaktifkan.");
             } else {
-                redirectAttrs.addFlashAttribute("errorMessage", "Siswa dengan nama " + siswa.getName() + " terdaftar pada kelas " + siswa.getKelasBimbel().getName() + ". Gagal menonaktifkan siswa.");
-                // } else if (!siswa.getListMapel().equals("-")){
-                //     redirectAttrs.addFlashAttribute("errorMessage", "Siswa dengan nama " + siswa.getName() + " merupakan siswa di satu atau lebih mata pelajaran. Gagal menonaktifkan siswa.");
-                // } 
-                // } else {
-                //     redirectAttrs.addFlashAttribute("errorMessage", "Siswa dengan nama " + siswa.getName() + " tidak dapat dinonaktifkan saat ini. Tunggu beberapa saat dan coba lagi.");
-                // }
+                if(siswa.getKelasBimbel() != null){
+                    redirectAttrs.addFlashAttribute("errorMessage", "Siswa dengan nama " + siswa.getName() + " terdaftar pada kelas " + siswa.getKelasBimbel().getName() + ". Gagal menonaktifkan siswa.");
+                } else if (jumlahKonsultasiAktif > 0){
+                redirectAttrs.addFlashAttribute("errorMessage", "Siswa dengan nama " + siswa.getName() + " memiliki jadwal konsultasi yang aktif. Gagal menonaktifkan siswa.");
+                } else {
+                    redirectAttrs.addFlashAttribute("errorMessage", "Siswa dengan nama " + siswa.getName() + " tidak dapat dinonaktifkan saat ini. Tunggu beberapa saat dan coba lagi.");
+                }
             }
         } else {
             redirectAttrs.addFlashAttribute("errorMessage", "Siswa dengan id " + id + " tidak ditemukan. Gagal menonaktifkan siswa.");

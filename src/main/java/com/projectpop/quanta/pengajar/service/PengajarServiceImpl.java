@@ -3,7 +3,9 @@ package com.projectpop.quanta.pengajar.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.kelas.model.KelasModel;
+import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
 import com.projectpop.quanta.mapel.repository.MataPelajaranDb;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
@@ -13,6 +15,8 @@ import com.projectpop.quanta.pengajarmapel.model.PengajarMapelModel;
 import static com.projectpop.quanta.user.auth.PasswordManager.encrypt;
 
 import javax.transaction.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -102,5 +106,29 @@ public class PengajarServiceImpl implements PengajarService {
     public PengajarModel updatePengajar(PengajarModel pengajar) {
         pengajarDb.save(pengajar);
         return pengajar;
+    }
+
+    @Override
+    public int getNumberOfKelasAktif(PengajarModel pengajar) {
+        int result = 0;
+        for (JadwalKelasModel jadwalKelas: pengajar.getListJadwalKelas()) {
+            if(jadwalKelas.getEndDateClass().isAfter(LocalDateTime.now())){
+                result++;
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public int getNumberOfKonsultasiAktif(PengajarModel pengajar) {
+        int result = 0;
+        for (KonsultasiModel konsultasi: pengajar.getListKonsultasiPengajar()) {
+            if(konsultasi.getEndTime().isAfter(LocalDateTime.now())){
+                result++;
+            }
+        }
+
+        return result;
     }
 }
