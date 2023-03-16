@@ -1,5 +1,6 @@
 package com.projectpop.quanta.siswa.model;
 
+import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.orangtua.model.OrtuModel;
 import com.projectpop.quanta.pesan.model.PesanModel;
 import com.projectpop.quanta.presensi.model.PresensiModel;
@@ -26,11 +27,7 @@ public class SiswaModel extends UserModel {
     @NotNull
     @Column(nullable = false)
     @Enumerated(value=EnumType.STRING)
-    private Jurusan jurusan;
-
-    @NotNull
-    @Column(nullable = false)
-    private Integer kelas;
+    private Jenjang jenjang;
 
     @NotNull
     @Column(nullable = false)
@@ -54,4 +51,6 @@ public class SiswaModel extends UserModel {
     @ManyToOne
     @JoinColumn(name= "ortu_id")
     private OrtuModel ortu;
+
+    private transient KelasModel kelasBimbel;
 }

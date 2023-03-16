@@ -1,7 +1,4 @@
 package com.projectpop.quanta.pesan.model;
-
-import com.projectpop.quanta.kelas.model.KelasModel;
-import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.siswa.model.SiswaModel;
 import com.projectpop.quanta.user.model.UserModel;
 import com.sun.istack.NotNull;
@@ -13,7 +10,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Setter
