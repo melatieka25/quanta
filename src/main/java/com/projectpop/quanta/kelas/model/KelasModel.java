@@ -2,7 +2,7 @@ package com.projectpop.quanta.kelas.model;
 
 import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
-import com.projectpop.quanta.siswa.model.Jurusan;
+import com.projectpop.quanta.siswa.model.Jenjang;
 import com.projectpop.quanta.siswakelas.model.SiswaKelasModel;
 import com.projectpop.quanta.tahunajar.model.TahunAjarModel;
 import com.sun.istack.NotNull;
@@ -34,7 +34,7 @@ public class KelasModel implements Serializable {
     @NotNull
     @Column(nullable = false)
     @Enumerated(value=EnumType.STRING)
-    private Jurusan jurusan;
+    private Jenjang jenjang;
 
     @NotNull
     @Column(nullable = false)
