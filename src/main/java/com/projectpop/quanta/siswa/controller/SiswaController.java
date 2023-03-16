@@ -152,4 +152,39 @@ public class SiswaController {
         return "redirect:/siswa/detail/" + id;
     }
 
+    @GetMapping("{id}/update")
+    public String updateSiswaFormPage(@PathVariable int id, Model model, RedirectAttributes redirectAttrs){
+
+        SiswaModel siswa = siswaService.getSiswaById(id);
+        if (siswa != null){
+            model.addAttribute("siswa", siswa);
+            model.addAttribute("listGender", Gender.values());
+            model.addAttribute("listReligion", Religion.values());
+            model.addAttribute("listJenjang", Jenjang.values());
+
+            return "manajemen-user/form-update-siswa";
+        } else {
+            redirectAttrs.addFlashAttribute("errorMessage", "Siswa dengan id " + id + " tidak ditemukan. Gagal mengupdate siswa");
+            return "redirect:/siswa";
+        }
+    }
+
+    @PostMapping("update")
+    public String updatePengajarSubmitPage(@ModelAttribute SiswaModel siswa, Model model, RedirectAttributes redirectAttrs) {
+        SiswaModel oldSiswa = siswaService.getSiswaById(siswa.getId());
+        oldSiswa.setName(siswa.getName());
+        oldSiswa.setNickname(siswa.getNickname());
+        oldSiswa.setJenjang(siswa.getJenjang());
+        oldSiswa.setSekolah(siswa.getSekolah());
+        oldSiswa.setAddress(siswa.getAddress());
+        oldSiswa.setPhone_num(siswa.getPhone_num());
+        oldSiswa.setPob(siswa.getPob());
+        oldSiswa.setDob(siswa.getDob());
+        oldSiswa.setGender(siswa.getGender());
+        oldSiswa.setReligion(siswa.getReligion());
+        SiswaModel updatedSiswa = siswaService.updateSiswa(oldSiswa);
+        redirectAttrs.addFlashAttribute("message", "Siswa dengan email " + updatedSiswa.getEmail() + " telah berhasil diubah datanya!");
+        return "redirect:/siswa/detail/" + updatedSiswa.getId();
+    }
+
 }
