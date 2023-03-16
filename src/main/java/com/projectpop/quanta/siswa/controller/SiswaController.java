@@ -11,8 +11,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.projectpop.quanta.orangtua.service.OrtuService;
+import com.projectpop.quanta.siswa.model.Jenjang;
 import com.projectpop.quanta.siswa.model.SiswaModel;
 import com.projectpop.quanta.siswa.service.SiswaService;
+import com.projectpop.quanta.user.model.Gender;
+import com.projectpop.quanta.user.model.Religion;
 import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.user.service.UserService;
@@ -31,10 +35,17 @@ public class SiswaController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private OrtuService ortuService;
+
     @GetMapping("/create-siswa")
     public String addSiswaFormPage(Model model) {
+        model.addAttribute("listGender", Gender.values());
+        model.addAttribute("listReligion", Religion.values());
+        model.addAttribute("listJenjang", Jenjang.values());
+        model.addAttribute("listWali", ortuService.getListOrtu());
         model.addAttribute("siswa", new SiswaModel());
-        return "siswa/form-add-siswa";
+        return "manajemen-user/form-create-siswa";
     }
 
     @PostMapping("/create-siswa")

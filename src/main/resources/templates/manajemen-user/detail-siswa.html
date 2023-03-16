@@ -35,13 +35,13 @@
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Nama Lengkap</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${siswa.name}"></p>
             </div>
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Kelas</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:if="${siswa.kelasBimbel != null}" th:text="${siswa.kelasBimbel.name}"></p>
               <td th:if="${siswa.kelasBimbel == null}">-</td>
             </div>
@@ -50,13 +50,13 @@
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Nama Panggilan</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${siswa.nickname}"></p>
             </div>
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Jenjang</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${siswa.jenjang}"></p>
             </div>
           </div>
@@ -64,13 +64,13 @@
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Email</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${siswa.email}"></p>
             </div>
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Sesi</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:if="${siswa.kelasBimbel != null}" th:text="${siswa.kelasBimbel.days}"></p>
               <td th:if="${siswa.kelasBimbel == null}">-</td>
             </div>
@@ -79,13 +79,13 @@
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Alamat</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${siswa.address}"></p>
             </div>
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Asal Sekolah</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${siswa.sekolah}"></p>
             </div>
           </div>
@@ -93,13 +93,13 @@
             <div class="col">
               <p style="font-weight: bold; color: #31318B">No. Telp</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="'(+62)' + ${siswa.phone_num}"></p>
             </div>
             <div class="col">
               <p></p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p></p>
             </div>
           </div>
@@ -107,14 +107,13 @@
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Jenis Kelamin</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${siswa.gender}"></p>
             </div>
             <div class="col">
               <h4 style="padding-bottom:20px; font-weight: bold;">Data Wali</h4>
             </div>
-            <div class="col">
-              <p></p>
+            <div class="col-4">
               <p></p>
             </div>
           </div>
@@ -122,13 +121,13 @@
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Tempat Lahir</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${siswa.pob}"></p>
             </div>
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Nama Wali</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${siswa.ortu.name}"></p>
             </div>
           </div>
@@ -136,13 +135,13 @@
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Tanggal Lahir</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${dateOfBirth}"></p>
             </div>
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Email Wali</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${siswa.ortu.email}"></p>
             </div>
           </div>
@@ -150,13 +149,13 @@
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Agama</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="${siswa.religion}"></p>
             </div>
             <div class="col">
               <p style="font-weight: bold; color: #31318B">No. Telp Wali</p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:text="'(+62)' + ${siswa.ortu.phone_num}"></p>
             </div>
           </div>
@@ -164,7 +163,7 @@
             <div class="col">
               <p></p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <p th:if="${siswa.isActive}">
                 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-nonaktif" style="display:block; width:100%; margin-top:20px;">
                     Non-Aktifkan
@@ -176,7 +175,7 @@
                 </button>
               </p>
             </div>
-            <div class="col">
+            <div class="col-4">
               <button type="button" class="btn btn-primary" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B" >Ubah Data</button>
             </div>
             <div class="col">
