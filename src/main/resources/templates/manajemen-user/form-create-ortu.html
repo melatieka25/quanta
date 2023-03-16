@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
-    <title>Create Siswa</title>
+    <title>Create Wali</title>
     <object th:include="fragments/fragment :: css" th:remove="tag"></object>
     <object th:include="fragments/fragment :: js" th:remove="tag"></object>
     <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <style>
         body {
             font-family: 'DM Sans';
@@ -18,21 +15,21 @@
 <nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
 <div class="container" style="width:100%">
   <div style="margin: auto; width: 80%; text-align: center; padding-top: 20px">
-    <h2 style="font-weight: bold; text-align:center; padding:20px">Tambah Siswa</h2>
+    <h2 style="font-weight: bold; text-align:center; padding:20px">Tambah Wali</h2>
     <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
     <div class="alert alert-danger" role="alert" th:text="${errorMessage}" th:if="${errorMessage}"></div>
   </div>
     <div class="card mt-3" style="background-color:#F7FAFC">
     <div class="card-body">
       <div class="justify-content-center">
-        <form th:action="@{/siswa/create-siswa}" th:object="${siswa}" method="POST">
+        <form th:action="@{/ortu/create-ortu/} + ${siswaId}" th:object="${ortu}" method="POST">
           <div class="container">
             <div class="row">
                 <div class="col">
-                  <h4 style="padding-bottom:20px; font-weight: bold;" >Data Pribadi</h4>
+                  <h4 style="padding-bottom:20px; font-weight: bold;" >Data Utama</h4>
                 </div>
                 <div class="col">
-                  <h4 style="padding-bottom:20px; font-weight: bold;">Data Akademik</h4>
+                  <h4 style="padding-bottom:20px; font-weight: bold;">Data Pelengkap</h4>
                 </div>
             </div>
             <div class="row">
@@ -43,15 +40,10 @@
                     <input class="form-control" type="text" placeholder="Nama Lengkap" name="name" required/>
                 </div>
                 <div class="col">
-                  <p style="font-weight: bold; color: #31318B">Jenjang</p>
+                  <p style="font-weight: bold; color: #31318B">Pekerjaan</p>
                 </div>
                 <div class="col-4">
-                  <select class="form-select" name="jenjang" required>
-                      <option hidden disabled selected value>Pilih Jenjang Sekolah</option>
-                      <option th:each="jenjang, iterationStatus : ${listJenjang}"
-                              th:value="${jenjang}" 
-                              th:text="${jenjang}"></option>
-                  </select>  
+                  <input class="form-control" type="text" placeholder="Pekerjaan" name="job" required/>
                 </div>
             </div>
             <div class="row">
@@ -62,10 +54,10 @@
                     <input class="form-control" type="text" placeholder="Nama Panggilan" name="nickname" required/>
                 </div>
                 <div class="col">
-                  <p style="font-weight: bold; color: #31318B">Sekolah Asal</p>
+                  <p style="font-weight: bold; color: #31318B">Tempat Bekerja</p>
                 </div>
                 <div class="col-4">
-                  <input class="form-control" type="text" placeholder="Sekolah Asal" name="sekolah" required/> 
+                  <input class="form-control" type="text" placeholder="Isi '-' jika tidak ada" name="kantor" required/> 
                 </div>
             </div>
             <div class="row">
@@ -90,7 +82,7 @@
                 <input class="form-control" type="text" placeholder="Alamat" name="address" required/>
               </div>
               <div class="col">
-                <h4 style="padding-bottom:20px; font-weight: bold;">Data Wali</h4>
+                <p></p>
               </div>
               <div class="col-4">
                 <p></p>
@@ -104,16 +96,10 @@
                 <input class="form-control" type="number" placeholder="No. Telp" name="phone_num" required/>
               </div>
               <div class="col">
-                <p style="font-weight: bold; color: #31318B">Nama Wali</p>
+                <p></p>
               </div>
               <div class="col-4">
-                <select class="form-select js-example-basic-single" name="ortu" required>
-                  <option hidden disabled selected value>Pilih Wali</option>
-                  <option th:value="${null}" th:text="'Buat Data Wali Baru'"></option>
-                  <option th:each="wali, iterationStatus : ${listWali}"
-                          th:value="${wali}" 
-                          th:text="${wali.name}"></option>
-                </select>  
+                <p></p>
               </div>
             </div>
             <div class="row">
@@ -205,10 +191,5 @@
   </div>
 </div>
 </div>
-<script>
-    $(document).ready(function() {
-        $('.js-example-basic-single').select2();
-    });
-</script>
 </body>
 </html>

@@ -67,4 +67,10 @@ public class SiswaServiceImpl implements SiswaService {
         siswaDb.save(siswa);
         return siswa;
     }
+
+    @Override
+    public SiswaModel updateSiswa(SiswaModel siswa) {
+        siswaDb.save(siswa);
+        return siswa;
+    }
 }

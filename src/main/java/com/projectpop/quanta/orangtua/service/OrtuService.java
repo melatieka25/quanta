@@ -6,4 +6,5 @@ import com.projectpop.quanta.orangtua.model.OrtuModel;
 
 public interface OrtuService {
     List<OrtuModel> getListOrtu();
+    void addOrtu(OrtuModel ortu);
 }

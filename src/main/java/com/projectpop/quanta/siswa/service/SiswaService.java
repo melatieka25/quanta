@@ -13,6 +13,6 @@ public interface SiswaService {
     SiswaModel getSiswaById(int id);
     SiswaModel inactiveSiswa(SiswaModel siswa);
     SiswaModel activeSiswa(SiswaModel siswa);
-
+    SiswaModel updateSiswa(SiswaModel siswa);
 
 }
