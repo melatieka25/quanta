@@ -56,4 +56,3 @@ public class SiswaModel extends UserModel {
     private transient String passwordPertama;
     private transient int ortuId;
 }
-
