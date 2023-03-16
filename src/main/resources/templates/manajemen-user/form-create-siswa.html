@@ -107,11 +107,11 @@
                 <p style="font-weight: bold; color: #31318B">Nama Wali</p>
               </div>
               <div class="col-4">
-                <select class="form-select js-example-basic-single" name="ortu" required>
+                <select type="number" class="form-select js-example-basic-single" name="ortuId" required>
                   <option hidden disabled selected value>Pilih Wali</option>
-                  <option th:value="${null}" th:text="'Buat Data Wali Baru'"></option>
+                  <option th:value="${0}" th:text="'Buat Data Wali Baru'"></option>
                   <option th:each="wali, iterationStatus : ${listWali}"
-                          th:value="${wali}" 
+                          th:value="${wali.id}" 
                           th:text="${wali.name}"></option>
                 </select>  
               </div>

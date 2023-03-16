@@ -61,10 +61,11 @@ public class SiswaController {
             siswa.setPasswordPertama(password);
             siswa.setIsActive(true);
             siswa.setIsPassUpdated(false);
-            siswaService.addSiswa(siswa);
             redirectAttrs.addFlashAttribute("message", "Siswa dengan email " + siswa.getEmail() + " dan password " + siswa.getPasswordPertama() + " telah berhasil ditambahkan!");
-            if (siswa.getOrtu() != null){
-                OrtuModel ortu = siswa.getOrtu();
+            if (siswa.getOrtuId() != 0){
+                OrtuModel ortu = ortuService.getOrtuById(siswa.getOrtuId());
+                siswa.setOrtu(ortu);
+                siswaService.addSiswa(siswa);
                 if (ortu.getListAnak() == null){
                     ortu.setListAnak(new ArrayList<SiswaModel>());
                 }

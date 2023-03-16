@@ -1,6 +1,8 @@
 package com.projectpop.quanta.orangtua.service;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.projectpop.quanta.orangtua.model.OrtuModel;
@@ -25,6 +27,14 @@ public class OrtuServiceImpl implements OrtuService {
         String pass = encrypt(ortu.getPassword());
         ortu.setPassword(pass);
         ortuDb.save(ortu);
+    }
+
+    @Override
+    public OrtuModel getOrtuById(int id) {
+        Optional<OrtuModel> ortu = ortuDb.findById(id);
+        if(ortu.isPresent()) {
+            return ortu.get();
+        } else return null;
     }
     
 }
