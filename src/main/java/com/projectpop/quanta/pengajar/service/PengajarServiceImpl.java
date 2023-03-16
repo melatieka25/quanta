@@ -97,4 +97,10 @@ public class PengajarServiceImpl implements PengajarService {
         pengajarDb.save(pengajar);
         return pengajar;
     }
+
+    @Override
+    public PengajarModel updatePengajar(PengajarModel pengajar) {
+        pengajarDb.save(pengajar);
+        return pengajar;
+    }
 }

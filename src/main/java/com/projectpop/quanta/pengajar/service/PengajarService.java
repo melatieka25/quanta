@@ -13,5 +13,6 @@ public interface PengajarService {
     PengajarModel getPengajarById(int id);
     PengajarModel inactivePengajar(PengajarModel pengajar);
     PengajarModel activePengajar(PengajarModel pengajar);
+    PengajarModel updatePengajar(PengajarModel pengajar);
 
 }

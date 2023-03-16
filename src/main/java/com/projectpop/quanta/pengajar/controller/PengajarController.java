@@ -142,4 +142,43 @@ public class PengajarController {
         return "redirect:/pengajar/detail/" + id;
     }
 
+    @GetMapping("{id}/update")
+    public String updatePengajarFormPage(@PathVariable int id, Model model, RedirectAttributes redirectAttrs){
+
+        PengajarModel pengajar = pengajarService.getPengajarById(id);
+        if (pengajar != null){
+            model.addAttribute("pengajar", pengajar);
+            model.addAttribute("listStatusPernikahan", StatusPernikahan.values());
+            model.addAttribute("listLastEdu", Education.values());
+            model.addAttribute("listGender", Gender.values());
+            model.addAttribute("listReligion", Religion.values());
+
+            return "manajemen-user/form-update-pengajar";
+        } else {
+            redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan id " + id + " tidak ditemukan. Gagal mengupdate pengajar");
+            return "redirect:/pengajar";
+        }
+    }
+
+    @PostMapping("update")
+    public String updatePengajarSubmitPage(@ModelAttribute PengajarModel pengajar, Model model, RedirectAttributes redirectAttrs) {
+        PengajarModel oldPengajar = pengajarService.getPengajarById(pengajar.getId());
+        oldPengajar.setName(pengajar.getName());
+        oldPengajar.setNickname(pengajar.getNickname());
+        oldPengajar.setKtp(pengajar.getKtp());
+        oldPengajar.setStatus(pengajar.getStatus());
+        oldPengajar.setLastEdu(pengajar.getLastEdu());
+        oldPengajar.setAddress(pengajar.getAddress());
+        oldPengajar.setUniversity(pengajar.getUniversity());
+        oldPengajar.setPhone_num(pengajar.getPhone_num());
+        oldPengajar.setJurusan(pengajar.getJurusan());
+        oldPengajar.setPob(pengajar.getPob());
+        oldPengajar.setDob(pengajar.getDob());
+        oldPengajar.setGender(pengajar.getGender());
+        oldPengajar.setReligion(pengajar.getReligion());
+        PengajarModel updatedPengajar = pengajarService.updatePengajar(oldPengajar);
+        redirectAttrs.addFlashAttribute("message", "Pengajar dengan email " + updatedPengajar.getEmail() + " telah berhasil diubah datanya!");
+        return "redirect:/pengajar/detail/" + updatedPengajar.getId();
+    }
+
 }
