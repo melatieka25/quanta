@@ -1,5 +1,6 @@
 package com.projectpop.quanta.orangtua.contoller;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,97 @@ public class OrtuController {
             redirectAttrs.addFlashAttribute("errorMessage", "User dengan email " + ortu.getEmail() + " sudah pernah ditambahkan sebelumnya. Coba lagi dengan email lain!");
             return "redirect:/ortu/create-ortu";
         }
+
+    }
+
+    @GetMapping("/detail/{id}/{siswaId}")
+    public String detailOrtu(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs) {
+        OrtuModel ortu = ortuService.getOrtuById(id);
+        ortu.setAnakAktif(ortuService.getAnakAktif(ortu));
+        String timePattern = "EEE, dd-MMM-yyyy";
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(timePattern);
+        String dateOfBirth = ortu.getDob().format(dateTimeFormatter);
+        model.addAttribute("ortu", ortu);
+        model.addAttribute("dateOfBirth", dateOfBirth);
+        model.addAttribute("siswaId", siswaId);
+        return "manajemen-user/detail-ortu";
+    }
+
+    @GetMapping("{id}/{siswaId}/inactive")
+    public String inactivateOrtuFormPage(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs){
+
+        OrtuModel ortu = ortuService.getOrtuById(id);
+        
+        
+        if (ortu != null){
+            model.addAttribute("ortu", ortu);
+            ortu.setAnakAktif(ortuService.getAnakAktif(ortu));
+
+            if (ortu.getAnakAktif().equals("-")){
+                OrtuModel inactivatedOrtu = ortuService.inactiveOrtu(ortu);
+                redirectAttrs.addFlashAttribute("message", "Wali dengan nama " + inactivatedOrtu.getName() + " berhasil di-nonaktifkan.");
+            } else {
+                redirectAttrs.addFlashAttribute("errorMessage", "Ortu dengan nama " + ortu.getName() + " masih memiliki anak dengan status aktif. Gagal menonaktifkan ortu.");
+            }
+        } else {
+            redirectAttrs.addFlashAttribute("errorMessage", "Wali dengan id " + id + " tidak ditemukan. Gagal menonaktifkan wali.");
+            return "redirect:/ortu";
+        }
+
+        return "redirect:/ortu/detail/" + id + "/" + siswaId;
+    }
+
+    @GetMapping("{id}/{siswaId}/active")
+    public String activateOrtuFormPage(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs){
+
+        OrtuModel ortu = ortuService.getOrtuById(id);
+        
+        
+        if (ortu != null){
+            model.addAttribute("ortu", ortu);
+            OrtuModel activatedOrtu = ortuService.activeOrtu(ortu);
+                redirectAttrs.addFlashAttribute("message", "Wali dengan nama " + activatedOrtu.getName() + " berhasil diaktifkan kembali.");
+        } else {
+            redirectAttrs.addFlashAttribute("errorMessage", "Wali dengan id " + id + " tidak ditemukan. Gagal mengaktifkan wali.");
+            return "redirect:/ortu";
+        }
+
+        return "redirect:/ortu/detail/" + id + "/" + siswaId;
+    }
+
+    @GetMapping("{id}/{siswaId}/update")
+    public String updateOrtuFormPage(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs){
+
+        OrtuModel ortu = ortuService.getOrtuById(id);
+        if (ortu != null){
+            model.addAttribute("ortu", ortu);
+            model.addAttribute("listGender", Gender.values());
+            model.addAttribute("listReligion", Religion.values());
+            model.addAttribute("siswaId", siswaId);
+
+            return "manajemen-user/form-update-ortu";
+        } else {
+            redirectAttrs.addFlashAttribute("errorMessage", "Wali dengan id " + id + " tidak ditemukan. Gagal mengupdate wali");
+            return "redirect:/ortu";
+        }
+    }
+
+    @PostMapping("{siswaId}/update")
+    public String updateOrtuSubmitPage(@ModelAttribute OrtuModel ortu, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs) {
+        OrtuModel oldOrtu = ortuService.getOrtuById(ortu.getId());
+        oldOrtu.setName(ortu.getName());
+        oldOrtu.setNickname(ortu.getNickname());
+        oldOrtu.setAddress(ortu.getAddress());
+        oldOrtu.setJob(ortu.getJob());
+        oldOrtu.setPhone_num(ortu.getPhone_num());
+        oldOrtu.setKantor(ortu.getKantor());
+        oldOrtu.setPob(ortu.getPob());
+        oldOrtu.setDob(ortu.getDob());
+        oldOrtu.setGender(ortu.getGender());
+        oldOrtu.setReligion(ortu.getReligion());
+        OrtuModel updatedOrtu = ortuService.updateOrtu(oldOrtu);
+        redirectAttrs.addFlashAttribute("message", "Wali dengan email " + updatedOrtu.getEmail() + " telah berhasil diubah datanya!");
+        return "redirect:/ortu/detail/" + updatedOrtu.getId() + "/" + siswaId;
     }
     
 }

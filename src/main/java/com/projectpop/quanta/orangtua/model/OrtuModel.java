@@ -30,5 +30,6 @@ public class OrtuModel extends UserModel {
     private List<SiswaModel> listAnak;
 
     private transient String passwordPertama;
+    private transient String anakAktif;
 
 }
