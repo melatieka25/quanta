@@ -45,6 +45,10 @@ public class PengajarModel extends UserModel {
     private String jurusan;
 
     @NotNull
+    @Column(nullable = false)
+    private String position;
+
+    @NotNull
     @Column(name="start_date", nullable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;

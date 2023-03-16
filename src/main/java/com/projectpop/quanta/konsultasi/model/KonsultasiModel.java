@@ -2,7 +2,6 @@ package com.projectpop.quanta.konsultasi.model;
 
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
-import com.projectpop.quanta.siswa.model.Jenjang;
 import com.projectpop.quanta.siswakonsultasi.model.SiswaKonsultasiModel;
 import com.projectpop.quanta.tahunajar.model.TahunAjarModel;
 import com.sun.istack.NotNull;
@@ -47,17 +46,11 @@ public class KonsultasiModel implements Serializable {
 
     @NotNull
     @Column(nullable = false)
-    private String place;
+    private String room;
 
     @NotNull
     @Column(nullable = false)
-    @Enumerated(value=EnumType.STRING)
     private StatusKonsul status;
-
-    @NotNull
-    @Column(name="jenjang_kelas", nullable = false)
-    @Enumerated(value=EnumType.STRING)
-    private Jenjang jenjangKelas;
 
     @ManyToOne
     @JoinColumn(name="mapel_id")
