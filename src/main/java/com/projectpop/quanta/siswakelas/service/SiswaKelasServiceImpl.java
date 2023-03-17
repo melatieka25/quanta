@@ -1,0 +1,24 @@
+package com.projectpop.quanta.siswakelas.service;
+
+import com.projectpop.quanta.kelas.model.KelasModel;
+import com.projectpop.quanta.siswakelas.model.SiswaKelasModel;
+import com.projectpop.quanta.siswakelas.repository.SiswaKelasDb;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.Optional;
+
+@Service
+@Transactional
+public class SiswaKelasServiceImpl implements SiswaKelasService {
+    @Autowired
+    SiswaKelasDb siswaKelasDb;
+
+    @Override
+    public SiswaKelasModel getSiswaKelasById(Integer id) {
+        Optional<SiswaKelasModel> kelas = siswaKelasDb.findById(id);
+        return kelas.orElse(null);
+    }
+
+}
