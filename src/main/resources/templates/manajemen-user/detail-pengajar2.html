@@ -14,7 +14,7 @@
 <body>
   <nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
   <a class="btn btn-link" style="color: #31318B" href="/pengajar"><- List Pengajar</a>
-  <div class="container">
+<div class="container">
     <h2 style="font-weight: bold; text-align:center; padding:20px">Detail Pengajar</h2>
     <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
     <div class="alert alert-danger" role="alert" th:text="${errorMessage}" th:if="${errorMessage}"></div>
@@ -209,7 +209,7 @@
         <a type="button" class="btn btn-primary btn-danger" th:href="@{/pengajar/} + ${pengajar.id} + @{/inactive}">Nonaktifkan</a>
         </div>
     </div>
-    </div>
+  </div>
 </div>
 
 <!-- Modal -->

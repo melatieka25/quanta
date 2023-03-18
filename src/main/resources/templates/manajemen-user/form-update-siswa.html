@@ -184,10 +184,28 @@
                   </a>
               </div>
               <div class="col-4">
-                <button type="submit" class="btn btn-primary" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B" >Simpan</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-update"  style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B" >Simpan</button>
               </div>
               <div class="col">
                 <p></p>
+              </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="modal-update" tabindex="-1" role="dialog" aria-labelledby="popupLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                  <div class="modal-header">
+                  <h5 class="modal-title" id="popupLabel"><strong>Konfirmasi Ubah Data Siswa</strong></h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+                  </div>
+                  <div class="modal-body">
+                      Apakah Anda Yakin ingin mengubah data Siswa? </br>
+                  </div>
+                  <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                  <button type="submit" class="btn btn-primary"  style="background-color: #31318B; border-color: #31318B" >Ubah Data</button>
               </div>
             </div>
           </br>
@@ -196,11 +214,11 @@
     </div>
   </div>
 </div>
-</div>
 <script>
     $(document).ready(function() {
         $('.js-example-basic-single').select2();
     });
 </script>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
 </html>
