@@ -72,6 +72,7 @@ public class SiswaController {
                 ortu.getListAnak().add(siswa);
                 return "redirect:/siswa";
             } else {
+                siswaService.addSiswa(siswa);
                 return "redirect:/ortu/create-ortu/" + siswa.getId();
             }
             
