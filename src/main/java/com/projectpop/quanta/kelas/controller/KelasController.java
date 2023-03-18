@@ -165,58 +165,55 @@ public class KelasController {
     @PostMapping(value="edit", params = {"save"})
     public String updateKelasSubmitPage(@ModelAttribute KelasModel kelas, RedirectAttributes redirectAttrs) {
         KelasModel kelasExs = kelasService.getKelasById(kelas.getId());
-//        ArrayList<SiswaKelasModel> listSiswa = new ArrayList<>();
-//        List<SiswaKelasModel> listSiswaExist = kelasExs.getListSiswaKelas();
+        kelasExs.setDays(kelas.getDays());
+        kelasExs.setName(kelas.getName());
+        kelasExs.setJenjang(kelas.getJenjang());
+        kelasExs.setKakakAsuh(kelas.getKakakAsuh());
+        kelasExs.setTahunAjar(kelas.getTahunAjar());
 
-        if (kelas.getListSiswaKelas() == null) {
-            kelas.setListSiswaKelas(new ArrayList<>());
+        ArrayList<Integer> listIdSiswaLama = new ArrayList<Integer>();
+        ArrayList<Integer> listIdSiswaBaru = new ArrayList<Integer>();
+
+        List<SiswaKelasModel> listSiswaKelasUpdated = new ArrayList<SiswaKelasModel>();
+
+        for (SiswaKelasModel siswaKelas : kelas.getListSiswaKelas()){
+            listIdSiswaBaru.add(siswaKelas.getSiswa().getId());
         }
 
-        // handle missing value akibat delete row
-        List<SiswaKelasModel> listOfMissingSiswaKelas = siswaKelasService.findMissingList(kelas.getListSiswaKelas(),
-                siswaKelasService.getAllbyKelas(kelas));
+        for (SiswaKelasModel siswaKelas : kelasExs.getListSiswaKelas()){
+            listIdSiswaLama.add(siswaKelas.getSiswa().getId());
+            SiswaModel siswaUpdated = siswaKelas.getSiswa();
+            siswaUpdated.getListKelasSiswa().remove(siswaKelas);
+        }
 
-        if (!listOfMissingSiswaKelas.isEmpty()) {
-            for (SiswaKelasModel siswaKelas : listOfMissingSiswaKelas) {
-                siswaKelasService.deleteSiswaKelas(siswaKelas);
+        kelasExs.setListSiswaKelas(null);
+        siswaKelasService.deleteAllByKelasSiswa(kelasExs);
+
+
+        for (int idSiswa : listIdSiswaLama){
+            if (listIdSiswaBaru.contains(idSiswa)) {
+                SiswaKelasModel siswaKelasBaru = new SiswaKelasModel();
+                siswaKelasBaru.setKelasSiswa(kelasExs);
+                siswaKelasBaru.setSiswa(siswaService.getById(idSiswa));
+                listSiswaKelasUpdated.add(siswaKelasBaru);
             }
         }
 
-        // handle added value akibat add row
-        for (SiswaKelasModel siswaKelas : kelas.getListSiswaKelas()) {
-            siswaKelas.setKelasSiswa(kelas);
-
+        for (int idSiswa : listIdSiswaBaru){
+            if (!listIdSiswaLama.contains(idSiswa)) {
+                SiswaKelasModel siswaKelasBaru = new SiswaKelasModel();
+                siswaKelasBaru.setKelasSiswa(kelasExs);
+                siswaKelasBaru.setSiswa(siswaService.getById(idSiswa));
+                listSiswaKelasUpdated.add(siswaKelasBaru);
+            }
         }
 
+        kelasExs.setListSiswaKelas(listSiswaKelasUpdated);
 
+        kelasService.addKelas(kelasExs);
 
-
-//        int index = 0;
-//        for (SiswaKelasModel siswaKelas : kelas.getListSiswaKelas()) {
-//            for (SiswaKelasModel siswaKelasExs : listSiswaExist){
-//                if (siswaKelasExs.getSiswa().getId().equals(siswaKelas.getSiswa().getId())){
-//                    SiswaKelasModel siswaKelas2 = siswaKelasService.getSiswaKelasById(siswaKelasExs.getId());
-//                    listSiswa.add(siswaKelas);
-//                    siswaKelas2.setKelasSiswa(kelas);
-//                    siswaKelas2.setSiswa(kelas.getListSiswaKelas().get(index).getSiswa());
-//                } else {
-//                    SiswaModel siswaBaru = siswaService.getById(siswaKelas.getSiswa().getId());
-//                    siswaKelas.setSiswa(siswaBaru);
-//                    siswaKelas.setKelasSiswa(kelasExs);
-//                    listSiswa.add(siswaKelas);
-//                }
-//            }
-//
-//
-//            index++;
-//        }
-
-//        kelasExs.setListSiswaKelas(listSiswa);
-
-        kelasService.addKelas(kelas);
-
-        redirectAttrs.addFlashAttribute("message", "Data kelas " + kelas.getName() + " telah berhasil diubah!");
-        return "redirect:/kelas/detail/" + kelas.getId();
+        redirectAttrs.addFlashAttribute("message", "Data kelas " + kelasExs.getName() + " telah berhasil diubah!");
+        return "redirect:/kelas/detail/" + kelasExs.getId();
     }
 
     @GetMapping("/delete/{id}")

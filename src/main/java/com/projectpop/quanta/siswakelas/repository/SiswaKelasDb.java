@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface SiswaKelasDb extends JpaRepository<SiswaKelasModel, String> {
     Optional<SiswaKelasModel> findById(Integer id);
     List<SiswaKelasModel> findAllByKelasSiswa(KelasModel kelas);
+    List<SiswaKelasModel> deleteAllByKelasSiswa(KelasModel kelas);
 }

@@ -9,7 +9,6 @@ public interface SiswaKelasService {
 
     List<SiswaKelasModel> getAllbyKelas(KelasModel kelas);
     SiswaKelasModel getSiswaKelasById(Integer id);
-    List<SiswaKelasModel> findMissingList(List<SiswaKelasModel> listSiswaNew, List<SiswaKelasModel> listSiswaDb);
 
-    void deleteSiswaKelas(SiswaKelasModel kelas);
+    void deleteAllByKelasSiswa(KelasModel kelas);
 }
