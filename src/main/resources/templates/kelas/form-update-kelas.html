@@ -73,7 +73,7 @@
                         </th>
                         </thead>
                         <tbody>
-                        <tr th:each="siswa, iterationStatus : *{listSiswaKelas}">
+                        <tr th:each="siswaKelas, iterationStatus : *{listSiswaKelas}">
                             <td>
                                 <select name="id"
                                         th:field="*{listSiswaKelas[__${iterationStatus.index}__].siswa.id}"
@@ -87,7 +87,7 @@
                             </td>
                             <td>
                                 <button th:value="${iterationStatus.index}" class="btn btn-danger"
-                                        type="submit" name="deleteRowSiswa">Hapus</button>
+                                        type="submit" name="deleteRowSiswaUpdate">Hapus</button>
                             </td>
                         </tr>
                         </tbody>

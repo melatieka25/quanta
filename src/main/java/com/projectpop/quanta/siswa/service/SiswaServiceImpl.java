@@ -19,4 +19,9 @@ public class SiswaServiceImpl implements SiswaService {
         return siswaDb.findAll();
     }
 
+    @Override
+    public SiswaModel getById(Integer id) {
+            return siswaDb.findById(id).orElse(null);
+    }
+
 }
