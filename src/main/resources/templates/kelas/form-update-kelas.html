@@ -65,6 +65,34 @@
                         </select>
                     </div>
 
+                    <table class="table">
+                        <thead>
+                        <th>Siswa</th>
+                        <th>
+                            <button class="btn btn-primary" type="submit" name="addRowSiswaUpdate">Tambah Row</button>
+                        </th>
+                        </thead>
+                        <tbody>
+                        <tr th:each="siswa, iterationStatus : *{listSiswaKelas}">
+                            <td>
+                                <select name="id"
+                                        th:field="*{listSiswaKelas[__${iterationStatus.index}__].siswa.id}"
+                                        class="form-select">
+                                    <div th:each="siswaEx, iterationStatus2: ${listSiswa}">
+                                        <option th:value="${siswaEx.id}"
+                                                th:text="${siswaEx.name}"></option>
+                                    </div>
+
+                                </select>
+                            </td>
+                            <td>
+                                <button th:value="${iterationStatus.index}" class="btn btn-danger"
+                                        type="submit" name="deleteRowSiswa">Hapus</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
 
 
 

@@ -1,3 +1,4 @@
 spring:
   profiles:
-    active: ${APP_ENV}
+#    active: ${APP_ENV}
+    active: dev

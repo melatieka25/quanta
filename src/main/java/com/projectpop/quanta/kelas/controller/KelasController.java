@@ -7,6 +7,7 @@ import com.projectpop.quanta.pengajar.service.PengajarService;
 import com.projectpop.quanta.siswa.model.SiswaModel;
 import com.projectpop.quanta.siswa.service.SiswaService;
 import com.projectpop.quanta.siswakelas.model.SiswaKelasModel;
+import com.projectpop.quanta.siswakelas.service.SiswaKelasService;
 import com.projectpop.quanta.tahunajar.model.TahunAjarModel;
 import com.projectpop.quanta.tahunajar.service.TahunAjarService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,10 @@ public class KelasController {
     @Qualifier("siswaServiceImpl")
     @Autowired
     private SiswaService siswaService;
+
+    @Qualifier("siswaKelasServiceImpl")
+    @Autowired
+    private SiswaKelasService siswaKelasService;
 
     @Qualifier("tahunAjarServiceImpl")
     @Autowired
@@ -160,11 +165,25 @@ public class KelasController {
     @PostMapping(value="edit", params = {"save"})
     public String updateKelasSubmitPage(KelasModel kelas, RedirectAttributes redirectAttrs) {
         KelasModel kelasExs = kelasService.getKelasById(kelas.getId());
+        ArrayList<SiswaKelasModel> listSiswa = new ArrayList<>();
+
         kelasExs.setName(kelas.getName());
         kelasExs.setDays(kelas.getDays());
         kelasExs.setJenjang(kelas.getJenjang());
         kelasExs.setKakakAsuh(kelas.getKakakAsuh());
         kelasExs.setTahunAjar(kelas.getTahunAjar());
+
+
+        int index = 0;
+        for (SiswaKelasModel siswaKelas : kelasExs.getListSiswaKelas()) {
+            SiswaKelasModel siswaKelas2 = siswaKelasService.getSiswaKelasById(siswaKelas.getId());
+            listSiswa.add(siswaKelas);
+            siswaKelas2.setKelasSiswa(kelas);
+            siswaKelas2.setSiswa(kelas.getListSiswaKelas().get(index).getSiswa());
+            index++;
+        }
+
+        kelasExs.setListSiswaKelas(listSiswa);
 
         kelasService.addKelas(kelasExs);
 
@@ -180,6 +199,49 @@ public class KelasController {
 
         return "redirect:/kelas";
 
+    }
+
+    @PostMapping(value="/edit", params = {"addRowSiswaUpdate"})
+    private String addRowKelasMultipleUpdate(
+            @ModelAttribute KelasModel kelas,
+            Model model
+    ){
+        if (kelas.getListSiswaKelas() == null || kelas.getListSiswaKelas().size() == 0) {
+            kelas.setListSiswaKelas(new ArrayList<>());
+        }
+        kelas.getListSiswaKelas().add(new SiswaKelasModel());
+
+        List<SiswaModel> listSiswa = siswaService.getListSiswa();
+        List<TahunAjarModel> listTahunAjar = tahunAjarService.getAllTahunAjar();
+        List<PengajarModel> listKakakAsuh = pengajarService.getListKakakAsuh();
+
+        model.addAttribute("listSiswa", listSiswa);
+        model.addAttribute("listTahunAjar", listTahunAjar);
+        model.addAttribute("listKakakAsuh", listKakakAsuh);
+        model.addAttribute("kelas", kelas);
+
+        return "kelas/form-update-kelas";
+    }
+
+    @PostMapping(value="/add", params={"deleteRowSiswaUpdate"})
+    private String deleteRowSiswaMultiple(
+            @ModelAttribute KelasModel kelas,
+            @RequestParam("deleteRowSiswa") Integer row,
+            Model model
+    ){
+        final Integer rowId = Integer.valueOf(row);
+        kelas.getListSiswaKelas().remove(rowId.intValue());
+
+        List<SiswaModel> listSiswa = siswaService.getListSiswa();
+        List<TahunAjarModel> listTahunAjar = tahunAjarService.getAllTahunAjar();
+        List<PengajarModel> listKakakAsuh = pengajarService.getListKakakAsuh();
+
+        model.addAttribute("listSiswa", listSiswa);
+        model.addAttribute("listTahunAjar", listTahunAjar);
+        model.addAttribute("listKakakAsuh", listKakakAsuh);
+        model.addAttribute("kelas", kelas);
+
+        return "kelas/form-update-kelas";
     }
 
 
