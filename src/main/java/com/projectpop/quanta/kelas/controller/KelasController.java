@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/kelas")
@@ -82,12 +84,24 @@ public class KelasController {
         if (kelas.getListSiswaKelas() == null) {
             kelas.setListSiswaKelas(new ArrayList<>());
         }
+
+        Set<Integer> listIdSiswa = new HashSet<Integer>();
+        List<SiswaKelasModel> listSiswaKelasUpdated = new ArrayList<SiswaKelasModel>();
+
+
+        for (SiswaKelasModel siswaKelas : kelas.getListSiswaKelas()){
+            listIdSiswa.add(siswaKelas.getSiswa().getId());
+        }
+
         int index = 0;
-        for (SiswaKelasModel siswaKelas : kelas.getListSiswaKelas()) {
+        for (Integer idSiswa : listIdSiswa) {
+            SiswaKelasModel siswaKelas = new SiswaKelasModel();
             siswaKelas.setKelasSiswa(kelas);
             siswaKelas.setSiswa(kelas.getListSiswaKelas().get(index).getSiswa());
-            index++;
+            listSiswaKelasUpdated.add(siswaKelas);
         }
+
+        kelas.setListSiswaKelas(listSiswaKelasUpdated);
 
         kelasService.addKelas(kelas);
         redirectAttrs.addFlashAttribute("success", "Kelas berhasil ditambahkan");
@@ -171,8 +185,8 @@ public class KelasController {
         kelasExs.setKakakAsuh(kelas.getKakakAsuh());
         kelasExs.setTahunAjar(kelas.getTahunAjar());
 
-        ArrayList<Integer> listIdSiswaLama = new ArrayList<Integer>();
-        ArrayList<Integer> listIdSiswaBaru = new ArrayList<Integer>();
+        Set<Integer> listIdSiswaLama = new HashSet<Integer>();
+        Set<Integer> listIdSiswaBaru = new HashSet<Integer>();
 
         List<SiswaKelasModel> listSiswaKelasUpdated = new ArrayList<SiswaKelasModel>();
 
