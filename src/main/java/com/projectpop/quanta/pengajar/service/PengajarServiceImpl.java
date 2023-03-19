@@ -3,13 +3,17 @@ package com.projectpop.quanta.pengajar.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.projectpop.quanta.pengajar.model.PengajarModel;
+import com.projectpop.quanta.pengajar.repository.PengajarDb;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
 import com.projectpop.quanta.mapel.repository.MataPelajaranDb;
-import com.projectpop.quanta.pengajar.model.PengajarModel;
-import com.projectpop.quanta.pengajar.repository.PengajarDb;
 import com.projectpop.quanta.pengajarmapel.model.PengajarMapelModel;
 
 import static com.projectpop.quanta.user.auth.PasswordManager.encrypt;
@@ -17,7 +21,6 @@ import static com.projectpop.quanta.user.auth.PasswordManager.encrypt;
 import javax.transaction.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 
@@ -26,9 +29,20 @@ import java.util.Optional;
 public class PengajarServiceImpl implements PengajarService {
     @Autowired
     PengajarDb pengajarDb;
-
+    
     @Autowired
     MataPelajaranDb mataPelajaranDb;
+
+    @Override
+    public List<PengajarModel> getListPengajarActive() {
+        List<PengajarModel> listPengajarActive = new ArrayList<>();
+        for (PengajarModel pengajar : pengajarDb.findAll()) {
+            if (pengajar.getIsActive()) {
+                listPengajarActive.add(pengajar);
+            }
+        }
+        return listPengajarActive;
+    }
 
     @Override
     public void addPengajar(PengajarModel pengajar) {
@@ -79,7 +93,7 @@ public class PengajarServiceImpl implements PengajarService {
     }
 
     @Override
-    public PengajarModel getPengajarById(int id) {
+    public PengajarModel getPengajarById(Integer id) {
         Optional<PengajarModel> pengajar = pengajarDb.findById(id);
         if(pengajar.isPresent()) {
             return pengajar.get();

@@ -1,13 +1,18 @@
 package com.projectpop.quanta.kelas.service;
 
-import com.projectpop.quanta.kelas.model.KelasModel;
-import com.projectpop.quanta.kelas.repository.KelasDb;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import com.projectpop.quanta.kelas.model.JadwalAvail;
+import com.projectpop.quanta.kelas.model.KelasModel;
+import com.projectpop.quanta.kelas.repository.KelasDb;
+
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.transaction.Transactional;
 import java.util.Optional;
+
 
 @Service
 @Transactional
@@ -26,12 +31,23 @@ public class KelasServiceImpl implements KelasService{
 
     }
     @Override
-    public List<KelasModel> getAllKelas(){
+    public List<KelasModel> getListKelas(){
         return kelasDb.findAll();
     }
 
     @Override
-    public KelasModel getKelasById(Integer id){
+    public List<KelasModel> getListKelasByDays(Integer day) {
+        List<KelasModel> listKelas = new ArrayList<>();
+        if (day == 1 || day == 3 || day == 5) {
+            listKelas = kelasDb.findByDays(JadwalAvail.SeninRabuJumat);
+        } else if (day == 2|| day == 4 || day==6){
+            listKelas = kelasDb.findByDays(JadwalAvail.SelasaKamisSabtu);
+        }
+        return listKelas;
+    }
+
+    @Override
+    public KelasModel getKelasById(Integer id) {
         Optional<KelasModel> kelas = kelasDb.findById(id);
         return kelas.orElse(null);
     }

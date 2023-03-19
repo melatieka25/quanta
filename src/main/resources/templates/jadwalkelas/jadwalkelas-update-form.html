@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <title>Ubah Jadwal Kelas</title>
+    <object th:include="fragments/fragment :: css" th:remove="tag"></object>
+    <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+    <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
+
+<body>
+<style>
+body {
+    font-family: 'DM Sans';
+}
+</style>
+<nav th:replace="fragments/fragment :: navbar('')"></nav>
+<div class="container" style="width:75%; padding-top:20px;">
+    <div style="margin: auto; width: 80%; text-align: center; padding-top: 20px">
+        <h2 style="font-weight: bolder;">Ubah Jadwal Kelas</h2>
+        <br>
+        <div class="alert alert-danger" role="alert" th:text="${message}" th:if="${message}"></div>
+    </div>
+    
+    <div class="card mt-3" style="background-color:#F7FAFC">
+    <div class="card-body">
+        <div class="justify-content-center">
+
+
+            <form th:action="@{/jadwal-kelas/update}" th:object="${jadwalKelas}" method="POST"> 
+                <input type="hidden" th:field="*{id}" name="id"/>
+
+                <div class="container">
+                    <div class="row">
+                        <p></p>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <p style="font-weight: bold; color: #31318B">Tanggal</p>
+                        </div>
+                        <div class="col-4">
+                            <input class="form-control" id="tanggal" type="date" name="tanggal" th:value="${tanggal}" required/>
+                        </div>
+                        <div class="col">
+                            <p style="font-weight: bold; color: #31318B">Kelas</p>
+                        </div>
+                        <div class="col-4">
+                            <select class="form-select" id="kelas-dropdown" name="kelasDiajar" required>
+                                <option hidden th:selected="*{kelas}" th:text="*{kelas.name}" th:value="*{kelas.id}"></option>
+                                <option th:each="kelas, iterationStatus : ${listKelas}"
+                                        th:value="${kelas.id}" 
+                                        th:text="${kelas.name}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <p></p>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col">
+                            <p style="font-weight: bold; color: #31318B">Jam</p>
+                        </div>
+                        <div class="col-4">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <input class="form-control" type="time" name="jam_mulai" th:value="${jamMulai}" required/>
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            -
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <input class="form-control" type="time" name="jam_selesai" th:value="${jamSelesai}" required/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+        
+                            </table>
+                        </div>
+
+                        <div class="col">
+                            <p style="font-weight: bold; color: #31318B">Mata Pelajaran</p>
+                            </div>
+                            <div class="col-4">
+                            <select class="form-select" id="mapel-dropdown" name="mapel" required>
+                                <option hidden th:selected="*{mapelJadwal}" th:text="*{mapelJadwal.name}" th:value="*{mapelJadwal.id}"></option>
+                                <option th:each="mapel, iterationStatus : ${listMapel}"
+                                        th:value="${mapel.id}" 
+                                        th:text="${mapel.name}"></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <p></p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <p style="font-weight: bold; color: #31318B">Ruang Kelas</p>
+                        </div>
+                        <div class="col-4">
+                            <select class="form-select" name="ruangKelas" th:value="*{ruangKelas}" required>
+                                <option hidden th:selected="*{ruangKelas}" th:text="*{ruangKelas}" th:value="*{ruangKelas}"></option>
+                                <option th:each="ruang, iterationStatus : ${listRuangKelas}"
+                                        th:value="${ruang}" 
+                                        th:text="${ruang}"></option>
+                            </select>  
+                        </div>
+                        <div class="col">
+                            <p style="font-weight: bold; color: #31318B">Pengajar</p>
+                        </div>
+                        <div class="col-4">
+                        <select class="form-select" id="pengajar-dropdown" name="pengajar" required>
+                            <option hidden th:selected="*{pengajarKelas}" th:text="*{pengajarKelas.name}" th:value="*{pengajarKelas.id}"></option>
+                            <option th:each="pengajar, iterationStatus : ${listPengajar}"
+                                    th:value="${pengajar.pengajar.id}" 
+                                    th:text="${pengajar.pengajar.name}"></option>
+                        </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <p></p>
+                        <p></p>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col">
+                          <p></p>
+                        </div>
+                        <div class="col-4">
+                            <a class="btn btn-outline-secondary" style="display:block; width:100%; margin-top:20px;" th:href="@{/jadwal-kelas/} + ${jadwalKelas.id}">
+                                Kembali
+                            </a>
+                        </div>
+                        <div class="col-4">
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-update" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B">
+                                Simpan
+                            </button>
+                        </div>
+                        <div class="col">
+                          <p></p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <p></p>
+                    </div>
+    
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="modal-update" tabindex="-1" role="dialog" aria-labelledby="popupLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="popupLabel"><strong>Konfirmasi Ubah Jadwal</strong></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                        <div class="modal-body">
+                            Apakah Anda yakin ingin mengubah jadwal kelas? </br> </br> 
+                            Jadwal kelas yang sudah dihapus tidak dapat dikembalikan lagi 
+                        </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                        <button type="submit" name="update" class="btn btn-primary"  style="background-color: #31318B; border-color: #31318B">Ubah Data</button>
+                        </div>
+                    </div>
+                </div>
+  
+            </form>
+        </div>
+    </div>
+    </div>
+</div>
+ 
+</body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#mapel-dropdown").change(function(){
+            // get id of selected team 
+            var mapel_id=$(this).find(':selected').val();
+            console.log(mapel_id);
+
+            // set json url
+            var json_url="/api/v1/jadwal-kelas/get-pengajar/mapel/" + mapel_id;
+            $('#pengajar-dropdown').prop({"disabled": false, "required": true})
+
+            
+            // get json data
+            jQuery.getJSON(json_url, function(data){
+                $("#pengajar-dropdown").html("");                
+                // put new dropdown values to pengajar dropdown
+                jQuery.each(data, function(key, val){
+                    $("#pengajar-dropdown").append("<option value='" + val.id + "'>" + val.name + "</option>")
+                });
+                
+            });
+            
+        });
+
+        // $("#pengajar-dropdown").change(function(){
+        //     // get id of selected team 
+        //     var pengajar_id=$(this).find(':selected').val();
+
+        //     // set json url
+        //     var json_url="/api/v1/jadwal-kelas/get-mapel/pengajar/" + pengajar_id;
+            
+        //     // get json data
+        //     jQuery.getJSON(json_url, function(data){
+        //         $("#mapel-dropdown").html("");
+        //         // $("#mapel-dropdown").append("<option hidden disabled selected value>Pilih mata pelajaran...</option>");
+                
+        //         // put new dropdown values to pengajar dropdown
+        //         jQuery.each(data, function(key, val){
+        //             $("#mapel-dropdown").append("<option value='" + val.id + "'>" + val.name + "</option>")
+        //         });
+                
+        //     });
+            
+        // });
+
+
+        var today = new Date().toISOString().split('T')[0];
+        $("#tanggal").attr('min', today);
+
+        // Everything except weekend days
+        const validate = dateString => {
+        const day = (new Date(dateString)).getDay();
+        if (day==0) {
+            alert('Kelas tidak bisa diadakan di hari Minggu! Silakan pilih hari lain.');
+            return false;
+        }
+        return true;
+        }
+
+        // Sets the value to '' in case of an invalid date
+        document.querySelector('#tanggal').onchange = evt => {
+            if (!validate(evt.target.value)) {
+                evt.target.value = '';
+            }
+        }
+
+
+        $("#tanggal").change(function(){
+            console.log("tes");
+            // get id of selected team 
+            var datetime=$(this).val();
+            const selectedDate = new Date(datetime);
+            let day = selectedDate.getDay();
+            //var pickedDay = datetime.getDay();
+            console.log(day)
+
+            // set json url
+            var json_url="/api/v1/jadwal-kelas/get-kelas/hari/" + day;
+            
+            // get json data
+            jQuery.getJSON(json_url, function(data){
+                $("#kelas-dropdown").html("");
+                $("#kelas-dropdown").append("<option hidden disabled selected value>Pilih kelas...</option>");
+                
+                // put new dropdown values to pengajar dropdown
+                jQuery.each(data, function(key, val){
+                    $("#kelas-dropdown").append("<option value='" + val.id + "'>" + val.name + "</option>")
+                });
+                
+            });
+            
+        });
+  })
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+
+
+</html>

@@ -47,7 +47,7 @@ public class KelasController {
 
     @GetMapping("")
     public String viewAllKelas(Model model){
-        List<KelasModel> listKelas = kelasService.getAllKelas();
+        List<KelasModel> listKelas = kelasService.getListKelas();
 
         model.addAttribute("ListKelas", listKelas);
         return "kelas/view-daftar-kelas";

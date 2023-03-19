@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <title>Detail Jadwal Kelas</title>
+    <object th:include="fragments/fragment :: css" th:remove="tag"></object>
+    <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+    <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
+    <style>
+      body {
+          font-family: 'DM Sans';
+      }
+  </style>  
+</head>
+<body>
+  <nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
+  <a class="btn btn-link" style="color: #31318B" href="/jadwal-kelas"> Kembali ke Daftar Jadwal Kelas</a>
+  <div class="container" style="width:75%; padding-top:20px;">
+    <h2 style="font-weight: bold; text-align:center; padding:20px">Detail Jadwal Kelas</h2>
+    <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
+    <div class="alert alert-danger" role="alert" th:text="${errorMessage}" th:if="${errorMessage}"></div>
+    <div class="container" style="width:100%;">
+    <div class="card mt-3" style="background-color:#F7FAFC">
+      <div class="card-body">
+        <div class="container">
+          <br>
+          <div class="row">
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">Tanggal Kelas</p>
+            </div>
+            <div class="col">
+              <p th:text="${#temporals.format(jadwal.startDateClass, 'dd MM yyyy')}"></p>
+            </div>
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">Jam Kelas</p>
+            </div>
+            <div class="col">
+              <p th:text="${#temporals.format(jadwal.startDateClass, 'HH:mm')} + ' - ' +${#temporals.format(jadwal.endDateClass, 'HH:mm')}"></p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">Kelas</p>
+            </div>
+            <div class="col">
+              <p th:text="${jadwal.kelas.name}"></p>
+            </div>
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">Ruang Kelas</p>
+            </div>
+            <div class="col">
+              <p th:text="${jadwal.ruangKelas}"></p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">Mata Pelajaran</p>
+            </div>
+            <div class="col">
+              <p th:text="${jadwal.mapelJadwal.name}"></p>
+            </div>
+            <div class="col">
+              <p style="font-weight: bold; color: #31318B">Pengajar</p>
+            </div>
+            <div class="col">
+              <p th:text="${jadwal.pengajarKelas.name}"></p>
+            </div>
+          </div>
+          
+
+          <div class="row">
+            <div class="col">
+              <p></p>
+            </div>
+            <div class="col">
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-delete" style="display:block; width:100%; margin-top:20px;">
+                    Hapus
+                </button>
+            </div>
+            <div class="col">
+              <div th:if="${canUpdate}">
+                <a type="button" class="btn btn-primary" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B" th:href="@{/jadwal-kelas/update/} + ${jadwal.id}">Ubah Data</a>
+              </div>
+              <div th:unless="${canUpdate}">
+                <button type="button" disabled class="btn btn-primary" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B" th:href="@{/jadwal-kelas/update/} + ${jadwal.id}">Ubah Data</button>
+              </div>
+            </div>
+            <div class="col">
+              <p></p>
+            </div>
+          </div>
+          <div class="row">
+            <p></p>
+          </div>
+          <div th:unless="${canUpdate}" class="row">
+            <small style="text-align:center; color: red;">* Jadwal yang sudah atau sedang berlangsung tidak dapat diubah</small>
+          </div>
+          <br>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal -->
+  <div class="modal fade" id="modal-delete" tabindex="-1" role="dialog" aria-labelledby="popupLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title" id="popupLabel"><strong>Konfirmasi Hapus Jadwal</strong></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
+        <div class="modal-body">
+            Apakah Anda yakin ingin menghapus jadwal kelas? </br> </br> 
+            Jadwal kelas yang sudah dihapus tidak dapat dikembalikan lagi 
+        </div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+        <a type="button" class="btn btn-primary btn-danger" th:href="@{/jadwal-kelas/delete/} + ${jadwal.id}">Hapus</a>
+        </div>
+    </div>
+  </div>
+</div>
+ 
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+</html>

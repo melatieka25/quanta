@@ -1,5 +1,6 @@
 package com.projectpop.quanta.pengajar.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
@@ -51,19 +52,24 @@ public class PengajarModel extends UserModel {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
+    @JsonIgnore
     @NotNull
     @Column(name="is_kakak_asuh", nullable = false)
     private Boolean isKakakAsuh;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "pengajar", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<PengajarMapelModel> listPengajarMapel;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "kakakAsuh")
     private List<KelasModel> listKelasAsuh;
 
+    @JsonIgnore
     @OneToMany(mappedBy="pengajarKonsul")
     private List<KonsultasiModel> listKonsultasiPengajar;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "pengajarKelas")
     private List<JadwalKelasModel> listJadwalKelas;
 

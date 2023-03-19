@@ -1,20 +1,31 @@
 package com.projectpop.quanta.pengajarmapel.service;
 
-import com.projectpop.quanta.mapel.model.MataPelajaranModel;
-import com.projectpop.quanta.pengajar.service.PengajarService;
-import com.projectpop.quanta.pengajarmapel.repository.PengajarMapelDb;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+import com.projectpop.quanta.mapel.model.MataPelajaranModel;
+import com.projectpop.quanta.pengajar.model.PengajarModel;
+import com.projectpop.quanta.pengajarmapel.model.PengajarMapelModel;
+import com.projectpop.quanta.pengajarmapel.repository.PengajarMapelDb;
 
 @Service
 @Transactional
-public class PengajarMapelServiceImpl implements PengajarMapelService {
+public class PengajarMapelServiceImpl implements PengajarMapelService{
     @Autowired
     PengajarMapelDb pengajarMapelDb;
 
     @Override
+    public List<PengajarMapelModel> getListPengajarByMapel(MataPelajaranModel mapel) {
+       return pengajarMapelDb.findByMapel(mapel);
+    }
+
+    @Override
+    public List<PengajarMapelModel> getListMapelByPengajar(PengajarModel pengajar) {
+        return pengajarMapelDb.findByPengajar(pengajar);
+    }
     public void deleteAllByMapel(MataPelajaranModel mapel){
         pengajarMapelDb.deleteAllByMapel(mapel);
     };
