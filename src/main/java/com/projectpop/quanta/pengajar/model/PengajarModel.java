@@ -9,6 +9,7 @@ import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -22,6 +23,7 @@ import java.util.List;
 @Table(name = "pengajar")
 @PrimaryKeyJoinColumn(name = "user_id")
 public class PengajarModel extends UserModel {
+
     @NotNull
     @Column(name = "ktp", nullable = false)
     private Long ktp;
@@ -64,4 +66,8 @@ public class PengajarModel extends UserModel {
 
     @OneToMany(mappedBy = "pengajarKelas")
     private List<JadwalKelasModel> listJadwalKelas;
+
+    private transient String listMapel;
+    private transient String kelasDiasuh;
+    private transient String passwordPertama;
 }

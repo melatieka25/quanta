@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <title>List Siswa</title>
+    <object th:include="fragments/fragment :: css" th:remove="tag"></object>
+    <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+    <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
+    <style>
+      body {
+          font-family: 'DM Sans';
+      }
+  </style> 
+</head>
+<body>
+<nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
+<div class="container" style="width:75%; padding-top:20px;">
+    <div class="justify-content-center">
+        <div style="margin: auto; padding-top: 10px; width: 80%; padding: 20px; text-align: center">
+            <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
+            <h2 style="font-weight: bold; padding-top: 10px;" >List Siswa</h2>
+            <a class="btn btn-primary" href="/siswa/create-siswa" style="margin: 12px; background-color: #31318B; font-weight: bold; border: none; width:30%;">Tambah Siswa  +</a>
+
+            <br>
+        </div>
+        <table style="margin: 20px;" class="table table-striped" id="siswa-table">
+            <thead style="background-color: #31318B; color: #ffffff">
+            <tr>
+                <th scope="col">No</th>
+                <th scope="col">Nama</th>
+                <th scope="col">Kelas</th>
+                <th scope="col">Email</th>
+                <th scope="col">Asal Sekolah</th>
+                <th scope="col">Status</th>
+                <th scope="col">Aksi</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="siswa, iterationStatus : ${listSiswa}">
+                <th scope="row"></th>
+                <td th:text="${siswa.name}"></td>
+                <td th:if="${siswa.kelasBimbel != null}" th:text="${siswa.kelasBimbel.name}"></td>
+                <td th:if="${siswa.kelasBimbel == null}">-</td>
+                <td th:text="${siswa.email}"></td>
+                <td th:text="${siswa.sekolah}"></td>
+                <td th:if="${siswa.isActive}">Aktif</td>
+                <td th:if="${!siswa.isActive}">Non-Aktif</td>
+                <td class="align-content-center">
+                    <a class="btn btn-outline-primary align-content-center" th:href="@{/siswa/detail/} + ${siswa.id}">Detail</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+    </div>
+</div>
+
+</div>
+<script>
+    $(document).ready(function () {
+        var t = $('#siswa-table').DataTable({
+            columnDefs: [
+                {
+                    searchable: false,
+                    orderable: false,
+                    targets: 0,
+                },
+            ],
+            order: [1, 'asc'],
+        });
+     
+        t.on('order.dt search.dt', function () {
+            let i = 1;
+     
+            t.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {
+                this.data(i++);
+            });
+        }).draw();
+    });
+</script>
+</body>
+</html>

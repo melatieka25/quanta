@@ -9,8 +9,9 @@
         /*}*/
     </style>
     <head th:fragment="css">
+        <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
-        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.css">
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
         <link rel="icon" href="https://cdn.discordapp.com/attachments/815844122673938453/1051739745752985720/favicon.ico" type="image/x-icon" />
     </head>
     <head th:fragment="js">
@@ -45,9 +46,8 @@
                         Manajemen Pengguna
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                        <li><a class="dropdown-item" th:href="@{/dokter}">Siswa SMP</a></li>
-                        <li><a class="dropdown-item" th:href="@{/apoteker}">Siswa SMA</a> </li>
-                        <li><a class="dropdown-item" th:href="@{/pasien}">Pengajar</a> </li>
+                        <li><a class="dropdown-item" th:href="@{/siswa}">Siswa</a></li>
+                        <li><a class="dropdown-item" th:href="@{/pengajar}">Pengajar</a> </li>
                     </ul>
                 </li>
                 <a sec:authorize="hasAnyRole('Admin', 'Dokter')" class="nav-item nav-link" th:classappend="${onevar == 'appointment'} ? active : ''" th:href="@{/appointment}">

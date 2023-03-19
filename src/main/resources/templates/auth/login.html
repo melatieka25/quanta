@@ -5,6 +5,7 @@
     <title>Login to QUANTA</title>
     <link rel="icon" href="https://cdn.discordapp.com/attachments/815844122673938453/1051739745752985720/favicon.ico" type="image/x-icon" />
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css'>
+    <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
     <style>
         .login {
             min-height: 100vh;
@@ -18,7 +19,11 @@
           
           .login-heading {
             font-weight: 300;
-          }     
+          }    
+          
+          body {
+            font-family: 'DM Sans';
+          }
     </style>
         <object th:include="fragments/fragment :: js" th:remove="tag"></object>
         <object th:include="fragments/fragment :: css" th:remove="tag"></object>
@@ -26,7 +31,7 @@
 <body>
     <div th:if="${param.error}">
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>Login Gagal!</strong> Cobalah untuk memasukkan email dan password yang sesuai.
+            <strong>Login Gagal!</strong> Cobalah untuk memasukkan email dan password yang sesuai. Jika sudah sesuai namun tetap tidak berhasil, harap segera hubungi admin.
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
     </div>
