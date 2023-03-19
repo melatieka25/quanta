@@ -25,7 +25,10 @@ public class PageController {
     private UserService userService;
     
     @RequestMapping("/")
-    public String home() {
+
+    public String home(Principal principal, Model model) {
+        UserModel user = userService.getUserByEmail(principal.getName());
+        model.addAttribute("username", user.getName());
         return "home";
     }
 

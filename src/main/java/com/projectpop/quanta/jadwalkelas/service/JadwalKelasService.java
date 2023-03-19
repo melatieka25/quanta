@@ -10,4 +10,5 @@ public interface JadwalKelasService {
     void addJadwalKelas(JadwalKelasModel jadwalKelas);
     void updateJadwalKelas(JadwalKelasModel jadwalKelas);
     void deleteJadwalKelas(JadwalKelasModel jadwalKelas);
+    List<JadwalKelasModel> getListJadwalKelasByIdPengajar(Integer idPengajar);
 }

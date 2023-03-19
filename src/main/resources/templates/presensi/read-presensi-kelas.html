@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+  <title>Kelas yang Diajarkan Hari Ini</title>
+  <object th:include="fragments/fragment :: css" th:remove="tag"></object>
+  <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+</head>
+<body>
+<nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
+<div class="container" style="width:75%; padding-top:50px;">
+  <div class="justify-content-center">
+    <div style="margin: auto; padding-top: 4px; width: 50%; padding: 0px; text-align: center">
+      <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
+      <h2 style="font-weight: bold; padding-top: 0px;" th:text="Kelas +' '+ ${kelas.name}"></h2>
+      <br>
+      <table style="margin: 20px;" class="table table-striped" id="presensi-filled-table">
+        <thead style="background-color: #31318B; color: #ffffff">
+        <tr>
+          <th scope="col">No</th>
+          <th scope="col">Nama</th>
+          <th scope="col">Status Presensi</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="presensi, iterationStatus : ${presensiModelList}">
+          <th scope="row" th:text="${iterationStatus.index + 1}"></th>
+          <td th:text="${presensi.siswa.name}"></td>
+          <td th:text="${presensi.status}"></td>
+        </tr>
+        </tbody>
+      </table>
+      <br>
+      <br>
+    </div>
+  </div>
+</div>
+<script>
+  $(document).ready(() => {
+    $('#presensi-filled-table').DataTable();
+  });
+</script>
+</body>
+</html>

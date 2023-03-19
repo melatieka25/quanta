@@ -1,9 +1,8 @@
 package com.projectpop.quanta.siswa.repository;
 
+import com.projectpop.quanta.siswa.model.SiswaModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import com.projectpop.quanta.siswa.model.SiswaModel;
 
 import java.util.Optional;
 
