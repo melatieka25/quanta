@@ -58,7 +58,6 @@ public class PengajarServiceImpl implements PengajarService {
 
         return result;
         
-        // return "test";
     }
 
     @Override
@@ -77,7 +76,6 @@ public class PengajarServiceImpl implements PengajarService {
         }
         
         return result;
-        // return "test";
     }
 
     @Override
