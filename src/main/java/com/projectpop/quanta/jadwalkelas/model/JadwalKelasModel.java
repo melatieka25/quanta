@@ -61,4 +61,8 @@ public class JadwalKelasModel implements Serializable {
     @OneToMany(mappedBy = "jadwalKelas", cascade = CascadeType.ALL)
     private List<SiswaJadwalModel> listSiswaJadwal;
 
+    @NotNull
+    @Column(name = "isi_presensi_able", nullable = false)
+    private Boolean isiPresensi = false;
+
 }

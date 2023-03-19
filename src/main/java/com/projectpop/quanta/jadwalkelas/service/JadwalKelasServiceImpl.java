@@ -2,11 +2,13 @@ package com.projectpop.quanta.jadwalkelas.service;
 
 import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.jadwalkelas.repository.JadwalKelasDb;
+import com.projectpop.quanta.pengajar.model.PengajarModel;
+import com.projectpop.quanta.pengajar.repository.PengajarDb;
 import com.projectpop.quanta.presensi.model.PresensiModel;
 import com.projectpop.quanta.presensi.service.PresensiService;
-import com.projectpop.quanta.siswa.model.SiswaModel;
-import com.projectpop.quanta.siswajadwalkelas.model.SiswaJadwalModel;
 import com.projectpop.quanta.siswakelas.model.SiswaKelasModel;
+
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,9 @@ public class JadwalKelasServiceImpl implements JadwalKelasService{
 
     @Autowired
     PresensiService presensiService;
+
+    @Autowired
+    PengajarDb pengajarDb;
 
     @Override
     public JadwalKelasModel getJadwalKelasById(Integer id) {
@@ -64,5 +69,13 @@ public class JadwalKelasServiceImpl implements JadwalKelasService{
     @Override
     public void deleteJadwalKelas(JadwalKelasModel jadwalKelas) {
         jadwalKelasDb.delete(jadwalKelas);
+    }
+    @Override
+    public List<JadwalKelasModel> getListJadwalKelasByIdPengajar(Integer idPengajar) {
+        Optional<PengajarModel> pengajarKelas = pengajarDb.findById(idPengajar);
+        if (pengajarKelas.isPresent()){
+            return jadwalKelasDb.findAllByPengajarKelas(pengajarKelas.get());
+        }
+        return new ArrayList<>();
     }
 }

@@ -1,5 +1,6 @@
 package com.projectpop.quanta.user.service;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -23,6 +24,17 @@ public class UserServiceImpl implements UserService {
         if (user.isPresent()) {
             return user.get();
         } else return null;
+    }
+
+    @Override
+    public UserModel getUserById(Integer id) {
+        Optional<UserModel> user = userDb.findById(id);
+        if (user.isPresent()){
+            return user.get();
+        }
+        else {
+            throw new NoSuchElementException();
+        }
     }
 
 

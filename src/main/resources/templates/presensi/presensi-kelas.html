@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <title>Kelas yang Diajarkan Hari Ini</title>
+    <object th:include="fragments/fragment :: css" th:remove="tag"></object>
+    <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+</head>
+<body>
+<nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
+<div class="container" style="width:75%; padding-top:50px;">
+    <div class="justify-content-center">
+        <div style="margin: auto; padding-top: 4px; width: 50%; padding: 0px; text-align: center">
+            <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
+            <h2 style="font-weight: bold; padding-top: 0px;" th:text="Kelas +' '+ ${kelas.name}"></h2>
+<!--            <h5 style="font-weight: bold; padding-top: 4px;" th:text="${kelas.name}"></h5>-->
+<!--            <p style="font-weight: normal; padding-top: 4px;" th:text="${tanggal}"></p>-->
+<!--            <p style="font-weight: normal; padding-top: 0px;" th:text="${tahunAjaran}"></p>-->
+            <br>
+        </div>
+        <form th:action="@{/presensi/read/}+ ${idJadwalKelas}" th:object="${jadwalKelasModel}" method="POST">
+            <table style="margin: 20px;" class="table table-striped" id="presensi-unfilled-table">
+                <thead style="background-color: #31318B; color: #ffffff">
+                <tr>
+                    <th scope="col">No</th>
+                    <th scope="col">Nama</th>
+                    <th scope="col">Status Presensi</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="presensi, iterationStatus : *{listPresensi}">
+                    <th scope="row" th:text="${iterationStatus.index + 1}"></th>
+                    <td th:text="${presensi.siswa.name}"></td>
+                    <td>
+                        <div class="col-4">
+                            <select name="status" th:field="*{listPresensi[__${iterationStatus.index}__].status}" class="form-select" required>
+                                <option hidden th:selected="${presensi.status}" th:text="${presensi.status.displayValue}" th:value="${presensi.status}"></option>
+                                <option class = "js-example-basic-single"
+                                        th:each="status : ${T(com.projectpop.quanta.presensi.model.PresensiStatus).values()}"
+                                        th:value="${status}"
+                                        th:text="${status.displayValue}">
+                                </option>
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-update" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B" >Simpan Presensi</button>
+<!--            <button class="btn btn-primary" type="submit" name="save">Simpan Presensi</button>-->
+            <!-- Modal -->
+            <div class="modal fade" id="modal-update" tabindex="-1" role="dialog" aria-labelledby="popupLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="popupLabel"><strong>Konfirmasi Simpan Presensi</strong></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Apakah Anda yakin ingin menyimpan data presensi siswa?
+                            <br>
+                            Data yang sudah disimpan tidak dapat diubah lagi
+                            <br>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                            <button name="save" type="submit" class="btn btn-primary"  style="background-color: #31318B; border-color: #31318B" >Simpan Presensi</button>
+                        </div>
+                    </div>
+                    <br>
+                </div>
+            </div>
+        </form>
+        <br>
+        <br>
+    </div>
+</div>
+<script>
+    $(document).ready(() => {
+        $('#presensi-unfilled-table').DataTable();
+    });
+</script>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+</html>

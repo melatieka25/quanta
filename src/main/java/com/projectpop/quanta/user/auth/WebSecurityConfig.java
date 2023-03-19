@@ -21,6 +21,7 @@ public class WebSecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/css/**").permitAll()
                 .antMatchers("/js/**").permitAll()
+                .antMatchers("/presensi/**").hasAnyRole("PENGAJAR", "ADMIN")
                 .antMatchers("/api/**").permitAll()
                 .antMatchers("/jadwal-kelas/add/**", "/jadwal-kelas/delete/**", "/jadwal-kelas/update/**").hasRole("ADMIN")
                 .antMatchers("/pengajar").hasRole("ADMIN")
