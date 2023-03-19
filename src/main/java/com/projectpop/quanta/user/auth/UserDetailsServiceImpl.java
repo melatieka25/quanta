@@ -24,12 +24,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<UserModel> optionalUser = userDb.findByEmail(email);
-        // if(!optionalUser.isPresent())
-        //     throw new UsernameNotFoundException("Email " + email + " not found!");
+        if(!optionalUser.isPresent())
+            throw new UsernameNotFoundException("Email " + email + " tidak ditemukan!");
         UserModel user = optionalUser.get();
         
+        if (!user.getIsActive()){
+            throw new UnsupportedOperationException("Pengguna dengan email " + email + " tidak aktif!");
+        }
+
         Set<GrantedAuthority> grantedAuthorities = new HashSet<GrantedAuthority>();
-        grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
-        return new User(user.getEmail(), user.getPassword(), grantedAuthorities);
+            grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
+            return new User(user.getEmail(), user.getPassword(), grantedAuthorities);
+
     }
 }
