@@ -16,5 +16,5 @@ public interface PengajarDb extends JpaRepository<PengajarModel, String> {
 
     Optional<PengajarModel> findByEmail(String email);
 
-    Optional<PengajarModel> findById(int id);
+    Optional<PengajarModel> findById(Integer id);
 }
