@@ -131,4 +131,10 @@ public class PengajarServiceImpl implements PengajarService {
 
         return result;
     }
+
+    @Override
+    public List<PengajarModel> getListKakakAsuh() {
+        Optional<List<PengajarModel>> kakakAsuhList = pengajarDb.findKakakAsuh();
+        return kakakAsuhList.orElse(null);
+    }
 }
