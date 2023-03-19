@@ -2,7 +2,6 @@ package com.projectpop.quanta.pengajar.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.repository.PengajarDb;
 
@@ -15,12 +14,13 @@ import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
 import com.projectpop.quanta.mapel.repository.MataPelajaranDb;
 import com.projectpop.quanta.pengajarmapel.model.PengajarMapelModel;
-
 import static com.projectpop.quanta.user.auth.PasswordManager.encrypt;
 
 import javax.transaction.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -44,6 +44,7 @@ public class PengajarServiceImpl implements PengajarService {
         return listPengajarActive;
     }
 
+    
     @Override
     public void addPengajar(PengajarModel pengajar) {
         String pass = encrypt(pengajar.getPassword());
@@ -145,6 +146,15 @@ public class PengajarServiceImpl implements PengajarService {
     }
 
     @Override
+    public PengajarModel findPengajarByEmail(String email) {
+        Optional<PengajarModel> pengajar = pengajarDb.findByEmail(email);
+        if(pengajar.isPresent()) {
+            return pengajar.get();
+        } else return null;
+    }
+
+    
+
     public List<PengajarModel> getListKakakAsuh() {
         Optional<List<PengajarModel>> kakakAsuhList = pengajarDb.findKakakAsuh();
         return kakakAsuhList.orElse(null);

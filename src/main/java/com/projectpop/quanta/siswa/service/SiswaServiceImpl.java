@@ -88,4 +88,12 @@ public class SiswaServiceImpl implements SiswaService {
 
         return result;
     }
+
+    @Override
+    public SiswaModel findSiswaByEmail(String email) {
+        Optional<SiswaModel> siswa = siswaDb.findByEmail(email);
+        if(siswa.isPresent()) {
+            return siswa.get();
+        } else return null;
+    }
 }

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <title>Daftar Konsultasi Saya</title>
+    <object th:include="fragments/fragment :: css" th:remove="tag"></object>
+    <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+    <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
+<body>
+<style>
+    body {
+        font-family: 'DM Sans';
+    }
+</style>
+<nav th:replace="fragments/fragment :: navbar (${'konsultasi'})"></nav>
+<div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
+<div class="alert alert-danger" role="alert" th:text="${errorMessage}" th:if="${errorMessage}"></div>
+<div class="container" style="width:75%; padding-top:20px;">
+    <div class="card m-4 p-4">
+        <div class="justify-content-center">
+            <div style="margin: auto; padding-top: 10px; width: 100%; padding: 20px; text-align: center">
+                <h2 style="font-weight: bold; padding-top: 10px;" >Daftar Konsultasi Saya</h2>
+                <br>
+            </div>
+            <div th:if="*{listKonsultasi.size() != 0}">
+                <table style="margin: 20px;" class="table table-striped" id="konsultasi-table">
+                    <thead style="background-color: #31318B; color: #ffffff">
+                    <tr>
+                        <th scope="col">No</th>
+                        <th scope="col">Mata Pelajaran</th>
+                        <th scope="col">Jenjang Kelas</th>
+                        <th scope="col">Tanggal</th>
+                        <th scope="col">Waktu</th>
+                        <th scope="col">Aksi</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="konsultasi, iterationStatus : ${listKonsultasi}">
+                        <td th:text="${iterationStatus.count}"></td>
+                        <td th:text="${konsultasi.mapelKonsul.name}"></td>
+                        <td th:text="${konsultasi.jenjangKelas}"></td>
+                        <td th:text="${#temporals.format(konsultasi.startTime, 'dd MMMM yyyy')}"></td>
+                        <td th:text="${#temporals.format(konsultasi.startTime, 'HH:mm')} + ' - ' +${#temporals.format(konsultasi.endTime, 'HH:mm')}"></td>
+                        <td class="align-content-center">
+                            <a class="btn btn-outline-primary align-content-center" th:href="@{/konsultasi/view/} + ${konsultasi.id}">Detail</a>
+                        </td>
+
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:unless="${listKonsultasi.size() != 0}">
+                <p>Tidak ada jadwal konsultasi!</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        var t = $('#konsultasi-table').DataTable({
+            columnDefs: [
+                {
+                    searchable: false,
+                    orderable: false,
+                    targets: 0,
+                },
+            ],
+            order: [1, 'asc'],
+        });
+
+        t.on('order.dt search.dt', function () {
+            let i = 1;
+
+            t.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {
+                this.data(i++);
+            });
+        }).draw();
+    });
+</script>
+</body>
+</html>

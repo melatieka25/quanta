@@ -15,6 +15,7 @@ public interface PengajarService {
     PengajarModel updatePengajar(PengajarModel pengajar);
     int getNumberOfKelasAktif(PengajarModel pengajar);
     int getNumberOfKonsultasiAktif(PengajarModel pengajar);
+    PengajarModel findPengajarByEmail(String email);
     List<PengajarModel> getListKakakAsuh();
 
 }
