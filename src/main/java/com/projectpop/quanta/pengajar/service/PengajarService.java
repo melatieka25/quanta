@@ -1,5 +1,4 @@
 package com.projectpop.quanta.pengajar.service;
-
 import java.util.List;
 
 import com.projectpop.quanta.pengajar.model.PengajarModel;
@@ -16,5 +15,6 @@ public interface PengajarService {
     PengajarModel updatePengajar(PengajarModel pengajar);
     int getNumberOfKelasAktif(PengajarModel pengajar);
     int getNumberOfKonsultasiAktif(PengajarModel pengajar);
+    List<PengajarModel> getListKakakAsuh();
 
 }

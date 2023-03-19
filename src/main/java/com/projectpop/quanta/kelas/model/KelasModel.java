@@ -48,7 +48,7 @@ public class KelasModel implements Serializable {
     @OneToMany(mappedBy = "kelas")
     private List<JadwalKelasModel> listJadwalKelas;
 
-    @OneToMany(mappedBy = "kelasSiswa")
+    @OneToMany(mappedBy = "kelasSiswa", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<SiswaKelasModel> listSiswaKelas;
 
     @ManyToOne

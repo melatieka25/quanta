@@ -22,7 +22,7 @@ import java.util.Optional;
 @Transactional
 public class SiswaServiceImpl implements SiswaService {
     @Autowired
-    SiswaDb siswaDb;
+    private SiswaDb siswaDb;
 
     @Override
     public void addSiswa(SiswaModel siswa) {
