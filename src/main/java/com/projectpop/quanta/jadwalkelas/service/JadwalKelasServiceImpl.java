@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,6 +71,19 @@ public class JadwalKelasServiceImpl implements JadwalKelasService{
     public void deleteJadwalKelas(JadwalKelasModel jadwalKelas) {
         jadwalKelasDb.delete(jadwalKelas);
     }
+
+    @Override
+    public List<JadwalKelasModel> getJadwalByPengajarAndTanggal(PengajarModel pengajar, LocalDate tanggal) {
+        List<JadwalKelasModel> listJadwalKelas = jadwalKelasDb.findAllByPengajarKelas(pengajar);
+        List<JadwalKelasModel> listJadwalKelasNew = new ArrayList<JadwalKelasModel>();
+        for (JadwalKelasModel jadwalKelas: listJadwalKelas) {
+            if (jadwalKelas.getStartDateClass().toLocalDate().equals(tanggal)){
+                listJadwalKelasNew.add(jadwalKelas);
+            }
+        }
+        return listJadwalKelasNew;
+    }
+    
     @Override
     public List<JadwalKelasModel> getListJadwalKelasByIdPengajar(Integer idPengajar) {
         Optional<PengajarModel> pengajarKelas = pengajarDb.findById(idPengajar);

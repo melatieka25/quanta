@@ -45,8 +45,7 @@ public class KonsultasiModel implements Serializable {
     @Column(nullable = false)
     private String topic;
 
-    @NotNull
-    @Column(nullable = false)
+    @Column()
     private String place;
 
     @NotNull
@@ -73,5 +72,4 @@ public class KonsultasiModel implements Serializable {
 
     @OneToMany(mappedBy = "konsultasi", cascade = CascadeType.ALL)
     private List<SiswaKonsultasiModel> listSiswaKonsultasi;
-
 }

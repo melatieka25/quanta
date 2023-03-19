@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+  <title>Quanta</title>
+  <object th:include="fragments/fragment :: css" th:remove="tag"></object>
+  <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+  <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
+
+<body>
+<style>
+  body {
+    font-family: 'DM Sans';
+  }
+</style>
+<nav th:replace="fragments/fragment :: navbar('')"></nav>
+<div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
+<div class="alert alert-danger" role="alert" th:text="${errorMessage}" th:if="${errorMessage}"></div>
+<div class="container m-5">
+  <div class="container" style="width:600px;">
+    <div class="justify-content-center">
+      <h2 style="font-weight: bolder;">Tambah Konsultasi</h2>
+      <br>
+      <div class="alert alert-danger" role="alert" th:text="${message}" th:if="${message}"></div>
+
+
+      <form th:action="@{/konsultasi/siswa/add}" th:object="${konsultasi}" method="POST">
+
+        <div class="card-body">
+          <div class="container">
+            <div class="row">
+              <div class="col">
+                Mata Pelajaran: <br>
+                <select  class="form-select" id="mapel-dropdown" name="mataPelajaran" >
+                  <option hidden disabled selected value>Pilih mata pelajaran...</option>
+                  <option th:each="mapel, iterationStatus : ${listMapel}"
+                          th:value="${mapel.id}"
+                          th:text="${mapel.name}"></option>
+                </select>
+                <br>
+
+                Pengajar: <br>
+                <select class="form-select" id="pengajar-dropdown" name="pengajarMapel" >
+                  <option hidden disabled selected value>Pilih pengajar...</option>
+                  <option th:each="pengajar, iterationStatus : ${listPengajar}"
+                          th:value="${pengajar.id}"
+                          th:text="${pengajar.name}"></option>
+                </select>
+                <br>
+
+                Tanggal: <br>
+                <input class="form-control datepicker" id="tanggal" type="date" name="tanggal"/>
+                <br>
+
+                Waktu <br>
+                <select class="form-select" id="waktu-dropdown" name="waktuMulai" type="time" >
+
+                  <option hidden disabled selected value>--:-- - --:--</option>
+                  <option th:each="waktuAwal, iterationStatus : ${listWaktuMulaiKonsul}"
+                          th:value="${waktuAwal}"
+                          th:text="${#temporals.format(waktuAwal, 'HH:mm')} + ' - ' +${#temporals.format(waktuAwal.plusHours(1), 'HH:mm')} "></option>
+                </select>
+                <br>
+
+                Topik : <br>
+                <input class="form-control" type="text" placeholder="Topik..." name="topik" th:value="${topik}" th:text="${topik}"required/>
+                <br>
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+        <a class="btn btn-secondary" onclick="history.go(-1)">Kembali</a>
+        <button class="btn" type="submit" name="save" style="background-color: #31318B; color: white;">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+</body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script type="text/javascript">
+  $(document).ready(function () {
+    $("#mapel-dropdown").change(function(){
+      // get id of selected team
+      var mapel_id=$(this).find(':selected').val();
+      // console.log(mapel_id);
+
+      // set json url
+      var json_url="/api/v1/konsultasi/get-pengajar-mapel/" + mapel_id;
+
+      // get json data
+      jQuery.getJSON(json_url, function(data){
+        $("#pengajar-dropdown").html("");
+        $("#pengajar-dropdown").append("<option hidden disabled selected value>Pilih pengajar...</option>");
+
+        // put new dropdown values to pengajar dropdown
+        jQuery.each(data, function(key, val){
+          $("#pengajar-dropdown").append("<option value='" + val.id + "'>" + val.name + "</option>")
+
+        });
+
+      });
+
+    });
+
+
+    //get waktu available
+    $("#tanggal").change(
+            function(){
+        // get id of selected team
+        // var tanggal=$(this).find(':selected').text();
+        //       var datetime=$(this).val();
+
+              var datetime=$(this).val();
+              var pengajar_id = $("#pengajar-dropdown").find(":selected").val();
+
+
+
+        // set json url
+        var json_url="/api/v1/konsultasi/get-waktu/" + pengajar_id + "/" + datetime;
+
+        console.log("Hallo")
+              console.log(tanggal)
+              console.log(pengajar_id)
+
+              // get json data
+        jQuery.getJSON(json_url, function(data){
+            $("#waktu-dropdown").html("");
+            $("#waktu-dropdown").append("<option hidden disabled selected value>--:-- - --:--</option>");
+
+          // put new dropdown values to waktu dropdown
+            jQuery.each(data, function(key, val){
+              //val bentuknya dateTime .e.g "19:00:00"
+              //Date bentuknya Date .e.g "2023-04-10"
+              var menit = ":00"
+              var waktuAwal = new Date();
+              waktuAwal.setHours(val.substring(0,2))
+
+              var waktuAkhir = new Date();
+              waktuAkhir.setHours(waktuAwal.getHours()+1)
+
+                $("#waktu-dropdown").append("<option value='" + val + "'>" + waktuAwal.getHours() + menit + " - " +  waktuAkhir.getHours() + menit + "</option>")
+            });
+
+
+        });
+
+    });
+
+
+
+    var today = new Date().toISOString().split('T')[0];
+    $("#tanggal").attr('min', today);
+
+    // Everything except weekend days
+    const validate = dateString => {
+      const day = (new Date(dateString)).getDay();
+      if (day==0) {
+        alert('Konsultasi tidak bisa diadakan di hari Minggu! Silakan pilih hari lain.');
+        return false;
+      }
+      return true;
+    }
+
+    // Sets the value to '' in case of an invalid date
+    document.querySelector('#tanggal').onchange = evt => {
+      if (!validate(evt.target.value)) {
+        evt.target.value = '';
+      }
+    }
+  })
+</script>
+
+
+</html>
