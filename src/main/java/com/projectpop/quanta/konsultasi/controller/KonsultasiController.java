@@ -22,15 +22,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import static com.projectpop.quanta.konsultasi.model.StatusKonsul.*;
 
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -38,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
+//@RequestMapping("/konsultasi")
 public class KonsultasiController {
     @Qualifier("konsultasiServiceImpl")
     @Autowired
@@ -76,18 +75,38 @@ public class KonsultasiController {
     private UserService userService;
 
     @GetMapping("/konsultasi")
-    public String konsultasiPage(Authentication authentication, Model model) {
-        UserModel user = userService.getUserByEmail(authentication.getName());
-        model.addAttribute("user", user);
-        return "konsultasi/page";
-    }
+    public String viewJadwalKonsultasi(Model model, Principal principal) {
+        UserModel user = userService.getUserByEmail(principal.getName());
 
-    @GetMapping("/konsultasi/admin/viewall")
-    public String listKonsultasi(Authentication authentication, Model model) {
+        if(user.getRole().toString().equals("ADMIN")){
             List<KonsultasiModel> listKonsultasi = konsultasiService.getListKonsultasi();
             model.addAttribute("listKonsultasi", listKonsultasi);
             return "konsultasi/admin-viewall";
+        }
 
+        else if(user.getRole().toString().equals("PENGAJAR")){
+            PengajarModel pengajar = pengajarService.findPengajarByEmail(principal.getName());
+            List<KonsultasiModel> myListKonsultasi = konsultasiService.getListMyKonsultasiPengajar(pengajar);
+            List<KonsultasiModel> myListRequestKonsultasi = konsultasiService.getListMyRequestKonsultasi(pengajar);
+
+            model.addAttribute("myListKonsultasi", myListKonsultasi);
+            model.addAttribute("myListRequestKonsultasi", myListRequestKonsultasi);
+            return "konsultasi/landing-page-pengajar";
+
+        }
+
+        else if(user.getRole().toString().equals("SISWA")){
+            SiswaModel siswa = siswaService.findSiswaByEmail(principal.getName());
+            Jenjang jenjang = siswa.getJenjang();
+            List<SiswaKonsultasiModel> listMySiswaKonsultasi = siswaKonsultasiService.getListKonsultasiBySiswa(siswa);
+            List<KonsultasiModel> listKonsultasiJenjang = konsultasiService.getListKonsultasiByJenjang(jenjang);
+
+            model.addAttribute("siswa", siswa);
+            model.addAttribute("listMySiswaKonsultasi", listMySiswaKonsultasi);
+            model.addAttribute("listKonsultasiJenjang", listKonsultasiJenjang);
+            return "konsultasi/landing-page-siswa";
+        }
+        return "error";
     }
 
     @GetMapping("/konsultasi/view/{idKonsultasi}" )
@@ -104,25 +123,6 @@ public class KonsultasiController {
         model.addAttribute("listSiswaKonsultasi", listSiswaKonsultasi);
 
         return "konsultasi/view-detail";
-    }
-
-    @GetMapping("/konsultasi/siswa/my-consultation")
-    public String listMyKonsultasiSiswa(Authentication authentication, Model model) {
-        SiswaModel siswa = siswaService.findSiswaByEmail(authentication.getName());
-        List<SiswaKonsultasiModel> listSiswaKonsultasi = siswaKonsultasiService.getListKonsultasiBySiswa(siswa);
-        model.addAttribute("siswa", siswa);
-        model.addAttribute("listSiswaKonsultasi", listSiswaKonsultasi);
-        return "konsultasi/siswa-my-viewall";
-    }
-
-    @GetMapping("/konsultasi/siswa/jenjang-consultation")
-    public String listJenjangKonsultasiSiswa(Authentication authentication, Model model) {
-        SiswaModel siswa = siswaService.findSiswaByEmail(authentication.getName());
-        Jenjang jenjang = siswa.getJenjang();
-        List<KonsultasiModel> listKonsultasi = konsultasiService.getListKonsultasiByJenjang(jenjang);
-        model.addAttribute("siswa", siswa);
-        model.addAttribute("listKonsultasi", listKonsultasi);
-        return "konsultasi/siswa-jenjang-viewall";
     }
 
     @GetMapping("/konsultasi/siswa/view/{idKonsultasi}" )
@@ -144,23 +144,7 @@ public class KonsultasiController {
     }
 
 
-    @GetMapping("/konsultasi/pengajar/my-consultation")
-    public String listMyKonsultasiPengajar(Authentication authentication, Model model) {
-        PengajarModel pengajar = pengajarService.findPengajarByEmail(authentication.getName());
-        List<KonsultasiModel> listKonsultasi = konsultasiService.getListMyKonsultasiPengajar(pengajar);
-        model.addAttribute("listKonsultasi", listKonsultasi);
-        return "konsultasi/pengajar-viewall";
-    }
-
-    @GetMapping("/konsultasi/pengajar/my-request")
-    public String listMyRequestKonsultasiPengajar(Authentication authentication, Model model) {
-        PengajarModel pengajar = pengajarService.findPengajarByEmail(authentication.getName());
-        List<KonsultasiModel> listKonsultasi = konsultasiService.getListMyRequestKonsultasi(pengajar);
-        model.addAttribute("listKonsultasi", listKonsultasi);
-        return "konsultasi/pengajar-request-viewall";
-    }
-
-    @GetMapping("/konsultasi/siswa/cancel/{idKonsultasi}")
+    @GetMapping("/konsultasi/cancel/{idKonsultasi}")
     public String cancelKonsultasiPage(Authentication authentication,
                                        @PathVariable Integer idKonsultasi,
                                        Model model,
@@ -177,20 +161,20 @@ public class KonsultasiController {
 
             redirectAttrs.addFlashAttribute("message", "Konsultasi berhasil dibatalkan!");
 
-            return "redirect:/konsultasi/siswa/my-consultation";
+            return "redirect:/konsultasi";
 
         } else {
             redirectAttrs.addFlashAttribute("errorMessage", "Konsultasi gagal dibatalkan!");
 
 
-            return "redirect:/konsultasi/siswa/my-consultation";
+            return "redirect:/konsultasi";
         }
 
     }
 
 
 //    create konsultasi
-    @GetMapping("/konsultasi/siswa/add")
+    @GetMapping("/konsultasi/add")
     public String addKonsultasiFormPage(Model model) {
         KonsultasiModel konsultasi = new KonsultasiModel();
         getAllDropdownList(konsultasi, model);
@@ -205,7 +189,7 @@ public class KonsultasiController {
         return listWaktuMulaiKonsul;
     }
 
-    @PostMapping(value = "/konsultasi/siswa/add", params = {"save"})
+    @PostMapping(value = "/konsultasi/add", params = {"save"})
     public String addKonsultasiSubmit(@ModelAttribute KonsultasiModel konsultasi,
                                       Authentication authentication,
                                       String waktuMulai,
@@ -236,7 +220,7 @@ public class KonsultasiController {
         KelasModel kelas = siswaService.getKelasBimbel(siswa);
         if (null == kelas){
             redirectAttrs.addFlashAttribute("errorMessage", "Anda belum memiliki kelas! Hubungi admin untuk mendaftarkan kelas");
-            return "redirect:/konsultasi/siswa/my-consultation";
+            return "redirect:/";
         }
         siswa.setKelasBimbel(kelas);
         konsultasi.setTahunAjarKonsul(kelas.getTahunAjar());
@@ -268,7 +252,7 @@ public class KonsultasiController {
 
 
         redirectAttrs.addFlashAttribute("message", "Konsultasi berhasil ditambahkan!");
-        return "redirect:/konsultasi/siswa/my-consultation";
+        return "redirect:/konsultasi";
     }
 
 
