@@ -23,15 +23,16 @@
 </head>
 <body>
 <nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
-<div class="alert alert-danger" role="alert" th:text="${error}" th:if="${error}"><br></div>
-<div class="alert alert-success alert-dismissible" role="alert" th:if="${success}">
-    <strong>Sucess! </strong>Mata Pelajaran Berhasil Disimpan
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
 <div class="container" style="width:75%; padding-top:50px;">
+    <div class="alert alert-danger alert-dismissible" role="alert" th:if="${error}" th:text="${error}">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div class="alert alert-success alert-dismissible" role="alert" th:if="${success}" th:text="${success}">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
     <div class="justify-content-center">
         <div style="margin: auto; padding-top: 10px; width: 80%; padding: 20px; text-align: center">
-            <h2 style="font-weight: bold; padding-top: 10px;" >List Mata Pelajaran</h2>
+            <h2 style="font-weight: bold; padding-top: 10px;" >Daftar Mata Pelajaran</h2>
             <div style="margin-top: 16px;">
                 <a class="btn btn-primary" href="/mapel/add" style="margin: 12px; background-color: #31318B; font-weight: bold; border: none; width:30%;">Tambah Mata Pelajaran  +</a>
             </div>
