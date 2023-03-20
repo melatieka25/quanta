@@ -24,10 +24,10 @@
 </head>
 <body>
 <nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
-<div class="alert alert-danger alert-dismissible" role="alert" th:if="${error}" th:text=$"{error}">
+<div class="alert alert-danger alert-dismissible" role="alert" th:if="${error}" th:text="${error}">
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
-<div class="alert alert-success alert-dismissible" role="alert" th:if="${success}" th:text=$"{success}>
+<div class="alert alert-success alert-dismissible" role="alert" th:if="${success}" th:text="${success}">
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 <div class="container" style="width:75%; padding-top:50px;">
