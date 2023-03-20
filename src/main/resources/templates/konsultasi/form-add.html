@@ -20,9 +20,6 @@
     <div class="justify-content-center">
       <h2 style="font-weight: bolder;">Tambah Konsultasi</h2>
       <br>
-      <div class="alert alert-danger" role="alert" th:text="${message}" th:if="${message}"></div>
-
-
       <form th:action="@{/konsultasi/siswa/add}" th:object="${konsultasi}" method="POST">
 
         <div class="card-body">
@@ -55,9 +52,9 @@
                 <select class="form-select" id="waktu-dropdown" name="waktuMulai" type="time" >
 
                   <option hidden disabled selected value>--:-- - --:--</option>
-                  <option th:each="waktuAwal, iterationStatus : ${listWaktuMulaiKonsul}"
-                          th:value="${waktuAwal}"
-                          th:text="${#temporals.format(waktuAwal, 'HH:mm')} + ' - ' +${#temporals.format(waktuAwal.plusHours(1), 'HH:mm')} "></option>
+<!--                  <option th:each="waktuAwal, iterationStatus : ${listWaktuMulaiKonsul}"-->
+<!--                          th:value="${waktuAwal}"-->
+<!--                          th:text="${#temporals.format(waktuAwal, 'HH:mm')} + ' - ' +${#temporals.format(waktuAwal.plusHours(1), 'HH:mm')} "></option>-->
                 </select>
                 <br>
 
@@ -87,11 +84,8 @@
 <script type="text/javascript">
   $(document).ready(function () {
     $("#mapel-dropdown").change(function(){
-      // get id of selected team
       var mapel_id=$(this).find(':selected').val();
-      // console.log(mapel_id);
 
-      // set json url
       var json_url="/api/v1/konsultasi/get-pengajar-mapel/" + mapel_id;
 
       // get json data
@@ -114,13 +108,8 @@
     $("#tanggal").change(
             function(){
         // get id of selected team
-        // var tanggal=$(this).find(':selected').text();
-        //       var datetime=$(this).val();
-
               var datetime=$(this).val();
               var pengajar_id = $("#pengajar-dropdown").find(":selected").val();
-
-
 
         // set json url
         var json_url="/api/v1/konsultasi/get-waktu/" + pengajar_id + "/" + datetime;
@@ -131,6 +120,9 @@
 
               // get json data
         jQuery.getJSON(json_url, function(data){
+          if (jQuery.isEmptyObject(data)){
+            alert("Tidak ada waktu yang tersedia, silakan cari tanggal lain!")
+          }
             $("#waktu-dropdown").html("");
             $("#waktu-dropdown").append("<option hidden disabled selected value>--:-- - --:--</option>");
 

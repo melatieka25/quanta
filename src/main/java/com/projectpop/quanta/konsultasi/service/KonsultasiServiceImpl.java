@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -77,5 +78,19 @@ public class KonsultasiServiceImpl implements KonsultasiService{
     @Override
     public KonsultasiModel createKonsultasi(KonsultasiModel konsultasiModel) {
         return konsultasiDb.save(konsultasiModel);
+    }
+
+    @Override
+    public List<KonsultasiModel> getListKonsultasiByPengajarAndTanggal(PengajarModel pengajar, LocalDate tanggal) {
+        List<KonsultasiModel> listKonsultasi = konsultasiDb.findAllByPengajarKonsul(pengajar);
+        List<KonsultasiModel> listKonsultasiNew = new ArrayList<KonsultasiModel>();
+        for (KonsultasiModel konsultasi: listKonsultasi) {
+            if (konsultasi.getStartTime().toLocalDate().equals(tanggal)){
+                listKonsultasiNew.add(konsultasi);
+            }
+        }
+        if (listKonsultasiNew.size()!=0) {
+            return listKonsultasiNew;
+        } return null;
     }
 }

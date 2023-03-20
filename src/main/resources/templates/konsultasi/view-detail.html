@@ -29,9 +29,6 @@
             <div class="col">
               <h4 style="padding-bottom:20px; font-weight: bold;" >Data Konsultasi</h4>
             </div>
-            <!--            <div class="col">-->
-            <!--              <h4 style="padding-bottom:20px; font-weight: bold;">Daftar Anggota Konsultasi</h4>-->
-            <!--            </div>-->
           </div>
 
           <div class="row">
@@ -95,7 +92,11 @@
               <p style="font-weight: bold; color: #31318B">Status</p>
             </div>
             <div class="col-8">
-              <td th:text="${konsultasi.status}"></td>
+              <td th:if="${konsultasi.status.toString().equals('PENDING')}" style="color:orange" th:text="${konsultasi.status.toString().toLowerCase()}"></td>
+              <td th:if="${konsultasi.status.toString().equals('DITERIMA')}" style="color:darkblue" th:text="${konsultasi.status.toString().toLowerCase()}"></td>
+              <td th:if="${konsultasi.status.toString().equals('DITOLAK')}" style="color:red" th:text="${konsultasi.status.toString().toLowerCase()}"></td>
+              <td th:if="${konsultasi.status.toString().equals('DITUTUP')}" th:text="${konsultasi.status.toString().toLowerCase()}"></td>
+
             </div>
           </div>
 
