@@ -3,6 +3,7 @@ package com.projectpop.quanta.presensi.controller;
 import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
 import com.projectpop.quanta.kelas.model.KelasModel;
+import com.projectpop.quanta.pengajar.service.PengajarServiceImpl;
 import com.projectpop.quanta.presensi.model.PresensiModel;
 import com.projectpop.quanta.presensi.model.PresensiStatus;
 import com.projectpop.quanta.presensi.service.PresensiServiceImpl;
@@ -45,9 +46,9 @@ public class PresensiController {
     @Autowired
     private UserServiceImpl userService;
 
-    @Qualifier("siswaServiceImpl")
+    @Qualifier("pengajarServiceImpl")
     @Autowired
-    private SiswaServiceImpl siswaService;
+    private PengajarServiceImpl pengajarService;
 
     @GetMapping("")
     public String viewAllJadwalPengajarHariIni(Model model, Principal principal) throws ParseException {
@@ -148,6 +149,14 @@ public class PresensiController {
         String tahunAjaran;
         JadwalKelasModel jadwalKelasModel = jadwalKelasService.getJadwalKelasById(Integer.parseInt(idJadwalKelas));
         List<PresensiModel> presensiModelList = jadwalKelasModel.getListPresensi();
+        var userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var userModel = userService.getUserByEmail(userDetails.getUsername());
+        if (!userModel.getEmail().equals(jadwalKelasModel.getPengajarKelas().getEmail())){
+            return "redirect:/presensi/read/"+jadwalKelasModel.getId();
+        }
+        if(!localDateTimeToDateWithSlash(jadwalKelasModel.getStartDateClass()).equals(localDateTimeToDateWithSlash(LocalDateTime.now()))){
+            return "redirect:/presensi/read/"+jadwalKelasModel.getId();
+        }
         int currentYear = LocalDate.now().getYear();
         int yearBefore = LocalDate.now().minusYears(1).getYear();
         int yearAfter = LocalDate.now().plusYears(1).getYear();
