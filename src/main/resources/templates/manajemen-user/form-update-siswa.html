@@ -48,9 +48,8 @@
                 </div>
                 <div class="col-4">
                   <select class="form-select" name="jenjang" th:field="*{jenjang}"required>
-                      <option th:each="jenjang, iterationStatus : ${listJenjang}"
-                              th:value="${jenjang}" 
-                              th:text="${jenjang}"></option>
+                    <option th:each="jenjangOpt : ${T(com.projectpop.quanta.siswa.model.Jenjang).values()}"
+                    th:value="${jenjangOpt}" th:text="${jenjangOpt.displayValue}"></option>
                   </select>  
                 </div>
             </div>

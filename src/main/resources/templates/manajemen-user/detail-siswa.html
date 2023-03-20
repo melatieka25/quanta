@@ -57,7 +57,7 @@
               <p style="font-weight: bold; color: #31318B">Jenjang</p>
             </div>
             <div class="col-4">
-              <p th:text="${siswa.jenjang}"></p>
+              <p th:text="${siswa.jenjang.displayValue}"></p>
             </div>
           </div>
           <div class="row">
@@ -71,7 +71,7 @@
               <p style="font-weight: bold; color: #31318B">Sesi</p>
             </div>
             <div class="col-4">
-              <p th:if="${siswa.kelasBimbel != null}" th:text="${siswa.kelasBimbel.days}"></p>
+              <p th:if="${siswa.kelasBimbel != null}" th:text="${siswa.kelasBimbel.days.displayValue}"></p>
               <td th:if="${siswa.kelasBimbel == null}">-</td>
             </div>
           </div>
