@@ -27,7 +27,7 @@ public class MataPelajaranModel implements Serializable {
     private Integer id;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     @NotNull

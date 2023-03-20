@@ -1,12 +1,15 @@
 package com.projectpop.quanta.mapel.controller;
 
 
+import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
+import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
 import com.projectpop.quanta.mapel.service.MapelService;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.service.PengajarService;
 import com.projectpop.quanta.pengajarmapel.model.PengajarMapelModel;
 import com.projectpop.quanta.pengajarmapel.service.PengajarMapelService;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -14,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.persistence.PersistenceException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -33,6 +37,10 @@ public class MapelController {
     @Qualifier("pengajarMapelServiceImpl")
     @Autowired
     private PengajarMapelService pengajarMapelService;
+
+    @Qualifier("jadwalKelasServiceImpl")
+    @Autowired
+    private JadwalKelasService jadwalKelasService;
 
     @GetMapping("")
     public String viewAllMapel(Model model){
@@ -88,8 +96,15 @@ public class MapelController {
             mapel.setListPengajarMapel(listPengajarMapelUpdated);
         }
 
+        for (MataPelajaranModel mapelDb : mapelService.getAllMapel()){
+            if (mapel.getName().equals(mapelDb.getName())){
+                redirectAttrs.addFlashAttribute("error", "Mata pelajaran dengan nama " + mapel.getName() + " tidak bisa ditambahkan karena sudah ada di database");
+                return "redirect:/mapel/add";
+            }
+        }
+
         mapelService.addMapel(mapel);
-        redirectAttrs.addFlashAttribute("success", "Mapel berhasil ditambahkan");
+        redirectAttrs.addFlashAttribute("success", "Mata pelajaran "  +  mapel.getName() + " berhasil ditambahkan");
         return "redirect:/mapel";
 
     }
@@ -157,8 +172,7 @@ public class MapelController {
     public String updateMapelSubmitPage(@ModelAttribute MataPelajaranModel mapel, RedirectAttributes redirectAttrs) {
         MataPelajaranModel mapelExs = mapelService.getMapelbyId(mapel.getId());
 
-        mapelExs.setName(mapel.getName());
-        mapelExs.setAbbr(mapel.getAbbr());
+        String oldName = mapelExs.getName();
 
         Set<Integer> listIdPengajarLama = new HashSet<>();
         Set<Integer> listIdPengajarBaru = new HashSet<>();
@@ -171,6 +185,16 @@ public class MapelController {
             PengajarModel pengajarUpdated = pengajarMapel.getPengajar();
             pengajarUpdated.getListPengajarMapel().remove(pengajarMapel);
         }
+
+        for (MataPelajaranModel mapelDb : mapelService.getAllMapel()){
+            if (mapel.getName().equals(mapelDb.getName()) && !(mapel.getName().equals(oldName))){
+                redirectAttrs.addFlashAttribute("error", "Mapel dengan nama " + mapel.getName() + " tidak bisa ditambahkan karena sudah ada di database");
+                return "redirect:/mapel/edit/" + mapelExs.getId();
+            }
+        }
+
+        mapelExs.setName(mapel.getName());
+        mapelExs.setAbbr(mapel.getAbbr());
 
         if (mapel.getListPengajarMapel() == null || mapel.getListPengajarMapel().size() == 0) {
             mapel.setListPengajarMapel(new ArrayList<>());
@@ -208,9 +232,10 @@ public class MapelController {
             mapelExs.setListPengajarMapel(listPengajarMapelUpdated);
 
         }
-            mapelService.addMapel(mapelExs);
 
-        redirectAttrs.addFlashAttribute("message", "Data Mapel " + mapelExs.getName() + " telah berhasil diubah!");
+
+        mapelService.addMapel(mapelExs);
+        redirectAttrs.addFlashAttribute("success", "Data Mapel " + mapelExs.getName() + " telah berhasil diubah!");
         return "redirect:/mapel/detail/" + mapelExs.getId();
     }
 
@@ -250,11 +275,19 @@ public class MapelController {
     }
 
     @GetMapping("/delete/{id}")
-    public String DeleteMapelForm (@PathVariable String id, Model model) {
+    public String DeleteMapelForm (@PathVariable String id, Model model, RedirectAttributes redirectAttrs) {
         MataPelajaranModel mapelDeleted = mapelService.getMapelbyId(Integer.valueOf(id));
+        String namaMapel = mapelDeleted.getName();
+
+        for (JadwalKelasModel jadwalDb : jadwalKelasService.getListJadwalKelas()){
+            if (Integer.valueOf(id) == jadwalDb.getMapelJadwal().getId()){
+                redirectAttrs.addFlashAttribute("error", "Mapel " + mapelDeleted.getName() + " tidak dapat dihapus karena memiliki Jadwal Kelas");
+                return "redirect:/mapel/detail/" + mapelDeleted.getId();
+            }
+        }
 
         mapelService.deleteMapel(mapelDeleted);
-
+        redirectAttrs.addFlashAttribute("success", "Mapel " + namaMapel + " berhasil dihapus");
         return "redirect:/mapel";
 
     }

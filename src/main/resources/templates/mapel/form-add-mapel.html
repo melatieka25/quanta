@@ -20,11 +20,14 @@
 </head>
 <body>
 <nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
+<div class="alert alert-danger alert-dismissible" role="alert" th:if="${error}" th:text="${error}">
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 <div class="container">
-    <div class="card m-4 p-4">
+    <h2 style="font-weight: bold; padding: 1.5rem; margin-top: 1.5rem; text-align: center">Tambah Mata Pelajaran</h2>
+    <div class="card m-4 p-4" style="background-color: #F7FAFC">
         <div class="card-body">
             <div class="justify-content-center">
-                <h2>Tambah Kelas</h2>
                 <br>
                 <form th:action="@{/mapel/add}" th:object="${mapel}" method="POST">
 
@@ -76,6 +79,19 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+
+    $(document).ready( () => {
+
+        window.setTimeout(function() {
+            $(".alert").fadeTo(500, 0).slideUp(1000, function(){
+                $(this).remove();
+            });
+        }, 2000);
+
+    });
+
+</script>
 
 </body>
 </html>
