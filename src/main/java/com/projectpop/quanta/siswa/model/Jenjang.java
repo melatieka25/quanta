@@ -7,7 +7,7 @@ public enum Jenjang {
     SMA_11_IPA("11 SMA IPA"),
     SMA_11_IPS("11 SMA IPS"),
     SMA_12_IPA("12 SMA 1PA"),
-    SMA_12_IPS("12 SMA IPA");
+    SMA_12_IPS("12 SMA IPS");
 
     private final String displayValue;
 

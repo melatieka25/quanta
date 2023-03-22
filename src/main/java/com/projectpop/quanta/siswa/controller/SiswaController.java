@@ -13,11 +13,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.projectpop.quanta.orangtua.model.OrtuModel;
 import com.projectpop.quanta.orangtua.service.OrtuService;
-import com.projectpop.quanta.siswa.model.Jenjang;
 import com.projectpop.quanta.siswa.model.SiswaModel;
 import com.projectpop.quanta.siswa.service.SiswaService;
-import com.projectpop.quanta.user.model.Gender;
-import com.projectpop.quanta.user.model.Religion;
 import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.user.service.UserService;
@@ -42,9 +39,6 @@ public class SiswaController {
 
     @GetMapping("/create-siswa")
     public String addSiswaFormPage(Model model) {
-        model.addAttribute("listGender", Gender.values());
-        model.addAttribute("listReligion", Religion.values());
-        model.addAttribute("listJenjang", Jenjang.values());
         model.addAttribute("listWali", ortuService.getListOrtu());
         model.addAttribute("siswa", new SiswaModel());
         return "manajemen-user/form-create-siswa";
@@ -160,9 +154,6 @@ public class SiswaController {
         SiswaModel siswa = siswaService.getSiswaById(id);
         if (siswa != null){
             model.addAttribute("siswa", siswa);
-            model.addAttribute("listGender", Gender.values());
-            model.addAttribute("listReligion", Religion.values());
-            model.addAttribute("listJenjang", Jenjang.values());
 
             return "manajemen-user/form-update-siswa";
         } else {

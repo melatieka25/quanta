@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.projectpop.quanta.user.model.Gender;
-import com.projectpop.quanta.user.model.Religion;
 import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.orangtua.model.OrtuModel;
 import com.projectpop.quanta.orangtua.service.OrtuService;
@@ -40,8 +38,6 @@ public class OrtuController {
 
     @GetMapping("/create-ortu/{siswaId}")
     public String addOrtuFormPage(Model model, @PathVariable int siswaId) {
-        model.addAttribute("listGender", Gender.values());
-        model.addAttribute("listReligion", Religion.values());
         model.addAttribute("ortu", new OrtuModel());
         model.addAttribute("siswaId", siswaId);
         return "manajemen-user/form-create-ortu";
@@ -137,8 +133,6 @@ public class OrtuController {
         OrtuModel ortu = ortuService.getOrtuById(id);
         if (ortu != null){
             model.addAttribute("ortu", ortu);
-            model.addAttribute("listGender", Gender.values());
-            model.addAttribute("listReligion", Religion.values());
             model.addAttribute("siswaId", siswaId);
 
             return "manajemen-user/form-update-ortu";

@@ -11,12 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.projectpop.quanta.pengajar.model.Education;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
-import com.projectpop.quanta.pengajar.model.StatusPernikahan;
 import com.projectpop.quanta.pengajar.service.PengajarService;
-import com.projectpop.quanta.user.model.Gender;
-import com.projectpop.quanta.user.model.Religion;
 import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.user.service.UserService;
@@ -38,10 +34,6 @@ public class PengajarController {
 
     @GetMapping("/create-pengajar")
     public String addPengajarFormPage(Model model) {
-        model.addAttribute("listStatusPernikahan", StatusPernikahan.values());
-        model.addAttribute("listLastEdu", Education.values());
-        model.addAttribute("listGender", Gender.values());
-        model.addAttribute("listReligion", Religion.values());
         model.addAttribute("pengajar", new PengajarModel());
         return "manajemen-user/form-create-pengajar";
     }
@@ -151,11 +143,6 @@ public class PengajarController {
         PengajarModel pengajar = pengajarService.getPengajarById(id);
         if (pengajar != null){
             model.addAttribute("pengajar", pengajar);
-            model.addAttribute("listStatusPernikahan", StatusPernikahan.values());
-            model.addAttribute("listLastEdu", Education.values());
-            model.addAttribute("listGender", Gender.values());
-            model.addAttribute("listReligion", Religion.values());
-
             return "manajemen-user/form-update-pengajar";
         } else {
             redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan id " + id + " tidak ditemukan. Gagal mengupdate pengajar");

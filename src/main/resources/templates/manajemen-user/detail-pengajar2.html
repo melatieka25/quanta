@@ -56,7 +56,7 @@
               <p style="font-weight: bold; color: #31318B">Status Pernikahan</p>
             </div>
             <div class="col-4">
-              <p th:text="${pengajar.status}"></p>
+              <p th:text="${pengajar.status.displayValue}"></p>
             </div>
           </div>
           <div class="row">
@@ -70,7 +70,7 @@
               <p style="font-weight: bold; color: #31318B">Pendidikan Terakhir</p>
             </div>
             <div class="col-4">
-              <p th:text="${pengajar.lastEdu}"></p>
+              <p th:text="${pengajar.lastEdu.displayValue}"></p>
             </div>
           </div>
           <div class="row">
@@ -135,7 +135,7 @@
               <p style="font-weight: bold; color: #31318B">Jenis Kelamin</p>
             </div>
             <div class="col-4">
-              <p th:text="${pengajar.gender}"></p>
+              <p th:text="${pengajar.gender.displayValue}"></p>
             </div>
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Tanggal Mulai</p>
@@ -149,7 +149,7 @@
               <p style="font-weight: bold; color: #31318B">Agama</p>
             </div>
             <div class="col-4">
-              <p th:text="${pengajar.religion}"></p>
+              <p th:text="${pengajar.religion.displayValue}"></p>
             </div>
             <div class="col">
               <p></p>
