@@ -1,5 +1,6 @@
 package com.projectpop.quanta.konsultasi.controller;
 
+import com.projectpop.quanta.email.service.EmailService;
 import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
 import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
@@ -19,11 +20,16 @@ import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 
 import static com.projectpop.quanta.konsultasi.model.StatusKonsul.*;
 
@@ -73,6 +79,9 @@ public class KonsultasiController {
     @Qualifier("userServiceImpl")
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping("/konsultasi")
     public String viewJadwalKonsultasi(Model model, Principal principal) {
@@ -249,7 +258,18 @@ public class KonsultasiController {
         model.addAttribute("siswa", siswa);
         model.addAttribute("listSiswaKonsultasi", allListSiswaKonsultasi);
 
+        String emailPenerima = konsultasi.getPengajarKonsul().getEmail();
+//        String emailPenerima = "ameliaputrifadillah@gmail.com";
+        String emailSubject = "ANDA MENDAPATKAN PERMINTAAN KONSULTASI BARU!";
+        String emailBody = "Mohon segera konfirmasi sebelum tanggal " + konsultasi.getStartTime().toLocalDate() + " pukul " + konsultasi.getStartTime().minusHours(1).toLocalTime()
+                + "\n\nDetail konsultasi"
+                + "\n- Waktu konsultasi: " + konsultasi.getStartTime().toLocalTime() + " - " + konsultasi.getEndTime().toLocalTime()
+                + "\n- Tanggal: " + konsultasi.getStartTime().toLocalDate()
+                + "\n- Jenjang: " + konsultasi.getJenjangKelas().getDisplayValue()
+                + "\n- Mata Pelajaran: " + konsultasi.getMapelKonsul().getName()
+                + "\n- Topik: " + konsultasi.getTopic();
 
+        emailService.sendEmail(emailPenerima, emailSubject, emailBody);
 
         redirectAttrs.addFlashAttribute("message", "Konsultasi berhasil ditambahkan!");
         return "redirect:/konsultasi";
@@ -273,6 +293,21 @@ public class KonsultasiController {
 //    end create konsultasi
 
 
+    @GetMapping("/konsultasi/request/view/{idKonsultasi}" )
+    public String viewDetailRequestPage(@PathVariable Integer idKonsultasi, Authentication authentication, Model model) {
+        KonsultasiModel konsultasi = konsultasiService.getKonsultasi(idKonsultasi);
+        List<SiswaKonsultasiModel> listSiswaKonsultasi = siswaKonsultasiService.getListSiswaByKonsultasi(konsultasi);
+
+        for (SiswaKonsultasiModel siswaKonsultasi: listSiswaKonsultasi) {
+            KelasModel kelas = siswaService.getKelasBimbel(siswaKonsultasi.getSiswaKonsul());
+            siswaKonsultasi.getSiswaKonsul().setKelasBimbel(kelas);
+        }
+
+        model.addAttribute("konsultasi", konsultasi);
+        model.addAttribute("listSiswaKonsultasi", listSiswaKonsultasi);
+
+        return "konsultasi/request-view-detail";
+    }
 
 }
 
