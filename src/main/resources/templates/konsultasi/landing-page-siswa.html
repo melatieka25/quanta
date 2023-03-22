@@ -19,7 +19,7 @@
         <div class="justify-content-center">
             <div style="margin: auto; padding-top: 10px; width: 100%; padding: 20px; text-align: center">
                 <h2 style="font-weight: bold; padding-top: 10px;" >Daftar Konsultasi Saya</h2>
-                <a class="btn btn-primary" href="/konsultasi/siswa/add" style="margin: 12px; background-color: #31318B; font-weight: bold; border: none; width:30%;">Buat Request Konsultasi +</a>
+                <a class="btn btn-primary" href="/konsultasi/add" style="margin: 12px; background-color: #31318B; font-weight: bold; border: none; width:30%;">Buat Request Konsultasi +</a>
                 <br>
             </div>
             <div th:if="*{listMySiswaKonsultasi.size() != 0}">
@@ -48,7 +48,6 @@
                         <td th:if="${siswaKonsultasi.konsultasi.status.toString().equals('DITUTUP')}" th:text="${siswaKonsultasi.konsultasi.status.toString().toLowerCase()}"></td>
                         <td>
                             <a class="btn btn-outline-primary align-content-center" th:href="@{/konsultasi/siswa/view/} + ${siswaKonsultasi.konsultasi.id}">Detail</a>
-
                         </td>
 
                     </tr>
@@ -68,7 +67,7 @@
     <div class="card m-4 p-4">
         <div class="justify-content-center">
             <div style="margin: auto; padding-top: 10px; width: 100%; padding: 20px; text-align: center">
-                <h2 style="font-weight: bold; padding-top: 10px;">Daftar Konsultas</h2>
+                <h2 style="font-weight: bold; padding-top: 10px;">Daftar Konsultasi</h2>
                 <h4 style="font-weight: bold; padding-top: 10px;" th:text="${siswa.jenjang.toString().replace('_',' ')}" ></h4>
                 <br>
                 <br>
@@ -80,7 +79,6 @@
                         <th scope="col">No</th>
                         <th scope="col">Pengajar</th>
                         <th scope="col">Mata Pelajaran</th>
-                        <th scope="col">Jenjang Kelas</th>
                         <th scope="col">Tanggal</th>
                         <th scope="col">Waktu</th>
                         <th scope="col">Status</th>
@@ -92,7 +90,6 @@
                         <td th:text="${iterationStatus.count}"></td>
                         <td th:text="${konsultasi.pengajarKonsul.name}"></td>
                         <td th:text="${konsultasi.mapelKonsul.name}"></td>
-                        <td th:text="${konsultasi.jenjangKelas}"></td>
                         <td th:text="${#temporals.format(konsultasi.startTime, 'dd MMMM yyyy')}"></td>
                         <td th:text="${#temporals.format(konsultasi.startTime, 'HH:mm')} + ' - ' +${#temporals.format(konsultasi.endTime, 'HH:mm')}"></td>
                         <td th:if="${konsultasi.status.toString().equals('PENDING')}" style="color:orange" th:text="${konsultasi.status.toString().toLowerCase()}"></td>
@@ -100,8 +97,9 @@
                         <td th:if="${konsultasi.status.toString().equals('DITOLAK')}" style="color:red" th:text="${konsultasi.status.toString().toLowerCase()}"></td>
                         <td th:if="${konsultasi.status.toString().equals('DITUTUP')}" th:text="${konsultasi.status.toString().toLowerCase()}"></td>
                         <td>
-                            <a class="btn btn-primary align-content-center" style="margin: 12px; background-color: #31318B; font-weight: bold; border: none;" th:href="@{/konsultasi/view/} + ${konsultasi.id}">Detail</a>
-                            <a class="btn btn-primary align-content-center" style="margin: 12px; background-color: #0c5460; font-color: #31318B; font-weight: bold; border: none;" >+ Ikuti</a>
+                            <a class="btn btn-outline-primary align-content-center" th:href="@{/konsultasi/view/} + ${konsultasi.id}">Detail</a>
+                            <a class="btn btn-outline-primary align-content-center" style="color: #4CAF50; background-color: white; border-color: #4CAF50;">+ Ikuti</a>
+
                         </td>
 
                     </tr>

@@ -159,7 +159,7 @@ public class KonsultasiRestController {
         List<LocalTime> listWaktuAwalKonsultasiTersediaToday = new ArrayList<LocalTime>();
         if(LocalDate.parse(tanggal).equals(LocalDate.now())) {
             for (LocalTime availabletime: listWaktuAwalKonsultasiTersedia) {
-                if (availabletime.isAfter(LocalTime.now().plusHours(1))){
+                if (availabletime.isAfter(LocalTime.now().plusHours(2))){
                     listWaktuAwalKonsultasiTersediaToday.add(availabletime);
                 }
             }

@@ -20,14 +20,14 @@
     <div class="justify-content-center">
       <h2 style="font-weight: bolder;">Tambah Konsultasi</h2>
       <br>
-      <form th:action="@{/konsultasi/siswa/add}" th:object="${konsultasi}" method="POST">
+      <form name="request-form" th:action="@{/konsultasi/add}" th:object="${konsultasi}" method="POST">
 
         <div class="card-body">
           <div class="container">
             <div class="row">
               <div class="col">
                 Mata Pelajaran: <br>
-                <select  class="form-select" id="mapel-dropdown" name="mataPelajaran" >
+                <select  class="form-select" id="mapel-dropdown" name="mataPelajaran" required>
                   <option hidden disabled selected value>Pilih mata pelajaran...</option>
                   <option th:each="mapel, iterationStatus : ${listMapel}"
                           th:value="${mapel.id}"
@@ -36,25 +36,19 @@
                 <br>
 
                 Pengajar: <br>
-                <select class="form-select" id="pengajar-dropdown" name="pengajarMapel" >
+                <select class="form-select" id="pengajar-dropdown" name="pengajarMapel" required>
+<!--                  <span th:unless="null != $(mataPelajaran).value" ></span>-->
                   <option hidden disabled selected value>Pilih pengajar...</option>
-                  <option th:each="pengajar, iterationStatus : ${listPengajar}"
-                          th:value="${pengajar.id}"
-                          th:text="${pengajar.name}"></option>
                 </select>
                 <br>
 
                 Tanggal: <br>
-                <input class="form-control datepicker" id="tanggal" type="date" name="tanggal"/>
+                <input class="form-control datepicker" id="tanggal" type="date" name="tanggal" required/>
                 <br>
 
                 Waktu <br>
-                <select class="form-select" id="waktu-dropdown" name="waktuMulai" type="time" >
-
+                <select class="form-select" id="waktu-dropdown" name="waktuMulai" type="time" required>
                   <option hidden disabled selected value>--:-- - --:--</option>
-<!--                  <option th:each="waktuAwal, iterationStatus : ${listWaktuMulaiKonsul}"-->
-<!--                          th:value="${waktuAwal}"-->
-<!--                          th:text="${#temporals.format(waktuAwal, 'HH:mm')} + ' - ' +${#temporals.format(waktuAwal.plusHours(1), 'HH:mm')} "></option>-->
                 </select>
                 <br>
 
@@ -108,7 +102,7 @@
     $("#tanggal").change(
             function(){
         // get id of selected team
-              var datetime=$(this).val();
+              var datetime=$("#tanggal").val();
               var pengajar_id = $("#pengajar-dropdown").find(":selected").val();
 
         // set json url
@@ -144,6 +138,27 @@
         });
 
     });
+
+    $("#pengajar-dropdown").click(function() {
+      var mapel_id = $("#mapel-dropdown").find(":selected").val();
+      if(mapel_id == "") {
+        alert("Mohon pilih mata pelajaran terlebih dahulu");
+        return false;
+      }return true;
+    })
+
+    $("#tanggal").click(function() {
+      var pengajar_id = $("#pengajar-dropdown").find(":selected").val();
+      var mapel_id = $("#pengajar-dropdown").find(":selected").val();
+      if((pengajar_id == "") && (mapel_id == "")) {
+        alert("Mohon pilih mata pelajaran dan pengajar terlebih dahulu");
+        return false;
+      } else if(pengajar_id == "") {
+        alert("Mohon pilih pengajar terlebih dahulu");
+        return false;
+      }
+      return true;
+    })
 
 
 

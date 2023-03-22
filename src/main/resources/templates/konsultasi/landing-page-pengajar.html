@@ -41,9 +41,7 @@
                         <td th:text="${#temporals.format(request.startTime, 'dd MMMM yyyy')}"></td>
                         <td th:text="${#temporals.format(request.startTime, 'HH:mm')} + ' - ' +${#temporals.format(request.endTime, 'HH:mm')}"></td>
                         <td class="align-content-center">
-                            <a class="btn btn-outline-primary">Terima</a>
-                            <a class="btn btn-outline-danger">Tolak</a>
-                            <a class="btn btn-outline-primary align-content-center" th:href="@{/konsultasi/view/} + ${request.id}">Detail</a>
+                            <a class="btn btn-outline-primary align-content-center" th:href="@{/konsultasi/request/view/} + ${request.id}">Detail</a>
                         </td>
 
                     </tr>
