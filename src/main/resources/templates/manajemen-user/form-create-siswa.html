@@ -149,9 +149,7 @@
               <div class="col-4">
                 <select class="form-select" name="gender" required>
                   <option hidden disabled selected value>Pilih Jenis Kelamin</option>
-                  <option th:each="gender, iterationStatus : ${listGender}"
-                          th:value="${gender}" 
-                          th:text="${gender}"></option>
+                  <option th:each="genderOpt : ${T(com.projectpop.quanta.user.model.Gender).values()}"th:value="${genderOpt}" th:text="${genderOpt.displayValue}"></option>
                 </select>  
               </div>
               <div class="col">
@@ -168,9 +166,7 @@
               <div class="col-4">
                 <select class="form-select" name="religion" required>
                   <option hidden disabled selected value>Pilih Agama</option>
-                  <option th:each="religion, iterationStatus : ${listReligion}"
-                          th:value="${religion}" 
-                          th:text="${religion}"></option>
+                  <option th:each="religionOpt : ${T(com.projectpop.quanta.user.model.Religion).values()}"th:value="${religionOpt}" th:text="${religionOpt.displayValue}"></option>
                 </select>  
               </div>
               <div class="col">

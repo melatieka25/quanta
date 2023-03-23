@@ -59,9 +59,7 @@
                 </div>
                 <div class="col-4">
                   <select class="form-select" name="status" th:field="*{status}" required>
-                      <option th:each="statusPernikahan, iterationStatus : ${listStatusPernikahan}"
-                              th:value="${statusPernikahan}" 
-                              th:text="${statusPernikahan}"></option>
+                    <option th:each="statusPernikahanOpt : ${T(com.projectpop.quanta.pengajar.model.StatusPernikahan).values()}"th:value="${statusPernikahanOpt}" th:text="${statusPernikahanOpt.displayValue}"></option>
                   </select>  
                 </div>
             </div>
@@ -77,9 +75,7 @@
               </div>
               <div class="col-4">
                 <select class="form-select" name="lastEdu" th:field="*{lastEdu}" required>
-                  <option th:each="lastEdu, iterationStatus : ${listLastEdu}"
-                          th:value="${lastEdu}" 
-                          th:text="${lastEdu}"></option>
+                  <option th:each="lastEduOpt : ${T(com.projectpop.quanta.pengajar.model.Education).values()}"th:value="${lastEduOpt}" th:text="${lastEduOpt.displayValue}"></option>
                 </select>  
               </div>
             </div>
@@ -145,9 +141,7 @@
               </div>
               <div class="col-4">
                 <select class="form-select" name="gender" th:field="*{gender}" required>
-                  <option th:each="gender, iterationStatus : ${listGender}"
-                          th:value="${gender}" 
-                          th:text="${gender}"></option>
+                  <option th:each="genderOpt : ${T(com.projectpop.quanta.user.model.Gender).values()}"th:value="${genderOpt}" th:text="${genderOpt.displayValue}"></option>
                 </select>  
               </div>
               <div class="col">
@@ -163,9 +157,7 @@
               </div>
               <div class="col-4">
                 <select class="form-select" name="religion" th:field="*{religion}" required>
-                  <option th:each="religion, iterationStatus : ${listReligion}"
-                          th:value="${religion}" 
-                          th:text="${religion}"></option>
+                  <option th:each="religionOpt : ${T(com.projectpop.quanta.user.model.Religion).values()}"th:value="${religionOpt}" th:text="${religionOpt.displayValue}"></option>
                 </select>  
               </div>
               <div class="col">

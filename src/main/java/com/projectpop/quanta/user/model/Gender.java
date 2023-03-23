@@ -1,16 +1,16 @@
 package com.projectpop.quanta.user.model;
 
 public enum Gender {
-    MALE("male"),
-    FEMALE("female");
+    MALE("Laki-Laki"),
+    FEMALE("Perempuan");
 
-    private String name;
+    private final String displayValue;
 
-    Gender(String name) {
-        this.name = name;
+    Gender(String displayValue) {
+        this.displayValue = displayValue;
     }
 
-    public String geGenderName() {
-        return name;
+    public String getDisplayValue() {
+        return displayValue;
     }
 }
