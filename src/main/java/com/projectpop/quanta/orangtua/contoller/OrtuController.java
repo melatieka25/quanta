@@ -1,7 +1,6 @@
 package com.projectpop.quanta.orangtua.contoller;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,14 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.orangtua.model.OrtuModel;
 import com.projectpop.quanta.orangtua.service.OrtuService;
-import com.projectpop.quanta.siswa.model.SiswaModel;
-import com.projectpop.quanta.siswa.service.SiswaService;
-import com.projectpop.quanta.user.model.UserModel;
-import com.projectpop.quanta.user.service.UserService;
-import com.projectpop.quanta.user.auth.PasswordManager;
 
 @Controller
 @RequestMapping("/ortu")
@@ -29,12 +22,6 @@ public class OrtuController {
     @Qualifier("ortuServiceImpl")
     @Autowired
     private OrtuService ortuService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private SiswaService siswaService;
 
     @GetMapping("/detail/{id}/{siswaId}")
     public String detailOrtu(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs) {

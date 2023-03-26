@@ -123,7 +123,7 @@
                     <option hidden disabled selected value>Pilih Wali</option>
                     <option th:each="wali, iterationStatus : ${listWali}"
                             th:value="${wali.id}" 
-                            th:text="${wali.name}"></option>
+                            th:text="${wali.name} + ' (' + ${wali.email} + ')'"></option>
                   </select>  
                 </div>
               </div>
