@@ -36,42 +36,6 @@ public class OrtuController {
     @Autowired
     private SiswaService siswaService;
 
-    @GetMapping("/create-ortu/{siswaId}")
-    public String addOrtuFormPage(Model model, @PathVariable int siswaId) {
-        model.addAttribute("ortu", new OrtuModel());
-        model.addAttribute("siswaId", siswaId);
-        return "manajemen-user/form-create-ortu";
-    }
-
-    @PostMapping("/create-ortu/{siswaId}")
-    public String addOrtuSubmitPage(@ModelAttribute OrtuModel ortu,  @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs) {
-        ortu.setRole(UserRole.ORTU);
-        UserModel sameEmail = userService.getUserByEmail(ortu.getEmail());
-        String password = PasswordManager.generateCommonTextPassword();
-        ortu.setPassword(password);
-
-        if (sameEmail == null){
-            ortu.setPasswordPertama(password);
-            ortu.setIsActive(true);
-            ortu.setIsPassUpdated(false);
-            ortuService.addOrtu(ortu);
-
-            ArrayList<SiswaModel> listAnak = new ArrayList<SiswaModel>();
-            SiswaModel siswa = siswaService.getSiswaById(siswaId);
-            listAnak.add(siswa);
-            ortu.setListAnak(listAnak);
-            siswa.setOrtu(ortu);
-            siswaService.updateSiswa(siswa);
-
-            redirectAttrs.addFlashAttribute("message", "Wali dengan email " + ortu.getEmail() + " dan password " + ortu.getPasswordPertama() + " telah berhasil ditambahkan!");
-            return "redirect:/siswa";
-        } else {
-            redirectAttrs.addFlashAttribute("errorMessage", "User dengan email " + ortu.getEmail() + " sudah pernah ditambahkan sebelumnya. Coba lagi dengan email lain!");
-            return "redirect:/ortu/create-ortu";
-        }
-
-    }
-
     @GetMapping("/detail/{id}/{siswaId}")
     public String detailOrtu(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs) {
         OrtuModel ortu = ortuService.getOrtuById(id);

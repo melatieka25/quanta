@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.projectpop.quanta.orangtua.model.OrtuModel;
@@ -40,12 +41,16 @@ public class SiswaController {
     @GetMapping("/create-siswa")
     public String addSiswaFormPage(Model model) {
         model.addAttribute("listWali", ortuService.getListOrtu());
-        model.addAttribute("siswa", new SiswaModel());
+        SiswaModel siswa = new SiswaModel();
+        OrtuModel ortu = new OrtuModel();
+        siswa.setOrtu(ortu);
+
+        model.addAttribute("siswa", siswa);
         return "manajemen-user/form-create-siswa";
     }
 
     @PostMapping("/create-siswa")
-    public String addSiswaSubmitPage(@ModelAttribute SiswaModel siswa, Model model, RedirectAttributes redirectAttrs) {
+    public String addSiswaSubmitPage(@ModelAttribute SiswaModel siswa, @RequestParam("statusWali") String statusWali, Model model, RedirectAttributes redirectAttrs) {
         siswa.setRole(UserRole.SISWA);
         UserModel sameEmail = userService.getUserByEmail(siswa.getEmail());
         String password = PasswordManager.generateCommonTextPassword();
@@ -56,18 +61,44 @@ public class SiswaController {
             siswa.setIsActive(true);
             siswa.setIsPassUpdated(false);
             redirectAttrs.addFlashAttribute("message", "Siswa dengan email " + siswa.getEmail() + " dan password " + siswa.getPasswordPertama() + " telah berhasil ditambahkan!");
-            if (siswa.getOrtuId() != 0){
-                OrtuModel ortu = ortuService.getOrtuById(siswa.getOrtuId());
-                siswa.setOrtu(ortu);
+            if (statusWali.equals("sudah_terdaftar")){
+                OrtuModel ortuSiswa = ortuService.getOrtuById(siswa.getOrtuId());
+                siswa.setOrtu(ortuSiswa);
                 siswaService.addSiswa(siswa);
-                if (ortu.getListAnak() == null){
-                    ortu.setListAnak(new ArrayList<SiswaModel>());
+                if (ortuSiswa.getListAnak() == null){
+                    ortuSiswa.setListAnak(new ArrayList<SiswaModel>());
                 }
-                ortu.getListAnak().add(siswa);
-                return "redirect:/siswa";
+                ortuSiswa.getListAnak().add(siswa);
+                return "redirect:/siswa/detail/" + siswa.getId();
             } else {
+                OrtuModel ortu = siswa.getOrtu();
+                ortu.setRole(UserRole.ORTU);
+                UserModel sameEmailOrtu = userService.getUserByEmail(ortu.getEmail());
+                String passwordOrtu = PasswordManager.generateCommonTextPassword();
+                ortu.setPassword(passwordOrtu);
+
+                if (sameEmailOrtu == null){
+                    ortu.setPasswordPertama(passwordOrtu);
+                    ortu.setIsActive(true);
+                    ortu.setIsPassUpdated(false);
+                    ortuService.addOrtu(ortu);
+
+                    ArrayList<SiswaModel> listAnak = new ArrayList<SiswaModel>();
+                    listAnak.add(siswa);
+                    ortu.setListAnak(listAnak);
+                    siswa.setOrtu(ortu);
+                    siswaService.updateSiswa(siswa);
+
+                } else {
+                    redirectAttrs.addFlashAttribute("errorMessage", "User dengan email " + ortu.getEmail() + " sudah pernah ditambahkan sebelumnya. Coba lagi dengan email lain!");
+                    return "redirect:/ortu/create-ortu";
+                }
+
                 siswaService.addSiswa(siswa);
-                return "redirect:/ortu/create-ortu/" + siswa.getId();
+                
+                redirectAttrs.addFlashAttribute("message", "Siswa dengan email " + siswa.getEmail() + " dan password " + siswa.getPasswordPertama() + " serta wali dengan email " + ortu.getEmail() + " dan password " + ortu.getPasswordPertama() + " telah berhasil ditambahkan!");
+                return "redirect:/siswa/detail/" + siswa.getId();
+                
             }
             
         } else {
