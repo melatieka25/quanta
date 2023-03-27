@@ -102,13 +102,14 @@
             </li>
         </ul>
         <ul class="navbar-nav navbar-right mx-5">
-            <li class="nav-item dropdown">
-                <a href="/" class="dropdown-toggle" id="navbarDropdownMenuLink profilePengguna" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #2d3748" >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-person-fill">
-                        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
-                    </svg>
-                    <div sec:authorize="isAuthenticated()">
-                        <span sec:authentication="name"></span></div>
+            <li class="dropdown">
+                <a href="/" class="dropdown" id="navbarDropdownMenuLink profilePengguna" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #2d3748; flex-direction: column" >
+                    <div sec:authorize="isAuthenticated()" style="display: flex; align-items: center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-person-fill" style="margin-right: 8px">
+                            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+                        </svg>
+                        <span sec:authentication="name" class="d-inline-block align-top font-weight-bold"></span>
+                    </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink profilePengguna">
                     <li><a class="dropdown-item invisible" hidden th:href="@{/}">Informasi Profil</a></li>
