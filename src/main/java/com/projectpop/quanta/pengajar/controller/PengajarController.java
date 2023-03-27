@@ -53,7 +53,7 @@ public class PengajarController {
             pengajar.setStartDate(LocalDate.now());
             pengajarService.addPengajar(pengajar);
             redirectAttrs.addFlashAttribute("message", "Pengajar dengan email " + pengajar.getEmail() + " dan password " + pengajar.getPasswordPertama() + " telah berhasil ditambahkan!");
-            return "redirect:/pengajar";
+            return "redirect:/pengajar/detail/" + pengajar.getId();
         } else {
             redirectAttrs.addFlashAttribute("errorMessage", "User dengan email " + pengajar.getEmail() + " sudah pernah ditambahkan sebelumnya. Coba lagi dengan email lain!");
             return "redirect:/pengajar/create-pengajar";
