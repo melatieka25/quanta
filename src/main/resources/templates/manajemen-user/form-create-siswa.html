@@ -22,17 +22,17 @@
     <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
     <div class="alert alert-danger" role="alert" th:text="${errorMessage}" th:if="${errorMessage}"></div>
   </div>
-    <div class="card mt-3" style="background-color:#F7FAFC">
+  <div class="card mt-3" style="background-color:#F7FAFC">
     <div class="card-body">
       <div class="justify-content-center">
-        <form th:action="@{/siswa/create-siswa}" th:object="${siswa}" method="POST">
+        <form th:action="@{/siswa/create-siswa}" method="POST" th:object="${siswa}">
           <div class="container">
             <div class="row">
                 <div class="col">
-                  <h4 style="padding-bottom:20px; font-weight: bold;" >Data Pribadi</h4>
+                  <h4 style="padding-bottom:20px; font-weight: bold;" >Data Pribadi Siswa</h4>
                 </div>
                 <div class="col">
-                  <h4 style="padding-bottom:20px; font-weight: bold;">Data Akademik</h4>
+                  <h4 style="padding-bottom:20px; font-weight: bold;">Data Akademik Siswa</h4>
                 </div>
             </div>
             <div class="row">
@@ -71,7 +71,7 @@
                 <p style="font-weight: bold; color: #31318B">Email</p>
               </div>
               <div class="col-4">
-                <input class="form-control" type="email" placeholder="Email" name="email"/ required>
+                <input class="form-control" type="email" placeholder="Email" name="email" required/>
               </div>
               <div class="col">
                 <p></p>
@@ -87,11 +87,22 @@
               <div class="col-4">
                 <input class="form-control" type="text" placeholder="Alamat" name="address" required/>
               </div>
-              <div class="col">
-                <h4 style="padding-bottom:20px; font-weight: bold;">Data Wali</h4>
+              <div class="col-3">
+                <p style="font-weight: bold; color: #31318B">Apakah wali sudah terdaftar pada sistem QUANTA?</p>
               </div>
-              <div class="col-4">
-                <p></p>
+              <div class="col-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="statusWali" id="sudahTerdaftarRadio" value="sudah_terdaftar" checked>
+                  <label class="form-check-label" for="sudahTerdaftarRadio">
+                    Ya, Wali sudah terdaftar
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="statusWali" id="belumTerdaftarRadio" value="belum_terdaftar">
+                  <label class="form-check-label" for="belumTerdaftarRadio">
+                    Belum, wali belum terdaftar
+                  </label>
+                </div>
               </div>
             </div>
             <div class="row">
@@ -102,16 +113,19 @@
                 <input class="form-control" type="number" placeholder="No. Telp" name="phone_num" required/>
               </div>
               <div class="col">
-                <p style="font-weight: bold; color: #31318B">Nama Wali</p>
+                <div id="ortuLabel">
+                  <p style="font-weight: bold; color: #31318B">Nama Wali</p>
+                </div>
               </div>
               <div class="col-4">
-                <select type="number" class="form-select js-example-basic-single" name="ortuId" required>
-                  <option hidden disabled selected value>Pilih Wali</option>
-                  <option th:value="${0}" th:text="'Buat Data Wali Baru'"></option>
-                  <option th:each="wali, iterationStatus : ${listWali}"
-                          th:value="${wali.id}" 
-                          th:text="${wali.name}"></option>
-                </select>  
+                <div id="ortuSelectDiv">
+                  <select id="ortuSelect" type="number" class="form-select js-example-basic-single" name="ortuId" required>
+                    <option hidden disabled selected value>Pilih Wali</option>
+                    <option th:each="wali, iterationStatus : ${listWali}"
+                            th:value="${wali.id}" 
+                            th:text="${wali.name} + ' (' + ${wali.email} + ')'"></option>
+                  </select>  
+                </div>
               </div>
             </div>
             <div class="row">
@@ -176,6 +190,152 @@
                 <p></p>
               </div>
             </div>
+          </div>
+            <br>
+            <br>
+          <div id="formOrtu" class="container">
+            <div class="row">
+                <div class="col">
+                  <h4 style="padding-bottom:20px; font-weight: bold;" >Data Wali</h4>
+                </div>
+                <div class="col">
+                  <h4 style="padding-bottom:20px; font-weight: bold;">Data Pelengkap Wali</h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                  <p style="font-weight: bold; color: #31318B">Nama Lengkap Wali</p>
+                </div>
+                <div class="col-4">
+                    <input class="form-control ortu-field" type="text" placeholder="Nama Lengkap Wali" th:field="*{ortu.name}" />
+                </div>
+                <div class="col">
+                  <p style="font-weight: bold; color: #31318B">Pekerjaan Wali</p>
+                </div>
+                <div class="col-4">
+                  <input class="form-control ortu-field" type="text" placeholder="Pekerjaan Wali" th:field="*{ortu.job}"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                  <p style="font-weight: bold; color: #31318B">Nama Panggilan Wali</p>
+                </div>
+                <div class="col-4">
+                    <input class="form-control ortu-field" type="text" placeholder="Nama Panggilan Wali" th:field="*{ortu.nickname}"/>
+                </div>
+                <div class="col">
+                  <p style="font-weight: bold; color: #31318B">Tempat Bekerja Wali</p>
+                </div>
+                <div class="col-4">
+                  <input class="form-control ortu-field" type="text" placeholder="Isi '-' jika tidak ada" th:field="*{ortu.kantor}"/> 
+                </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <p style="font-weight: bold; color: #31318B">Email Wali</p>
+              </div>
+              <div class="col-4">
+                <input class="form-control ortu-field" type="email" placeholder="Email Wali" th:field="*{ortu.email}" />
+              </div>
+              <div class="col">
+                <p></p>
+              </div>
+              <div class="col-4">
+                <p></p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <p style="font-weight: bold; color: #31318B">Alamat Wali</p>
+              </div>
+              <div class="col-4">
+                <input class="form-control ortu-field" type="text" placeholder="Alamat Wali" th:field="*{ortu.address}" />
+              </div>
+              <div class="col">
+                <p></p>
+              </div>
+              <div class="col-4">
+                <p></p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <p style="font-weight: bold; color: #31318B">No. Telp Wali</p>
+              </div>
+              <div class="col-4">
+                <input id="ortuPhone" class="form-control ortu-field" type="number" placeholder="No. Telp Wali" th:field="*{ortu.phone_num}" />
+              </div>
+              <div class="col">
+                <p></p>
+              </div>
+              <div class="col-4">
+                <p></p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <p style="font-weight: bold; color: #31318B">Tempat Lahir Wali</p>
+              </div>
+              <div class="col-4">
+                <input class="form-control ortu-field" type="text" placeholder="Tempat Lahir Wali" th:field="*{ortu.pob}"/>
+              </div>
+              <div class="col">
+                <p></p>
+              </div>
+              <div class="col-4">
+                <p></p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <p style="font-weight: bold; color: #31318B">Tanggal Lahir Wali</p>
+              </div>
+              <div class="col-4">
+                <input id="ortuDob" class="form-control ortu-field" type="date" placeholder="Tanggal Lahir Wali" th:field="*{ortu.dob}"/>
+              </div>
+              <div class="col">
+                <p></p>
+              </div>
+              <div class="col-4">
+                <p></p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <p style="font-weight: bold; color: #31318B">Jenis Kelamin Wali</p>
+              </div>
+              <div class="col-4">
+                <select class="form-select ortu-field" th:field="*{ortu.gender}" >
+                  <option hidden disabled selected value="GENDER">Pilih Jenis Kelamin</option>
+                  <option th:each="genderOpt : ${T(com.projectpop.quanta.user.model.Gender).values()}"th:value="${genderOpt}" th:text="${genderOpt.displayValue}"></option>
+                </select>  
+              </div>
+              <div class="col">
+                <p></p>
+              </div>
+              <div class="col-4">
+                <p></p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <p style="font-weight: bold; color: #31318B">Agama Wali</p>
+              </div>
+              <div class="col-4">
+                <select class="form-select ortu-field" th:field="*{ortu.religion}">
+                  <option hidden disabled selected value="RELIGION">Pilih Agama</option>
+                  <option th:each="religionOpt : ${T(com.projectpop.quanta.user.model.Religion).values()}"th:value="${religionOpt}" th:text="${religionOpt.displayValue}"></option>
+                </select>  
+              </div>
+              <div class="col">
+                <p></p>
+              </div>
+              <div class="col-4">
+                <p></p>
+              </div>
+            </div>
+          </div>
+          <div class="container">
             <div class="row">
               <div class="col">
                 <p></p>
@@ -192,7 +352,7 @@
                 <p></p>
               </div>
             </div>
-          </br>
+          </div>
         </form>
       </div>
     </div>
@@ -200,9 +360,53 @@
 </div>
 </div>
 <script>
-    $(document).ready(function() {
-        $('.js-example-basic-single').select2();
-    });
+  $(document).ready(function() {
+      $('.js-example-basic-single').select2();
+  });
+
+  // Get the radio button and select box elements
+  const belumTerdaftarRadio = document.getElementById('belumTerdaftarRadio');
+  const sudahTerdaftarRadio = document.getElementById('sudahTerdaftarRadio');
+  const ortuSelect = document.getElementById('ortuSelect');
+  const ortuSelectDiv = document.getElementById('ortuSelectDiv');
+  const formOrtu = document.getElementById('formOrtu');
+  const ortuLabel = document.getElementById('ortuLabel');
+  const ortuDob = document.getElementById('ortuDob');
+  const ortuPhone = document.getElementById('ortuPhone');
+  const ortuFields = document.querySelectorAll('.ortu-field');
+
+  formOrtu.style.display = 'none';
+  ortuDob.value = "2002-03-25";
+  ortuPhone.value = 08123456789;
+
+  belumTerdaftarRadio.addEventListener('change', () => {
+    if (belumTerdaftarRadio.checked) {
+      ortuSelect.value = 0
+      ortuLabel.style.display = 'none';
+      ortuSelectDiv.style.display = 'none';
+      ortuSelect.removeAttribute('required');
+      formOrtu.style.display = 'block';
+      ortuFields.forEach((field) => {
+        field.setAttribute('required', '');
+      });
+      ortuDob.value = null;
+      ortuPhone.value = null;
+    } 
+  });
+
+  sudahTerdaftarRadio.addEventListener('change', () => {
+    if (sudahTerdaftarRadio.checked) {
+      ortuLabel.style.display = 'block';
+      ortuSelectDiv.style.display = 'block';
+      ortuSelect.setAttribute('required', '');
+      formOrtu.style.display = 'none';
+      ortuFields.forEach((field) => {
+        field.removeAttribute('required');
+      });
+      ortuDob.value = "2002-03-25";
+      ortuPhone.value = 08123456789;
+    } 
+  });
 </script>
 </body>
 </html>
