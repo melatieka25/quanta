@@ -24,7 +24,7 @@
     <div class="card m-4 p-4">
         <div class="card-body">
             <div class="justify-content-center">
-                <h2>Tambah Kelas</h2>
+                <h2 style="font-weight: bold">Tambah Kelas</h2>
                 <br>
                 <form th:action="@{/kelas/add}" th:object="${kelas}" method="POST">
 
@@ -69,7 +69,7 @@
                         <thead>
                         <th>Siswa</th>
                         <th>
-                            <button class="btn btn-primary" type="submit" name="addRowSiswa">Tambah Row</button>
+                            <button class="btn" type="submit" name="addRowSiswa" style="background-color: #31318B; color: white;">Tambah Siswa</button>
                         </th>
                         </thead>
                         <tbody>
@@ -94,9 +94,8 @@
                     </table>
 
 
-
-                    <button class="btn btn-primary" type="submit" name="save">Submit</button>
-                    <a class="btn btn-outline-primary" href="/kelas/">Kembali</a>
+                    <a class="btn btn-outline-secondary" href="/kelas/" >Kembali</a>
+                    <button class="btn" type="submit" name="save" style="background-color: #31318B; color: white;">Simpan</button>
                 </form>
             </div>
         </div>

@@ -2,6 +2,7 @@ package com.projectpop.quanta.jadwalkelas.service;
 
 import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.jadwalkelas.repository.JadwalKelasDb;
+import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.repository.PengajarDb;
 import com.projectpop.quanta.presensi.model.PresensiModel;
@@ -70,6 +71,11 @@ public class JadwalKelasServiceImpl implements JadwalKelasService{
     @Override
     public void deleteJadwalKelas(JadwalKelasModel jadwalKelas) {
         jadwalKelasDb.delete(jadwalKelas);
+    }
+
+    @Override
+    public List<JadwalKelasModel> getListJadwalKelasByKelas(KelasModel kelas) {
+        return jadwalKelasDb.findAllByKelas(kelas);
     }
 
     @Override

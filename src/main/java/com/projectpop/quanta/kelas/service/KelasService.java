@@ -7,6 +7,7 @@ public interface KelasService {
     List<KelasModel> getListKelas();
     List<KelasModel> getListKelasByDays(Integer day);
     KelasModel getKelasById(Integer id);
+    List<KelasModel> getKelasByName(String name);
     void addKelas(KelasModel kelas);
     void deleteKelas(KelasModel kelas);
 
