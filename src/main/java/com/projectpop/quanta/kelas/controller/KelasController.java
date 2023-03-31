@@ -1,5 +1,7 @@
 package com.projectpop.quanta.kelas.controller;
 
+import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
+import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
 import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.kelas.service.KelasService;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
@@ -45,6 +47,10 @@ public class KelasController {
     @Autowired
     private PengajarService pengajarService;
 
+    @Qualifier("jadwalKelasServiceImpl")
+    @Autowired
+    private JadwalKelasService jadwalKelasService;
+
     @GetMapping("")
     public String viewAllKelas(Model model){
         List<KelasModel> listKelas = kelasService.getListKelas();
@@ -56,7 +62,7 @@ public class KelasController {
     @GetMapping("/detail/{kelas_id}")
     public String viewDetailKelas(Model model, @PathVariable String kelas_id){
         KelasModel kelas = kelasService.getKelasById(Integer.valueOf(kelas_id));
-
+        System.out.println(kelas.getListSiswaKelas());
         model.addAttribute("kelas", kelas);
         return "kelas/detail2";
     }
@@ -72,6 +78,14 @@ public class KelasController {
         kelas.setListSiswaKelas(listSiswaKelasNew);
         kelas.getListSiswaKelas().add(new SiswaKelasModel());
 
+        for (int i = 0; i < listSiswa.size(); i++){
+            SiswaModel siswaItr = listSiswa.get(i);
+            if (siswaService.getKelasBimbel(siswaItr) != null){
+                listSiswa.remove(siswaItr);
+                i--;
+            }
+        }
+
         model.addAttribute("listSiswa", listSiswa);
         model.addAttribute("listTahunAjar", listTahunAjar);
         model.addAttribute("listKakakAsuh", listKakakAsuh);
@@ -81,6 +95,16 @@ public class KelasController {
 
     @PostMapping(value = "/add", params = {"save"})
     public String addKelasSubmitPage(@ModelAttribute KelasModel kelas, RedirectAttributes redirectAttrs , Model model) {
+        List<KelasModel> kelasCheck = kelasService.getKelasByName(kelas.getName());
+        if (kelasCheck != null){
+            for(KelasModel kelasItr : kelasCheck){
+                if (kelasItr.getTahunAjar().getId().equals(kelas.getTahunAjar().getId())){
+                    redirectAttrs.addFlashAttribute("error", "Kelas " + kelas.getName() + " sudah ada di database.");
+                    return "redirect:/kelas";
+                }
+            }
+        }
+
         if (kelas.getListSiswaKelas() == null ||kelas.getListSiswaKelas().size() == 0) {
             kelas.setListSiswaKelas(new ArrayList<>());
         } else {
@@ -117,16 +141,21 @@ public class KelasController {
         if (kelas.getListSiswaKelas() == null || kelas.getListSiswaKelas().size() == 0) {
             kelas.setListSiswaKelas(new ArrayList<>());
         }
-        kelas.getListSiswaKelas().add(new SiswaKelasModel());
+
+        List<SiswaKelasModel>listSiswaKelasEx = kelas.getListSiswaKelas();
 
         List<SiswaModel> listSiswa = siswaService.getListSiswa();
         List<TahunAjarModel> listTahunAjar = tahunAjarService.getAllTahunAjar();
         List<PengajarModel> listKakakAsuh = pengajarService.getListKakakAsuh();
 
-        model.addAttribute("listSiswa", listSiswa);
+        List<SiswaModel> listSiswaClean = siswaService.getListSiswaExsAndNoClass(listSiswa, kelas);
+
+        kelas.getListSiswaKelas().add(new SiswaKelasModel());
+
+        model.addAttribute("kelas", kelas);
+        model.addAttribute("listSiswa", listSiswaClean);
         model.addAttribute("listTahunAjar", listTahunAjar);
         model.addAttribute("listKakakAsuh", listKakakAsuh);
-        model.addAttribute("kelas", kelas);
 
         return "kelas/form-add-kelas";
     }
@@ -140,14 +169,22 @@ public class KelasController {
         final Integer rowId = Integer.valueOf(row);
         kelas.getListSiswaKelas().remove(rowId.intValue());
 
+        if (kelas.getListSiswaKelas() == null || kelas.getListSiswaKelas().size() == 0) {
+            kelas.setListSiswaKelas(new ArrayList<>());
+        }
+
+        List<SiswaKelasModel>listSiswaKelasEx = kelas.getListSiswaKelas();
+
         List<SiswaModel> listSiswa = siswaService.getListSiswa();
         List<TahunAjarModel> listTahunAjar = tahunAjarService.getAllTahunAjar();
         List<PengajarModel> listKakakAsuh = pengajarService.getListKakakAsuh();
 
-        model.addAttribute("listSiswa", listSiswa);
+        List<SiswaModel> listSiswaClean = siswaService.getListSiswaExsAndNoClass(listSiswa, kelas);
+
+        model.addAttribute("kelas", kelas);
+        model.addAttribute("listSiswa", listSiswaClean);
         model.addAttribute("listTahunAjar", listTahunAjar);
         model.addAttribute("listKakakAsuh", listKakakAsuh);
-        model.addAttribute("kelas", kelas);
 
         return "kelas/form-add-kelas";
     }
@@ -168,8 +205,10 @@ public class KelasController {
         kelas.setTahunAjar(kelasExist.getTahunAjar());
         kelas.setListSiswaKelas(kelasExist.getListSiswaKelas());
 
+        List<SiswaModel> listSiswaClean = siswaService.getListSiswaExsAndNoClass(listSiswa, kelas);
+
         model.addAttribute("kelas", kelas);
-        model.addAttribute("listSiswa", listSiswa);
+        model.addAttribute("listSiswa", listSiswaClean);
         model.addAttribute("listTahunAjar", listTahunAjar);
         model.addAttribute("listKakakAsuh", listKakakAsuh);
         return "kelas/form-update-kelas";
@@ -178,6 +217,17 @@ public class KelasController {
 
     @PostMapping(value="edit", params = {"save"})
     public String updateKelasSubmitPage(@ModelAttribute KelasModel kelas, RedirectAttributes redirectAttrs) {
+        List<KelasModel> kelasCheck = kelasService.getKelasByName(kelas.getName());
+        if (kelasCheck != null){
+            for(KelasModel kelasItr : kelasCheck){
+                if (kelasItr.getTahunAjar().getId().equals(kelas.getTahunAjar().getId())){
+                    redirectAttrs.addFlashAttribute("error", "Kelas " + kelas.getName() + " sudah ada di database.");
+                    redirectAttrs.addFlashAttribute("errorBold", "Perubahan data gagal!");
+                    return "redirect:/kelas/detail/" + kelas.getId();
+                }
+            }
+        }
+
         KelasModel kelasExs = kelasService.getKelasById(kelas.getId());
         kelasExs.setDays(kelas.getDays());
         kelasExs.setName(kelas.getName());
@@ -232,18 +282,24 @@ public class KelasController {
 
         kelasService.addKelas(kelasExs);
 
-        redirectAttrs.addFlashAttribute("message", "Data kelas " + kelasExs.getName() + " telah berhasil diubah!");
+        redirectAttrs.addFlashAttribute("success", "Data Kelas " + kelasExs.getName() + " telah berhasil diubah.");
         return "redirect:/kelas/detail/" + kelasExs.getId();
     }
 
     @GetMapping("/delete/{id}")
-    public String DeleteKelasForm (@PathVariable String id, Model model) {
+    public String DeleteKelasForm (@PathVariable String id, Model model, RedirectAttributes redirectAttrs) {
         KelasModel courseDeleted = kelasService.getKelasById(Integer.valueOf(id));
 
-        kelasService.deleteKelas(courseDeleted);
+        List<JadwalKelasModel> listJadwalKelas = jadwalKelasService.getListJadwalKelasByKelas(courseDeleted);
 
-        return "redirect:/kelas";
-
+        if (listJadwalKelas == null || listJadwalKelas.size() == 0){
+            kelasService.deleteKelas(courseDeleted);
+            redirectAttrs.addFlashAttribute("success", "Kelas berhasil dihapus");
+            return "redirect:/kelas";
+        }
+        redirectAttrs.addFlashAttribute("error", " Kelas memiliki jadwal pembelajaran");
+        redirectAttrs.addFlashAttribute("errorBold", " Kelas Gagal dihapus!");
+        return "redirect:/kelas/detail/{id}";
     }
 
     @PostMapping(value="/edit", params = {"addRowSiswaUpdate"})
@@ -254,13 +310,18 @@ public class KelasController {
         if (kelas.getListSiswaKelas() == null || kelas.getListSiswaKelas().size() == 0) {
             kelas.setListSiswaKelas(new ArrayList<>());
         }
-        kelas.getListSiswaKelas().add(new SiswaKelasModel());
+
+        List<SiswaKelasModel>listSiswaKelasEx = kelas.getListSiswaKelas();
 
         List<SiswaModel> listSiswa = siswaService.getListSiswa();
         List<TahunAjarModel> listTahunAjar = tahunAjarService.getAllTahunAjar();
         List<PengajarModel> listKakakAsuh = pengajarService.getListKakakAsuh();
 
-        model.addAttribute("listSiswa", listSiswa);
+        List<SiswaModel> listSiswaClean = siswaService.getListSiswaExsAndNoClass(listSiswa, kelas);
+
+        kelas.getListSiswaKelas().add(new SiswaKelasModel());
+
+        model.addAttribute("listSiswa", listSiswaClean);
         model.addAttribute("listTahunAjar", listTahunAjar);
         model.addAttribute("listKakakAsuh", listKakakAsuh);
         model.addAttribute("kelas", kelas);
@@ -281,7 +342,9 @@ public class KelasController {
         List<TahunAjarModel> listTahunAjar = tahunAjarService.getAllTahunAjar();
         List<PengajarModel> listKakakAsuh = pengajarService.getListKakakAsuh();
 
-        model.addAttribute("listSiswa", listSiswa);
+        List<SiswaModel> listSiswaClean = siswaService.getListSiswaExsAndNoClass(listSiswa, kelas);
+
+        model.addAttribute("listSiswa", listSiswaClean);
         model.addAttribute("listTahunAjar", listTahunAjar);
         model.addAttribute("listKakakAsuh", listKakakAsuh);
         model.addAttribute("kelas", kelas);

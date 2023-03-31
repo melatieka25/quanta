@@ -24,7 +24,7 @@
     <div class="card m-4 p-4">
         <div class="card-body">
             <div class="justify-content-center">
-                <h2>Edit Kelas</h2>
+                <h2 style="font-weight: bold">Ubah Data Kelas</h2>
                 <br>
                 <form th:action="@{/kelas/edit}" th:object="${kelas}" method="POST">
                     <input type="hidden" th:field="*{id}" />
@@ -69,7 +69,7 @@
                         <thead>
                         <th>Siswa</th>
                         <th>
-                            <button class="btn btn-primary" type="submit" name="addRowSiswaUpdate">Tambah Row</button>
+                            <button class="btn btn-primary" type="submit" name="addRowSiswaUpdate" style="background-color: #31318B; border: none">Tambah Siswa</button>
                         </th>
                         </thead>
                         <tbody>
@@ -95,9 +95,8 @@
 
 
 
-
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-update">Submit</button>
-                    <a class="btn btn-outline-primary" href="/kelas">Kembali</a>
+                    <a class="btn btn-outline-secondary" href="/kelas">Kembali</a>
+                    <button type="button" class="btn" data-toggle="modal" data-target="#modal-update" style="background-color: #31318B;  color: white">Simpan</button>
 
                     <div class="modal fade" id="modal-update" tabindex="-1" role="dialog" aria-labelledby="popupLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">

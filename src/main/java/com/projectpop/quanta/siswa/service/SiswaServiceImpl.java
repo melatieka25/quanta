@@ -96,4 +96,21 @@ public class SiswaServiceImpl implements SiswaService {
             return siswa.get();
         } else return null;
     }
+
+    @Override
+    public List<SiswaModel> getListSiswaExsAndNoClass(List<SiswaModel> listSiswa, KelasModel kelas) {
+        List<SiswaModel> listSiswa2 =  listSiswa;
+
+        for (int i = 0; i < listSiswa2.size(); i++){
+            SiswaModel siswaItr = listSiswa2.get(i);
+            if (getKelasBimbel(siswaItr) != null){
+                if (getKelasBimbel(siswaItr).getId() != kelas.getId()){
+                    listSiswa2.remove(siswaItr);
+                    i--;
+                }
+            }
+        }
+
+        return listSiswa2;
+    }
 }

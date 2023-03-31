@@ -52,4 +52,9 @@ public class KelasServiceImpl implements KelasService{
         return kelas.orElse(null);
     }
 
+    @Override
+    public List<KelasModel> getKelasByName(String name) {
+        List<KelasModel> kelas = kelasDb.findByName(name);
+        return kelas;
+    }
 }

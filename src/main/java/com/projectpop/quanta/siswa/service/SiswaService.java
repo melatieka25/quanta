@@ -16,5 +16,6 @@ public interface SiswaService {
     SiswaModel updateSiswa(SiswaModel siswa);
     int getNumberOfKonsultasiAktif(SiswaModel siswa);
     SiswaModel findSiswaByEmail(String email);
+    List<SiswaModel> getListSiswaExsAndNoClass(List<SiswaModel> listSiswa, KelasModel kelas);
 
 }

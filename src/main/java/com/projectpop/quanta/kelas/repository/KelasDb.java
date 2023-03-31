@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface KelasDb extends JpaRepository<KelasModel, String> {
     List<KelasModel> findByDays(JadwalAvail days);
     Optional<KelasModel> findById(Integer id);
+    List<KelasModel> findByName(String name);
 }
