@@ -12,42 +12,41 @@
         <div style="margin: auto; padding-top: 4px; width: 50%; padding: 0px; text-align: center">
             <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
             <h2 style="font-weight: bold; padding-top: 0px;" th:text="Kelas +' '+ ${kelas.name}"></h2>
-<!--            <h5 style="font-weight: bold; padding-top: 4px;" th:text="${kelas.name}"></h5>-->
-<!--            <p style="font-weight: normal; padding-top: 4px;" th:text="${tanggal}"></p>-->
-<!--            <p style="font-weight: normal; padding-top: 0px;" th:text="${tahunAjaran}"></p>-->
+            <h4 style="font-weight: normal; padding-top: 4px;" th:text="${hari}+', '+ ${tanggal}+' '+${bulan}+' '+ ${tahun}"></h4>
+            <h5 style="font-weight: normal; padding-top: 0px;" th:if="${tahunAjaran}" th:text="'Tahun ajaran ' + ${tahunAjaran}"></h5>
             <br>
         </div>
-        <form th:action="@{/presensi/read/}+ ${idJadwalKelas}" th:object="${jadwalKelasModel}" method="POST">
-            <table style="margin: 20px;" class="table table-striped" id="presensi-unfilled-table">
-                <thead style="background-color: #31318B; color: #ffffff">
-                <tr>
-                    <th scope="col">No</th>
-                    <th scope="col">Nama</th>
-                    <th scope="col">Status Presensi</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="presensi, iterationStatus : *{listPresensi}">
-                    <th scope="row" th:text="${iterationStatus.index + 1}"></th>
-                    <td th:text="${presensi.siswa.name}"></td>
-                    <td>
-                        <div class="col-4">
-                            <select name="status" th:field="*{listPresensi[__${iterationStatus.index}__].status}" class="form-select" required>
-                                <option hidden th:selected="${presensi.status}" th:text="${presensi.status.displayValue}" th:value="${presensi.status}"></option>
-                                <option class = "js-example-basic-single"
-                                        th:each="status : ${T(com.projectpop.quanta.presensi.model.PresensiStatus).values()}"
-                                        th:value="${status}"
-                                        th:text="${status.displayValue}">
-                                </option>
-                            </select>
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-update" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B" >Simpan Presensi</button>
-<!--            <button class="btn btn-primary" type="submit" name="save">Simpan Presensi</button>-->
-            <!-- Modal -->
+        <form style="justify-content: center" th:action="@{/presensi/read/}+ ${idJadwalKelas}" th:object="${jadwalKelasModel}" method="POST">
+            <fieldset class="align-content-center">
+                <table style="margin: 20px;" class="table table-striped" id="presensi-unfilled-table">
+                    <thead style="background-color: #31318B; color: #ffffff">
+                    <tr>
+                        <th scope="col">No</th>
+                        <th scope="col">Nama</th>
+                        <th scope="col">Status Presensi</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="presensi, iterationStatus : *{listPresensi}">
+                        <th scope="row" th:text="${iterationStatus.index + 1}"></th>
+                        <td th:text="${presensi.siswa.name} + ' - ' + ${presensi.siswa.email}"></td>
+                        <td>
+                            <div class="col-4">
+                                <select name="status" th:field="*{listPresensi[__${iterationStatus.index}__].status}" class="form-select" required style="width: max-content">
+                                    <option hidden th:selected="${presensi.status}" th:text="${presensi.status.displayValue}" th:value="${presensi.status}"></option>
+                                    <option class = "js-example-basic-single"
+                                            th:each="status : ${T(com.projectpop.quanta.presensi.model.PresensiStatus).values()}"
+                                            th:value="${status}"
+                                            th:text="${status.displayValue}">
+                                    </option>
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-update" style="display:block; width:100%; margin-top:40px; background-color: #31318B; border-color: #31318B" >Simpan Presensi</button>
+            </fieldset>
             <div class="modal fade" id="modal-update" tabindex="-1" role="dialog" aria-labelledby="popupLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">

@@ -5,13 +5,21 @@
   <object th:include="fragments/fragment :: css" th:remove="tag"></object>
   <object th:include="fragments/fragment :: js" th:remove="tag"></object>
 </head>
-<body>
+<body onload="myAlertTop()">
 <nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
+<div class="alert alert-danger alert-dismissible" role="alert" th:if="${error}" th:text="${error}">
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<div class="alert alert-success alert-dismissible" role="alert" th:if="${success}" th:text="${success}">
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 <div class="container" style="width:75%; padding-top:50px;">
   <div class="justify-content-center">
-    <div style="margin: auto; padding-top: 4px; width: 50%; padding: 0px; text-align: center">
+    <div style="margin: auto; padding-top: 4px; width: 100%; padding: 0px; text-align: center">
       <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
       <h2 style="font-weight: bold; padding-top: 0px;" th:text="Kelas +' '+ ${kelas.name}"></h2>
+      <h4 style="font-weight: normal; padding-top: 4px;" th:text="${hari}+', '+ ${tanggal}+' '+${bulan}+' '+ ${tahun}"></h4>
+      <h5 style="font-weight: normal; padding-top: 0px;" th:if="${tahunAjaran}" th:text="'Tahun ajaran ' + ${tahunAjaran}"></h5>
       <br>
       <table style="margin: 20px;" class="table table-striped" id="presensi-filled-table">
         <thead style="background-color: #31318B; color: #ffffff">
@@ -21,10 +29,10 @@
           <th scope="col">Status Presensi</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody style="text-align: left">
         <tr th:each="presensi, iterationStatus : ${presensiModelList}">
           <th scope="row" th:text="${iterationStatus.index + 1}"></th>
-          <td th:text="${presensi.siswa.name}"></td>
+          <td th:text="${presensi.siswa.name} + ' - ' + ${presensi.siswa.email}"></td>
           <td th:text="${presensi.status}"></td>
         </tr>
         </tbody>
@@ -37,6 +45,11 @@
 <script>
   $(document).ready(() => {
     $('#presensi-filled-table').DataTable();
+    window.setTimeout(function() {
+      $(".alert").fadeTo(500, 0).slideUp(1000, function(){
+        $(this).remove();
+      });
+    }, 2000);
   });
 </script>
 </body>
