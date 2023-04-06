@@ -1,7 +1,6 @@
 package com.projectpop.quanta.siswakelas.model;
 
 import com.projectpop.quanta.kelas.model.KelasModel;
-import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
 import com.projectpop.quanta.siswa.model.SiswaModel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,11 +18,11 @@ public class SiswaKelasModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name= "siswa_id")
     private SiswaModel siswa;
 
-    @ManyToOne
-    @JoinColumn(name= "kelas_id")
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name= "kelas_id", referencedColumnName = "id")
     private KelasModel kelasSiswa;
 }

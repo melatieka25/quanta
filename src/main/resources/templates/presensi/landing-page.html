@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <title>List Presensi Jadwal Kelas</title>
+    <object th:include="fragments/fragment :: css" th:remove="tag"></object>
+    <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+</head>
+<body>
+<nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
+<div class="container" style="width:75%; padding-top:50px;">
+    <div class="justify-content-center">
+        <div sec:authorize="hasRole('PENGAJAR')">
+            <div style="margin: auto; padding-top: 10px; width: 80%; padding: 20px; text-align: center">
+                <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
+                <h2 style="font-weight: bold; padding-top: 10px;" >Daftar Kelas yang Diajarkan Hari Ini</h2>
+                <h4 style="font-weight: normal; padding-top: 4px;" th:text="${hari}+', '+ ${tanggal}+' '+${bulan}+' '+ ${tahun}"></h4>
+                <h5 style="font-weight: normal; padding-top: 0px;" th:text="'Tahun ajaran ' + ${tahunAjaran}"></h5>
+                <br>
+            </div>
+            <table style="margin: 20px;" class="table table-striped" id="jadwal-table">
+                <thead style="background-color: #31318B; color: #ffffff">
+                <tr>
+                    <th scope="col">No</th>
+                    <th scope="col">Mata Pelajaran</th>
+                    <th scope="col">Kelas</th>
+                    <th scope="col">Ruang</th>
+                    <th scope="col">Jam Mengajar</th>
+                    <th scope="col">Lihat Daftar Presensi</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="jadwalKelas, iterationStatus : ${jadwalKelasHariIniMap}">
+                    <th scope="row" th:text="${iterationStatus.index + 1}"></th>
+                    <td th:text="${jadwalKelas.getKey().mapelJadwal.name}"></td>
+                    <td th:text="${jadwalKelas.getKey().kelas.name}"></td>
+                    <td th:text="${jadwalKelas.getKey().ruangKelas}"></td>
+                    <td th:text="${jadwalKelas.getValue()}"></td>
+                    <td class="align-content-center">
+                        <div th:if="${jadwalKelas.getKey().isiPresensi}">
+                            <a th:href="@{/presensi/} + ${jadwalKelas.getKey().id}" type="button" class="btn btn-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B">
+                                Isi Presensi </a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <br>
+        <div sec:authorize="hasAnyRole('PENGAJAR','ADMIN')">
+            <div style="margin: auto; padding-top: 10px; width: 80%; padding: 20px; text-align: center">
+                <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
+                <h2 style="font-weight: bold; padding-top: 10px;" >Daftar Presensi Kelas Sebelumnya</h2>
+                <br>
+            </div>
+            <table style="margin: 20px;" class="table table-striped" id="jadwal-table-sebelumnya">
+                <thead style="background-color: #31318B; color: #ffffff">
+                <tr>
+                    <th scope="col">No</th>
+                    <th scope="col">Mata Pelajaran</th>
+                    <th scope="col">Pengajar</th>
+                    <th scope="col">Kelas</th>
+                    <th scope="col">Ruang</th>
+                    <th scope="col">Tanggal Mengajar</th>
+                    <th scope="col">Jam Mengajar</th>
+                    <th scope="col">Lihat Daftar Presensi</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="jadwalKelas, iterationStatus : ${allJadwalKelasMap}">
+                    <th scope="row" th:text="${iterationStatus.index + 1}"></th>
+                    <td th:text="${jadwalKelas.getKey().mapelJadwal.name}"></td>
+                    <td th:text="${jadwalKelas.getKey().pengajarKelas.name}"></td>
+                    <td th:text="${jadwalKelas.getKey().kelas.name}"></td>
+                    <td th:text="${jadwalKelas.getKey().ruangKelas}"></td>
+                    <td th:text="${jadwalKelas.getValue()[1]}"></td>
+                    <td th:text="${jadwalKelas.getValue()[0]}"></td>
+                    <td class="align-content-center">
+                        <div sec:authorize="hasRole('PENGAJAR')">
+                            <div th:if="${jadwalKelas.getKey().isiPresensi}">
+                                <a th:href="@{/presensi/} + ${jadwalKelas.getKey().id}" type="button" class="btn btn-primary" style="display:block; width:75%; background-color: #31318B; border-color: #31318B">
+                                    Isi Presensi </a>
+                            </div>
+                            <div th:unless="${jadwalKelas.getKey().isiPresensi}">
+                                <a th:href="@{/presensi/read/} + ${jadwalKelas.getKey().id}" type="button" class="btn btn-outline-secondary" style="display:block; width:75%;  background-color: #E3EEFD; border-color: #82B0D9; color: #31318B">
+                                    Lihat Presensi </a>
+                            </div>
+                        </div>
+                        <div sec:authorize="hasRole('ADMIN')">
+                            <div th:unless="${jadwalKelas.getKey().isiPresensi}">
+                                <a th:href="@{/presensi/read/} + ${jadwalKelas.getKey().id}" type="button" class="btn btn-outline-secondary" style="display:block; width:75%;  background-color: #E3EEFD; border-color: #82B0D9; color: #31318B">
+                                    Lihat Presensi </a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <br>
+    </div>
+</div>
+<script>
+    $(document).ready(() => {
+        $('#jadwal-table').DataTable();
+    });
+    $(document).ready(() => {
+        $('#jadwal-table-sebelumnya').DataTable();
+    });
+</script>
+</body>
+</html>

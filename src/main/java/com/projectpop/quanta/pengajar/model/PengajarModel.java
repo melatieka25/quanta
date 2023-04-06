@@ -1,5 +1,6 @@
 package com.projectpop.quanta.pengajar.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
@@ -9,6 +10,7 @@ import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -22,6 +24,7 @@ import java.util.List;
 @Table(name = "pengajar")
 @PrimaryKeyJoinColumn(name = "user_id")
 public class PengajarModel extends UserModel {
+
     @NotNull
     @Column(name = "ktp", nullable = false)
     private Long ktp;
@@ -45,27 +48,32 @@ public class PengajarModel extends UserModel {
     private String jurusan;
 
     @NotNull
-    @Column(nullable = false)
-    private String position;
-
-    @NotNull
     @Column(name="start_date", nullable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
+    @JsonIgnore
     @NotNull
     @Column(name="is_kakak_asuh", nullable = false)
     private Boolean isKakakAsuh;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "pengajar", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<PengajarMapelModel> listPengajarMapel;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "kakakAsuh")
     private List<KelasModel> listKelasAsuh;
 
+    @JsonIgnore
     @OneToMany(mappedBy="pengajarKonsul")
     private List<KonsultasiModel> listKonsultasiPengajar;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "pengajarKelas")
     private List<JadwalKelasModel> listJadwalKelas;
+
+    private transient String listMapel;
+    private transient String kelasDiasuh;
+    private transient String passwordPertama;
 }
