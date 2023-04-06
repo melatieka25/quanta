@@ -217,13 +217,17 @@ public class KelasController {
 
     @PostMapping(value="edit", params = {"save"})
     public String updateKelasSubmitPage(@ModelAttribute KelasModel kelas, RedirectAttributes redirectAttrs) {
-        List<KelasModel> kelasCheck = kelasService.getKelasByName(kelas.getName());
-        if (kelasCheck != null){
-            for(KelasModel kelasItr : kelasCheck){
-                if (kelasItr.getTahunAjar().getId().equals(kelas.getTahunAjar().getId())){
-                    redirectAttrs.addFlashAttribute("error", "Kelas " + kelas.getName() + " sudah ada di database.");
-                    redirectAttrs.addFlashAttribute("errorBold", "Perubahan data gagal!");
-                    return "redirect:/kelas/detail/" + kelas.getId();
+        KelasModel kelasById = kelasService.getKelasById(kelas.getId());
+
+        if (!kelas.getName().equals(kelasById.getName())){
+            List<KelasModel> kelasCheck = kelasService.getKelasByName(kelas.getName());
+            if (kelasCheck != null){
+                for(KelasModel kelasItr : kelasCheck){
+                    if (kelasItr.getTahunAjar().getId().equals(kelas.getTahunAjar().getId())){
+                        redirectAttrs.addFlashAttribute("error", "Kelas " + kelas.getName() + " sudah ada di database.");
+                        redirectAttrs.addFlashAttribute("errorBold", "Perubahan data gagal!");
+                        return "redirect:/kelas/detail/" + kelas.getId();
+                    }
                 }
             }
         }
