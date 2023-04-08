@@ -2,25 +2,36 @@
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
     <title>Update Wali</title>
-    <object th:include="fragments/fragment :: css" th:remove="tag"></object>
-    <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <style>
-        body {
-            font-family: 'DM Sans';
-        }
-    </style>  
+      body {
+          font-family: 'DM Sans';
+      }
+
+      .alert {
+        position:fixed;
+        top: 7rem;
+        left: 5%;
+        width: 90%;
+        z-index:9999;
+    }
+  </style>  
 </head>
 <body>
 <nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
+<div class="alert alert-success alert-dismissible d-flex align-items-center" role="alert" th:if="${message}" >
+      <div class="d-flex align-items-center">
+          <p th:text="${message}" style="margin-bottom: 0px; margin-top: 0px;"></p>
+      </div>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 <div class="container" style="width:100%">
   <div style="margin: auto; width: 80%; text-align: center; padding-top: 20px">
     <h2 style="font-weight: bold; text-align:center; padding:20px">Ubah Data Wali</h2>
-    <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
-    <div class="alert alert-danger" role="alert" th:text="${errorMessage}" th:if="${errorMessage}"></div>
   </div>
     <div class="card mt-3" style="background-color:#F7FAFC">
     <div class="card-body">
@@ -210,6 +221,11 @@
 <script>
     $(document).ready(function() {
         $('.js-example-basic-single').select2();
+        window.setTimeout(function() {
+            $(".alert").fadeTo(500, 0).slideUp(1000, function(){
+                $(this).remove();
+            });
+        }, 4000);
     });
 </script>
 </body>
