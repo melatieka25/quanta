@@ -1,8 +1,9 @@
 package com.projectpop.quanta.kelas.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
-import com.projectpop.quanta.siswa.model.Jurusan;
+import com.projectpop.quanta.siswa.model.Jenjang;
 import com.projectpop.quanta.siswakelas.model.SiswaKelasModel;
 import com.projectpop.quanta.tahunajar.model.TahunAjarModel;
 import com.sun.istack.NotNull;
@@ -34,23 +35,27 @@ public class KelasModel implements Serializable {
     @NotNull
     @Column(nullable = false)
     @Enumerated(value=EnumType.STRING)
-    private Jurusan jurusan;
+    private Jenjang jenjang;
 
     @NotNull
     @Column(nullable = false)
     @Enumerated(value=EnumType.STRING)
     private JadwalAvail days;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name="kakak_asuh_id", nullable=false)
     private PengajarModel kakakAsuh;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "kelas")
     private List<JadwalKelasModel> listJadwalKelas;
 
-    @OneToMany(mappedBy = "kelasSiswa")
+    @JsonIgnore
+    @OneToMany(mappedBy = "kelasSiswa", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<SiswaKelasModel> listSiswaKelas;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name="tahun_ajar_id", nullable = false)
     private TahunAjarModel tahunAjar;

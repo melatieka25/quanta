@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <title>Daftar Jadwal Kelas</title>
+    <object th:include="fragments/fragment :: css" th:remove="tag"></object>
+    <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+    <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
+<body>
+<style>
+    body {
+        font-family: 'DM Sans';
+    }
+</style>
+<nav th:replace="fragments/fragment :: navbar('')"></nav>
+
+<div sec:authorize="hasRole('ADMIN')">
+<div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
+<div class="alert alert-danger" role="alert" th:text="${deletefailed}" th:if="${deletefailed}"></div>
+<div class="container" style="width:75%; padding-top:20px;">
+    <div class="justify-content-center">
+        <div style="margin: auto; padding-top: 10px; width: 80%; padding: 20px; text-align: center">
+            <h2 style="font-weight: bold; padding-top: 10px;" >Daftar Jadwal Kelas</h2>
+            <a class="btn" style="background-color: #31318B; color: white;" th:href="@{/jadwal-kelas/add}">Buat Jadwal</a>
+            <br>
+        </div>
+
+        <table style="margin: 20px;" class ="table table-striped" id="jadwalkelas-table">
+            <thead style="background-color: #31318B; color: #ffffff">
+            <tr>
+                <th scope="col">No</th>
+                <th scope="col">Mata Pelajaran</th>
+                <th scope="col">Pengajar</th>
+                <th scope="col">Kelas</th>
+                <th scope="col">Ruang Kelas</th>
+                <th scope="col">Tanggal Kelas</th>
+                <th scope="col">Waktu Kelas</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr th:each="jadwal, iterationStatus : ${listJadwal}">
+                    <th scope="row"></th>
+                    <td th:text="${jadwal.mapelJadwal.name}"></td>
+                    <td th:text="${jadwal.pengajarKelas.name}"></td>
+                    <td th:text="${jadwal.kelas.name}"></td>
+                    <td th:text="${jadwal.ruangKelas}"></td>
+                    <td th:text="${#temporals.format(jadwal.startDateClass, 'dd MMMM yyyy')}"></td>
+                    <td th:text="${#temporals.format(jadwal.startDateClass, 'HH:mm')} + ' - ' +${#temporals.format(jadwal.endDateClass, 'HH:mm')}"></td>
+
+                    <td>
+                        <div class="justify-content-center">
+                            <a class="btn btn-outline-primary align-content-center" th:href="@{/jadwal-kelas/} + ${jadwal.id}">Detail</a>               
+                        </div>
+                    </td>                 
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <div th:unless="${listJadwal.size() != 0}">
+            <p>Tidak ada jadwal kelas!</p>
+        </div>
+    </div>
+</div>
+
+</div>
+</div>
+
+
+<!-- <div class="container m-5">
+        <div class="card-body">
+            <div class="content-center">
+                <h2 style="font-weight: bolder;">Daftar Jadwal Kelas</h2>
+                <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
+                <div class="alert alert-danger" role="alert" th:text="${deletefailed}" th:if="${deletefailed}"></div>
+
+                <br>
+                <div class="col">
+                    <a class="btn" style="background-color: #31318B; color: white;" th:href="@{/jadwal-kelas/add}">Buat Jadwal</a>
+                </div>
+               
+                <br>
+                <div th:if="${listJadwal.size() != 0}">
+                <table class ="table table-striped" id="jadwalkelas-table">
+                    <thead style="background: #31318B; color: white;">
+                    <tr>
+                        <th>No</th>
+                        <th>Mata Pelajaran</th>
+                        <th>Pengajar</th>
+                        <th>Kelas</th>
+                        <th>Ruang Kelas</th>
+                        <th>Tanggal Kelas</th>
+                        <th>Waktu Kelas</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="jadwal, iterationStatus : ${listJadwal}">
+                            <td th:text="${iterationStatus.count}"></td>
+                            <td th:text="${jadwal.mapelJadwal.name}"></td>
+                            <td th:text="${jadwal.pengajarKelas.name}"></td>
+                            <td th:text="${jadwal.kelas.name}"></td>
+                            <td th:text="${jadwal.ruangKelas}"></td>
+                            <td th:text="${#temporals.format(jadwal.startDateClass, 'dd MMMM yyyy')}"></td>
+                            <td th:text="${#temporals.format(jadwal.startDateClass, 'HH:mm')} + ' - ' +${#temporals.format(jadwal.endDateClass, 'HH:mm')}"></td>
+
+                            <td>
+                                <div class="justify-content-center">
+                                    <a class="btn btn-outline-primary align-content-center" th:href="@{/jadwal-kelas/} + ${jadwal.id}">Detail</a>               
+                                </div>
+                            </td>
+
+            
+                           
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+                <div th:unless="${listJadwal.size() != 0}">
+                    <p>Tidak ada jadwal kelas!</p>
+                </div>
+                <br>
+            </div>
+    </div>
+</div> -->
+
+
+ 
+</body>
+
+<script>
+    $(document).ready(() => {
+        var t = $('#jadwalkelas-table').DataTable({
+            columnDefs: [
+                {
+                    searchable: false,
+                    orderable: false,
+                    targets: 0,
+                },
+            ],
+            order: [1, 'asc'],
+        });
+     
+        t.on('order.dt search.dt', function () {
+            let i = 1;
+     
+            t.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {
+                this.data(i++);
+            });
+        }).draw();
+
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+</html>
