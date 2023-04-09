@@ -10,7 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.user.service.UserService;
 
@@ -23,6 +22,7 @@ public class PageController {
     @Qualifier("userServiceImpl")
     @Autowired
     private UserService userService;
+
     
     @RequestMapping("/")
 

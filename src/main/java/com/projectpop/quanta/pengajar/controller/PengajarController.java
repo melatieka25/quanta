@@ -167,8 +167,7 @@ public class PengajarController {
         oldPengajar.setGender(pengajar.getGender());
         oldPengajar.setReligion(pengajar.getReligion());
         PengajarModel updatedPengajar = pengajarService.updatePengajar(oldPengajar);
-        redirectAttrs.addFlashAttribute("message", "Pengajar dengan email " + updatedPengajar.getEmail() + " telah berhasil diubah datanya!");
-        return "redirect:/pengajar/detail/" + updatedPengajar.getId();
+
     }
 
 }
