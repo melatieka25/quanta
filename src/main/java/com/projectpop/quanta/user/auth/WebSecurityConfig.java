@@ -40,6 +40,7 @@ public class WebSecurityConfig {
                 .and()
                 .formLogin()
                 .loginPage("/login")
+                .defaultSuccessUrl("/?loginSuccess")
 				.usernameParameter("email")
 				.permitAll()
                 .and()
