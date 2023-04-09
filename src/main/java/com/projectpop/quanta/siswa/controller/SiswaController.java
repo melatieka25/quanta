@@ -60,7 +60,7 @@ public class SiswaController {
             siswa.setPasswordPertama(password);
             siswa.setIsActive(true);
             siswa.setIsPassUpdated(false);
-            redirectAttrs.addFlashAttribute("message", "Siswa dengan email " + siswa.getEmail() + " dan password " + siswa.getPasswordPertama() + " telah berhasil ditambahkan!");
+            redirectAttrs.addFlashAttribute("message", "Siswa dengan nama " + siswa.getNameEmail() + " dan password " + siswa.getPasswordPertama() + " telah berhasil ditambahkan!");
             if (statusWali.equals("sudah_terdaftar")){
                 OrtuModel ortuSiswa = ortuService.getOrtuById(siswa.getOrtuId());
                 siswa.setOrtu(ortuSiswa);
@@ -96,7 +96,7 @@ public class SiswaController {
 
                 siswaService.addSiswa(siswa);
                 
-                redirectAttrs.addFlashAttribute("message", "Siswa dengan email " + siswa.getEmail() + " dan password " + siswa.getPasswordPertama() + " serta wali dengan email " + ortu.getEmail() + " dan password " + ortu.getPasswordPertama() + " telah berhasil ditambahkan!");
+                redirectAttrs.addFlashAttribute("message", "Siswa dengan nama " + siswa.getNameEmail() + " dan password " + siswa.getPasswordPertama() + " serta wali dengan nama " + ortu.getNameEmail() + " dan password " + ortu.getPasswordPertama() + " telah berhasil ditambahkan!");
                 return "redirect:/siswa/detail/" + siswa.getId();
                 
             }
@@ -121,13 +121,18 @@ public class SiswaController {
     @GetMapping("/detail/{id}")
     public String detailSiswa(@PathVariable int id, Model model, RedirectAttributes redirectAttrs) {
         SiswaModel siswa = siswaService.getSiswaById(id);
-        String timePattern = "EEE, dd-MMM-yyyy";
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(timePattern);
-        String dateOfBirth = siswa.getDob().format(dateTimeFormatter);
-        siswa.setKelasBimbel(siswaService.getKelasBimbel(siswa));
-        model.addAttribute("siswa", siswa);
-        model.addAttribute("dateOfBirth", dateOfBirth);
-        return "manajemen-user/detail-siswa";
+        if (siswa != null){
+             String timePattern = "EEE, dd-MMM-yyyy";
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(timePattern);
+            String dateOfBirth = siswa.getDob().format(dateTimeFormatter);
+            siswa.setKelasBimbel(siswaService.getKelasBimbel(siswa));
+            model.addAttribute("siswa", siswa);
+            model.addAttribute("dateOfBirth", dateOfBirth);
+            return "manajemen-user/detail-siswa";
+        } else {
+            redirectAttrs.addFlashAttribute("errorMessage", "Siswa dengan id " + id + " tidak ditemukan. Gagal melihat detail siswa");
+            return "redirect:/siswa";
+        }
     }
 
     @GetMapping("{id}/inactive")
@@ -143,14 +148,14 @@ public class SiswaController {
 
             if (siswa.getKelasBimbel() == null && jumlahKonsultasiAktif == 0){
                 SiswaModel inactivatedSiswa = siswaService.inactiveSiswa(siswa);
-                redirectAttrs.addFlashAttribute("message", "Siswa dengan nama " + inactivatedSiswa.getName() + " berhasil di-nonaktifkan.");
+                redirectAttrs.addFlashAttribute("message", "Siswa dengan nama " + inactivatedSiswa.getNameEmail() + " berhasil di-nonaktifkan.");
             } else {
                 if(siswa.getKelasBimbel() != null){
-                    redirectAttrs.addFlashAttribute("errorMessage", "Siswa dengan nama " + siswa.getName() + " terdaftar pada kelas " + siswa.getKelasBimbel().getName() + ". Gagal menonaktifkan siswa.");
+                    redirectAttrs.addFlashAttribute("errorMessage", "Siswa dengan nama " + siswa.getNameEmail() + " terdaftar pada kelas " + siswa.getKelasBimbel().getName() + ". Gagal menonaktifkan siswa.");
                 } else if (jumlahKonsultasiAktif > 0){
-                redirectAttrs.addFlashAttribute("errorMessage", "Siswa dengan nama " + siswa.getName() + " memiliki jadwal konsultasi yang aktif. Gagal menonaktifkan siswa.");
+                redirectAttrs.addFlashAttribute("errorMessage", "Siswa dengan nama " + siswa.getNameEmail() + " memiliki jadwal konsultasi yang aktif. Gagal menonaktifkan siswa.");
                 } else {
-                    redirectAttrs.addFlashAttribute("errorMessage", "Siswa dengan nama " + siswa.getName() + " tidak dapat dinonaktifkan saat ini. Tunggu beberapa saat dan coba lagi.");
+                    redirectAttrs.addFlashAttribute("errorMessage", "Siswa dengan nama " + siswa.getNameEmail() + " tidak dapat dinonaktifkan saat ini. Tunggu beberapa saat dan coba lagi.");
                 }
             }
         } else {
@@ -170,7 +175,7 @@ public class SiswaController {
         if (siswa != null){
             model.addAttribute("siswa", siswa);
             SiswaModel activatedSiswa = siswaService.activeSiswa(siswa);
-                redirectAttrs.addFlashAttribute("message", "Siswa dengan nama " + activatedSiswa.getName() + " berhasil diaktifkan kembali.");
+                redirectAttrs.addFlashAttribute("message", "Siswa dengan nama " + activatedSiswa.getNameEmail() + " berhasil diaktifkan kembali.");
         } else {
             redirectAttrs.addFlashAttribute("errorMessage", "Siswa dengan id " + id + " tidak ditemukan. Gagal mengaktifkan siswa.");
             return "redirect:/siswa";
@@ -207,7 +212,7 @@ public class SiswaController {
         oldSiswa.setGender(siswa.getGender());
         oldSiswa.setReligion(siswa.getReligion());
         SiswaModel updatedSiswa = siswaService.updateSiswa(oldSiswa);
-        redirectAttrs.addFlashAttribute("message", "Siswa dengan email " + updatedSiswa.getEmail() + " telah berhasil diubah datanya!");
+        redirectAttrs.addFlashAttribute("message", "Siswa dengan nama " + updatedSiswa.getNameEmail() + " telah berhasil diubah datanya!");
         return "redirect:/siswa/detail/" + updatedSiswa.getId();
     }
 
