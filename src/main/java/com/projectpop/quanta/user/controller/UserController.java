@@ -21,8 +21,6 @@ import com.projectpop.quanta.siswa.service.SiswaService;
 import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.user.service.UserService;
-import com.projectpop.quanta.user.auth.PasswordManager;
-import com.projectpop.quanta.user.model.UpdatePasswordModel;
 
 @Controller
 public class UserController {
