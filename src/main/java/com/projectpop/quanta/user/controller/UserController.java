@@ -99,6 +99,7 @@ public class UserController {
             if (updatePassword.getPasswordBaru().equals(updatePassword.getKonfirmasiPasswordBaru())){
                 if (PasswordManager.validationChecker(updatePassword.getPasswordBaru())){
                     user.setPassword(bcrypt.encode(updatePassword.getPasswordBaru()));
+                    user.setIsPassUpdated(true);
                     userService.updateUser(user);
                     redirectAttrs.addFlashAttribute("message", "Password untuk akunmu berhasil diubah!");
                     return "redirect:/profil";
