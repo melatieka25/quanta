@@ -86,4 +86,8 @@ public class UserModel implements Serializable {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<PesanModel> listPesan;
+
+    public String getNameEmail() {
+        return this.name + " (" + this.email + ") ";
+    }
 }
