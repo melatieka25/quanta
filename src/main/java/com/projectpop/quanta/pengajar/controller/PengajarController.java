@@ -52,7 +52,7 @@ public class PengajarController {
             pengajar.setIsKakakAsuh(false);
             pengajar.setStartDate(LocalDate.now());
             pengajarService.addPengajar(pengajar);
-            redirectAttrs.addFlashAttribute("message", "Pengajar dengan email " + pengajar.getEmail() + " dan password " + pengajar.getPasswordPertama() + " telah berhasil ditambahkan!");
+            redirectAttrs.addFlashAttribute("message", "Pengajar dengan nama " + pengajar.getNameEmail() + " dan password " + pengajar.getPasswordPertama() + " telah berhasil ditambahkan!");
             return "redirect:/pengajar/detail/" + pengajar.getId();
         } else {
             redirectAttrs.addFlashAttribute("errorMessage", "User dengan email " + pengajar.getEmail() + " sudah pernah ditambahkan sebelumnya. Coba lagi dengan email lain!");
@@ -73,16 +73,21 @@ public class PengajarController {
     @GetMapping("/detail/{id}")
     public String detailPengajar(@PathVariable int id, Model model, RedirectAttributes redirectAttrs) {
         PengajarModel pengajar = pengajarService.getPengajarById(id);
-        String timePattern = "EEE, dd-MMM-yyyy";
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(timePattern);
-        String dateOfBirth = pengajar.getDob().format(dateTimeFormatter);
-        String startDate = pengajar.getStartDate().format(dateTimeFormatter);
-        pengajar.setListMapel(pengajarService.getPengajarMapel(pengajar));
-        pengajar.setKelasDiasuh(pengajarService.getKelasAsuh(pengajar));
-        model.addAttribute("pengajar", pengajar);
-        model.addAttribute("dateOfBirth", dateOfBirth);
-        model.addAttribute("startDate", startDate);
-        return "manajemen-user/detail-pengajar2";
+        if (pengajar != null){
+            String timePattern = "EEE, dd-MMM-yyyy";
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(timePattern);
+            String dateOfBirth = pengajar.getDob().format(dateTimeFormatter);
+            String startDate = pengajar.getStartDate().format(dateTimeFormatter);
+            pengajar.setListMapel(pengajarService.getPengajarMapel(pengajar));
+            pengajar.setKelasDiasuh(pengajarService.getKelasAsuh(pengajar));
+            model.addAttribute("pengajar", pengajar);
+            model.addAttribute("dateOfBirth", dateOfBirth);
+            model.addAttribute("startDate", startDate);
+            return "manajemen-user/detail-pengajar2";
+        } else {
+            redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan id " + id + " tidak ditemukan. Gagal melihat detail pengajar");
+            return "redirect:/pengajar";
+        }
     }
 
     @GetMapping("{id}/inactive")
@@ -99,16 +104,16 @@ public class PengajarController {
 
             if (pengajar.getKelasDiasuh().equals("-") && jumlahKelasAktif == 0 && jumlahKonsultasiAktif == 0){
                 PengajarModel inactivatedPengajar = pengajarService.inactivePengajar(pengajar);
-                redirectAttrs.addFlashAttribute("message", "Pengajar dengan nama " + inactivatedPengajar.getName() + " berhasil di-nonaktifkan.");
+                redirectAttrs.addFlashAttribute("message", "Pengajar dengan nama " + inactivatedPengajar.getNameEmail() + " berhasil di-nonaktifkan.");
             } else {
                 if (!pengajar.getKelasDiasuh().equals("-")){
-                    redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan nama " + pengajar.getName() + " merupakan kakak asuh. Gagal menonaktifkan pengajar.");
+                    redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan nama " + pengajar.getNameEmail() + " merupakan kakak asuh. Gagal menonaktifkan pengajar.");
                 } else if (jumlahKelasAktif > 0){
-                    redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan nama " + pengajar.getName() + " memiliki jadwal kelas yang aktif. Gagal menonaktifkan pengajar.");
+                    redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan nama " + pengajar.getNameEmail() + " memiliki jadwal kelas yang aktif. Gagal menonaktifkan pengajar.");
                 } else if (jumlahKonsultasiAktif > 0){
-                    redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan nama " + pengajar.getName() + " memiliki jadwal konsultasi yang aktif. Gagal menonaktifkan pengajar.");
+                    redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan nama " + pengajar.getNameEmail() + " memiliki jadwal konsultasi yang aktif. Gagal menonaktifkan pengajar.");
                 } else {
-                    redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan nama " + pengajar.getName() + " tidak dapat dinonaktifkan saat ini. Tunggu beberapa saat dan coba lagi.");
+                    redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan nama " + pengajar.getNameEmail() + " tidak dapat dinonaktifkan saat ini. Tunggu beberapa saat dan coba lagi.");
                 }
             }
         } else {
@@ -128,7 +133,7 @@ public class PengajarController {
         if (pengajar != null){
             model.addAttribute("pengajar", pengajar);
             PengajarModel activatedPengajar = pengajarService.activePengajar(pengajar);
-                redirectAttrs.addFlashAttribute("message", "Pengajar dengan nama " + activatedPengajar.getName() + " berhasil diaktifkan kembali.");
+                redirectAttrs.addFlashAttribute("message", "Pengajar dengan nama " + activatedPengajar.getNameEmail() + " berhasil diaktifkan kembali.");
         } else {
             redirectAttrs.addFlashAttribute("errorMessage", "Pengajar dengan id " + id + " tidak ditemukan. Gagal mengaktifkan pengajar.");
             return "redirect:/pengajar";
@@ -167,7 +172,7 @@ public class PengajarController {
         oldPengajar.setGender(pengajar.getGender());
         oldPengajar.setReligion(pengajar.getReligion());
         PengajarModel updatedPengajar = pengajarService.updatePengajar(oldPengajar);
-        redirectAttrs.addFlashAttribute("message", "Pengajar dengan email " + updatedPengajar.getEmail() + " telah berhasil diubah datanya!");
+        redirectAttrs.addFlashAttribute("message", "Pengajar dengan nama " + updatedPengajar.getNameEmail() + " telah berhasil diubah datanya!");
         return "redirect:/pengajar/detail/" + updatedPengajar.getId();
     }
 
