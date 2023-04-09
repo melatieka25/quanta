@@ -112,8 +112,8 @@
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink profilePengguna">
-                    <li><a class="dropdown-item invisible" hidden th:href="@{/}">Informasi Profil</a></li>
-                    <li><a class="nav-item nav-link text-danger" th:if="${onevar != 'logged-out'}" th:href="@{/logout}">Logout</a></li>
+                    <li><a class="dropdown-item" th:href="@{/profil}">Informasi Profil</a></li>
+                    <li><a class="dropdown-item text-danger" th:if="${onevar != 'logged-out'}" th:href="@{/logout}">Logout</a></li>
                 </ul>
             </li>
         </ul>
