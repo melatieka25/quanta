@@ -6,8 +6,5 @@ public interface UserService {
 
     UserModel getUserByEmail(String email);
     UserModel getUserById(Integer id);
-//
-//    UserModel addUser(UserModel user);
-//
-//    String encrypt(String password);
+    UserModel updateUser(UserModel user);
 }
