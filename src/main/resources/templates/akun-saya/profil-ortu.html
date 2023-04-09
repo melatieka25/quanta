@@ -1,43 +1,22 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
-    <title>Detail Pengajar</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <title>Profil Saya</title>
+    <object th:include="fragments/fragment :: css" th:remove="tag"></object>
+    <object th:include="fragments/fragment :: js" th:remove="tag"></object>
     <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
     <style>
       body {
           font-family: 'DM Sans';
       }
-
-      .alert {
-        position:fixed;
-        top: 7rem;
-        left: 5%;
-        width: 90%;
-        z-index:9999;
-    }
   </style>  
 </head>
 <body>
   <nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
-  <div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${errorMessage}" >
-    <div class="d-flex align-items-center">
-        <p th:text="${errorMessage}" style="margin-bottom: 0px; margin-top: 0px;"></p>
-    </div>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <div class="alert alert-success alert-dismissible d-flex align-items-center" role="alert" th:if="${message}" >
-      <div class="d-flex align-items-center">
-          <p th:text="${message}" style="margin-bottom: 0px; margin-top: 0px;"></p>
-      </div>
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <a class="btn btn-link" style="color: #31318B" href="/pengajar"><- List Pengajar</a>
-<div class="container">
-    <h2 style="font-weight: bold; text-align:center; padding:20px">Detail Pengajar</h2>
+  <div class="container">
+    <h2 style="font-weight: bold; text-align:center; padding:20px">Profil Saya</h2>
+    <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
+    <div class="alert alert-danger" role="alert" th:text="${errorMessage}" th:if="${errorMessage}"></div>
     <div class="container" style="width:100%;">
     <div class="card mt-3" style="background-color:#F7FAFC">
       <div class="card-body">
@@ -56,13 +35,13 @@
               <p style="font-weight: bold; color: #31318B">Nama Lengkap</p>
             </div>
             <div class="col-4">
-              <p th:text="${pengajar.name}"></p>
+              <p th:text="${ortu.name}"></p>
             </div>
             <div class="col">
-              <p style="font-weight: bold; color: #31318B">No. KTP</p>
+              <p style="font-weight: bold; color: #31318B">Pekerjaan</p>
             </div>
             <div class="col-4">
-              <p th:text="${pengajar.ktp}"></p>
+              <p th:text="${ortu.job}"></p>
             </div>
           </div>
           <div class="row">
@@ -70,13 +49,13 @@
               <p style="font-weight: bold; color: #31318B">Nama Panggilan</p>
             </div>
             <div class="col-4">
-              <p th:text="${pengajar.nickname}"></p>
+              <p th:text="${ortu.nickname}"></p>
             </div>
             <div class="col">
-              <p style="font-weight: bold; color: #31318B">Status Pernikahan</p>
+              <p style="font-weight: bold; color: #31318B">Kantor</p>
             </div>
             <div class="col-4">
-              <p th:text="${pengajar.status.displayValue}"></p>
+              <p th:text="${ortu.kantor}"></p>
             </div>
           </div>
           <div class="row">
@@ -84,13 +63,13 @@
               <p style="font-weight: bold; color: #31318B">Email</p>
             </div>
             <div class="col-4">
-              <p th:text="${pengajar.email}"></p>
+              <p th:text="${ortu.email}"></p>
             </div>
             <div class="col">
-              <p style="font-weight: bold; color: #31318B">Pendidikan Terakhir</p>
+              <p style="font-weight: bold; color: #31318B">Nama Anak</p>
             </div>
             <div class="col-4">
-              <p th:text="${pengajar.lastEdu.displayValue}"></p>
+              <p th:text="${ortu.anakAktif}"></p>
             </div>
           </div>
           <div class="row">
@@ -98,13 +77,13 @@
               <p style="font-weight: bold; color: #31318B">Alamat</p>
             </div>
             <div class="col-4">
-              <p th:text="${pengajar.address}"></p>
+              <p th:text="${ortu.address}"></p>
             </div>
             <div class="col">
-              <p style="font-weight: bold; color: #31318B">Perguruan Tinggi</p>
+              <p></p>
             </div>
             <div class="col-4">
-              <p th:text="${pengajar.university}"></p>
+              <p></p>
             </div>
           </div>
           <div class="row">
@@ -112,13 +91,13 @@
               <p style="font-weight: bold; color: #31318B">No. Telp</p>
             </div>
             <div class="col-4">
-              <p th:text="'(+62)' + ${pengajar.phone_num}"></p>
+              <p th:text="'(+62)' + ${ortu.phone_num}"></p>
             </div>
             <div class="col">
-              <p style="font-weight: bold; color: #31318B">Jurusan</p>
+              <p></p>
             </div>
             <div class="col-4">
-              <p th:text="${pengajar.jurusan}"></p>
+              <p></p>
             </div>
           </div>
           <div class="row">
@@ -126,14 +105,13 @@
               <p style="font-weight: bold; color: #31318B">Tempat Lahir</p>
             </div>
             <div class="col-4">
-              <p th:text="${pengajar.pob}"></p>
+              <p th:text="${ortu.pob}"></p>
             </div>
             <div class="col">
-              <p style="font-weight: bold; color: #31318B">Kelas Diasuh</p>
+              <p></p>
             </div>
             <div class="col-4">
-              <p th:if="${pengajar.listKelasAsuh.size() != 0}" th:text="${pengajar.kelasDiasuh}"></p>
-              <p th:if="${pengajar.listKelasAsuh.size() == 0}">-</p>
+              <p></p>
             </div>
           </div>
           <div class="row">
@@ -144,10 +122,10 @@
               <p th:text="${dateOfBirth}"></p>
             </div>
             <div class="col">
-              <p style="font-weight: bold; color: #31318B">Mata Pelajaran Diajar</p>
+              <p></p>
             </div>
             <div class="col-4">
-              <p th:text="${pengajar.listMapel}"></p>
+              <p></p>
             </div>
           </div>
           <div class="row">
@@ -155,13 +133,13 @@
               <p style="font-weight: bold; color: #31318B">Jenis Kelamin</p>
             </div>
             <div class="col-4">
-              <p th:text="${pengajar.gender.displayValue}"></p>
+              <p th:text="${ortu.gender.displayValue}"></p>
             </div>
             <div class="col">
-              <p style="font-weight: bold; color: #31318B">Tanggal Mulai</p>
+              <p></p>
             </div>
             <div class="col-4">
-              <p th:text="${startDate}"></p>
+              <p></p>
             </div>
           </div>
           <div class="row">
@@ -169,7 +147,7 @@
               <p style="font-weight: bold; color: #31318B">Agama</p>
             </div>
             <div class="col-4">
-              <p th:text="${pengajar.religion.displayValue}"></p>
+              <p th:text="${ortu.religion.displayValue}"></p>
             </div>
             <div class="col">
               <p></p>
@@ -183,19 +161,10 @@
               <p></p>
             </div>
             <div class="col-4">
-              <p th:if="${pengajar.isActive}">
-                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-nonaktif" style="display:block; width:100%; margin-top:20px;">
-                    Non-Aktifkan
-                </button>
-              </p>
-              <p th:if="${!pengajar.isActive}">
-                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-aktif" style="display:block; width:100%; margin-top:20px;">
-                    Aktifkan
-                </button>
-              </p>
+              <a class="btn btn-outline-primary" href="https://wa.link/ch2g9f" style="display:block; width:100%; margin-top:20px;" >Hubungi Admin</a>
             </div>
             <div class="col-4">
-              <a class="btn btn-primary" th:href="@{/pengajar/} + ${pengajar.id}+ @{/update}" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B">Ubah Data Pengajar</a>
+              <a class="btn btn-primary" th:href="@{/update-password}" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B">Ubah Password</a>
             </div>
             <div class="col">
               <p></p>
@@ -211,25 +180,23 @@
     <div class="modal-dialog" role="document">
     <div class="modal-content">
         <div class="modal-header">
-        <h5 class="modal-title" id="popupLabel"><strong>Konfirmasi Nonaktifkan Pengajar</strong></h5>
+        <h5 class="modal-title" id="popupLabel"><strong>Konfirmasi Nonaktifkan Wali</strong></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
         </div>
         <div class="modal-body">
-            Apakah Anda Yakin ingin menonaktifkan pengajar? </br> </br>  Berikut merupakan syarat agar pengajar dapat dinonaktifkan:
+            Apakah Anda Yakin ingin menonaktifkan ortu? </br> </br>  Berikut merupakan syarat agar ortu dapat dinonaktifkan:
             <ul>
-              <li>Pengajar tidak terdaftar sebagai kakak asuh </li>
-              <li>Pengajar tidak memiliki jadwal mengajar kelas wajib </li> 
-              <li>Pengajar tidak memiliki konsultasi yang aktif</li>
+              <li>Wali tidak memiliki anak dengan status aktif</li>
             </ul>
         </div>
         <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-        <a type="button" class="btn btn-primary btn-danger" th:href="@{/pengajar/} + ${pengajar.id} + @{/inactive}">Nonaktifkan</a>
+        <a type="button" class="btn btn-primary btn-danger" th:href="@{/ortu/} + ${ortu.id} + @{/} + ${siswaId} + @{/inactive}">Nonaktifkan</a>
         </div>
     </div>
-  </div>
+    </div>
 </div>
 
 <!-- Modal -->
@@ -237,17 +204,17 @@
   <div class="modal-dialog" role="document">
   <div class="modal-content">
       <div class="modal-header">
-      <h5 class="modal-title" id="popupLabel"><strong>Konfirmasi Aktifkan Pengajar</strong></h5>
+      <h5 class="modal-title" id="popupLabel"><strong>Konfirmasi Aktifkan Wali</strong></h5>
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
       </button>
       </div>
       <div class="modal-body">
-          Apakah Anda Yakin ingin mengaktifkan kembali pengajar? </br> </br>  Pengajar yang sudah diaktifkan dapat masuk kembali ke sistem QUANTA menggunakan email dan passwordnya.
+          Apakah Anda Yakin ingin mengaktifkan kembali ortu? </br> </br>  Wali yang sudah diaktifkan dapat masuk kembali ke sistem QUANTA menggunakan email dan passwordnya.
       </div>
       <div class="modal-footer">
       <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-      <a type="button" class="btn btn-primary btn-warning" th:href="@{/pengajar/} + ${pengajar.id} + @{/active}">Aktifkan</a>
+      <a type="button" class="btn btn-primary btn-warning" th:href="@{/ortu/} + ${ortu.id} + @{/} + ${siswaId} + @{/active}">Aktifkan</a>
       </div>
   </div>
   </div>
@@ -255,16 +222,4 @@
 
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
-<script type="text/javascript">
-
-    $(document).ready( () => {
-        window.setTimeout(function() {
-            $(".alert").fadeTo(500, 0).slideUp(1000, function(){
-                $(this).remove();
-            });
-        }, 4000);
-
-    });
-
-</script>
 </html>
