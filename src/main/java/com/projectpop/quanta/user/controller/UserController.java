@@ -18,6 +18,8 @@ import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.service.PengajarService;
 import com.projectpop.quanta.siswa.model.SiswaModel;
 import com.projectpop.quanta.siswa.service.SiswaService;
+import com.projectpop.quanta.user.auth.PasswordManager;
+import com.projectpop.quanta.user.model.UpdatePasswordModel;
 import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.user.service.UserService;
@@ -70,5 +72,40 @@ public class UserController {
             return "home";
         }
         
+    }
+
+    
+    @GetMapping("/update-password")
+    public String updateUserPasswordFormPage(Model model){
+        UpdatePasswordModel updatePassword = new UpdatePasswordModel();
+        model.addAttribute("updatePassword", updatePassword);
+        return "akun-saya/form-update-password";
+    }
+
+
+    @PostMapping("/update-password")
+    public String updateUserSubmitPage(@ModelAttribute UpdatePasswordModel updatePassword, Principal principal, Model model, RedirectAttributes redirectAttrs) {
+        BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
+        UserModel user = userService.getUserByEmail(principal.getName());
+        if (bcrypt.matches(updatePassword.getPasswordLama(), user.getPassword())) {
+            if (updatePassword.getPasswordBaru().equals(updatePassword.getKonfirmasiPasswordBaru())){
+                if (PasswordManager.validationChecker(updatePassword.getPasswordBaru())){
+                    user.setPassword(bcrypt.encode(updatePassword.getPasswordBaru()));
+                    userService.updateUser(user);
+                    redirectAttrs.addFlashAttribute("message", "Password untuk akunmu berhasil diubah!");
+                    return "redirect:/profil";
+                } else {
+                    redirectAttrs.addFlashAttribute("error", "Password tidak mengandung huruf besar/huruf kecil/angka/simbol atau kurang dari 8 karakter.");
+                    return "redirect:/update-password";
+                }
+            } else {
+                redirectAttrs.addFlashAttribute("error", "Konfirmasi password baru tidak cocok dengan password baru.");
+                return "redirect:/update-password";
+            }
+        } else {
+            redirectAttrs.addFlashAttribute("error", "Password lama tidak sesuai.");
+            return "redirect:/update-password";
+        }
+
     }
 }

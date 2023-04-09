@@ -37,5 +37,9 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public UserModel updateUser(UserModel user) {
+        return userDb.save(user);
+    }
 
 }
