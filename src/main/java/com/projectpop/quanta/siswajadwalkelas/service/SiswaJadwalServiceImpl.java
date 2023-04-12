@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,7 +24,13 @@ public class SiswaJadwalServiceImpl implements SiswaJadwalService{
 
     @Override
     public List<SiswaJadwalModel> getListSiswaJadwalBySiswaAndDate(SiswaModel siswa, LocalDate tanggal) {
-//        return siswaJadwalDb.findAllBySiswaAndJadwalKelas_StartDateClass_Date(siswa, tanggal);
-        return null;
+        List<SiswaJadwalModel> listSiswaJadwalBySiswa = siswaJadwalDb.findAllBySiswa(siswa);
+        List<SiswaJadwalModel> listSiswaJadwalBySiswaAndTanggal = new ArrayList<>();
+        for (SiswaJadwalModel siswaJadwal: listSiswaJadwalBySiswa) {
+            if (siswaJadwal.getJadwalKelas().getStartDateClass().toLocalDate().equals(tanggal)){
+                listSiswaJadwalBySiswaAndTanggal.add(siswaJadwal);
+            }
+        }
+        return listSiswaJadwalBySiswaAndTanggal;
     }
 }
