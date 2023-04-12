@@ -1,5 +1,6 @@
 package com.projectpop.quanta.konsultasi.service;
 import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
+import com.projectpop.quanta.konsultasi.model.StatusKonsul;
 import com.projectpop.quanta.konsultasi.repository.KonsultasiDb;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.siswa.model.Jenjang;
@@ -8,13 +9,12 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static com.projectpop.quanta.konsultasi.model.StatusKonsul.*;
-//import static com.projectpop.quanta.konsultasi.model.StatusKonsul.DITERIMA;
-//import static com.projectpop.quanta.konsultasi.model.StatusKonsul.PENDING;
 
 @Service
 @Transactional
@@ -23,8 +23,16 @@ public class KonsultasiServiceImpl implements KonsultasiService{
     KonsultasiDb konsultasiDb;
 
     @Override
-    public List<KonsultasiModel> getListKonsultasi() {
-        return konsultasiDb.findAll();
+    public List<KonsultasiModel> getListKonsultasiHariIni() {
+        List<KonsultasiModel> listKonsultasi = konsultasiDb.findAll();
+        List<KonsultasiModel> listKonsultasiToday = new ArrayList<>();
+
+        for (KonsultasiModel konsultasi: listKonsultasi) {
+            if (konsultasi.getStartTime().toLocalDate().equals(LocalDate.now())){
+                listKonsultasiToday.add(konsultasi);
+            }
+        }
+        return listKonsultasiToday;
     }
 
     @Override
@@ -50,29 +58,29 @@ public class KonsultasiServiceImpl implements KonsultasiService{
     }
 
     @Override
-    public List<KonsultasiModel> getListKonsultasiByJenjang(Jenjang jenjang) {
+    public List<KonsultasiModel> getListKonsultasiByJenjangAndStatus(Jenjang jenjang, StatusKonsul status) {
         List<KonsultasiModel> listKonsultasi = konsultasiDb.findAll();
-        List<KonsultasiModel> listRequestKonsultasiJenjang = new ArrayList<KonsultasiModel>();
+        List<KonsultasiModel> listRequestKonsultasiJenjangStatus = new ArrayList<KonsultasiModel>();
         for (KonsultasiModel konsultasi: listKonsultasi) {
-            if (konsultasi.getJenjangKelas().equals(jenjang)) {
-                listRequestKonsultasiJenjang.add(konsultasi);
+            if (konsultasi.getJenjangKelas().equals(jenjang) && konsultasi.getStatus().equals(status)) {
+                listRequestKonsultasiJenjangStatus.add(konsultasi);
             }
         }
 
-        return listRequestKonsultasiJenjang;
+        return listRequestKonsultasiJenjangStatus;
     }
 
     @Override
-    public List<KonsultasiModel> getListMyRequestKonsultasi(PengajarModel pengajar) {
+    public List<KonsultasiModel> getListMyKonsultasiPengajarAndStatus(PengajarModel pengajar, StatusKonsul status) {
         List<KonsultasiModel> listKonsultasi = konsultasiDb.findAllByPengajarKonsul(pengajar);
-        List<KonsultasiModel> listRequestKonsultasiPengajar = new ArrayList<KonsultasiModel>();
+        List<KonsultasiModel> listKonsultasiStatus = new ArrayList<KonsultasiModel>();
 
         for (KonsultasiModel konsultasi: listKonsultasi) {
-            if (konsultasi.getStatus().equals(PENDING)) {
-                listRequestKonsultasiPengajar.add(konsultasi);
+            if (konsultasi.getStatus().equals(status)) {
+                listKonsultasiStatus.add(konsultasi);
             }
         }
-        return listRequestKonsultasiPengajar;
+        return listKonsultasiStatus;
     }
 
     @Override
@@ -89,8 +97,56 @@ public class KonsultasiServiceImpl implements KonsultasiService{
                 listKonsultasiNew.add(konsultasi);
             }
         }
-        if (listKonsultasiNew.size()!=0) {
-            return listKonsultasiNew;
-        } return null;
+        return listKonsultasiNew;
+    }
+
+    @Override
+    public void reloadStatus() {
+        List<KonsultasiModel> listKonsultasi = konsultasiDb.findAll();
+        for (KonsultasiModel konsultasi: listKonsultasi) {
+            if (konsultasi.getStatus().equals(PENDING) && konsultasi.getStartTime().minusHours(1).isBefore(LocalDateTime.now())) {
+                konsultasi.setStatus(KADALUARSA);
+                konsultasiDb.save(konsultasi);
+            }
+        }
+
+    }
+
+    @Override
+    public List<KonsultasiModel> getListKonsultasiByJenjangHariIni(Jenjang jenjang) {
+        List<KonsultasiModel> listKonsultasi = konsultasiDb.findAll();
+        List<KonsultasiModel> listRequestKonsultasiJenjangHariIni = new ArrayList<KonsultasiModel>();
+        for (KonsultasiModel konsultasi: listKonsultasi) {
+            if (konsultasi.getJenjangKelas().equals(jenjang) && konsultasi.getStartTime().toLocalDate().equals(LocalDate.now())) {
+                listRequestKonsultasiJenjangHariIni.add(konsultasi);
+            }
+        }
+
+        return listRequestKonsultasiJenjangHariIni;
+    }
+
+    @Override
+    public List<KonsultasiModel> getListKonsultasiStatus(StatusKonsul status) {
+        List<KonsultasiModel> listKonsultasi = konsultasiDb.findAll();
+        List<KonsultasiModel> listRequestKonsultasiStatus = new ArrayList<KonsultasiModel>();
+        for (KonsultasiModel konsultasi: listKonsultasi) {
+            if (konsultasi.getStatus().equals(status)) {
+                listRequestKonsultasiStatus.add(konsultasi);
+            }
+        }
+
+        return listRequestKonsultasiStatus;
+    }
+
+    @Override
+    public List<KonsultasiModel> getListKonsultasiByPengajarAndStatusAndTanggal(PengajarModel pengajar, StatusKonsul satus, LocalDate tanggal) {
+        List<KonsultasiModel> listKonsultasi = konsultasiDb.findAllByPengajarKonsul(pengajar);
+        List<KonsultasiModel> listKonsultasiNew = new ArrayList<KonsultasiModel>();
+        for (KonsultasiModel konsultasi: listKonsultasi) {
+            if (konsultasi.getStartTime().toLocalDate().equals(tanggal) && konsultasi.getStatus().equals(satus)){
+                listKonsultasiNew.add(konsultasi);
+            }
+        }
+        return listKonsultasiNew;
     }
 }

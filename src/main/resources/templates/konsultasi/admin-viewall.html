@@ -11,63 +11,333 @@
         font-family: 'DM Sans';
     }
 </style>
-
 <nav th:replace="fragments/fragment :: navbar (${'konsultasi'})"></nav>
 <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
 <div class="alert alert-danger" role="alert" th:text="${errorMessage}" th:if="${errorMessage}"></div>
 <div class="container" style="width:75%; padding-top:20px;">
     <div class="card m-4 p-4">
-            <div class="justify-content-center">
-                <div style="margin: auto; padding-top: 10px; width: 100%; padding: 20px; text-align: center">
-                    <h2 style="font-weight: bold; padding-top: 10px;" >Daftar Konsultasi</h2>
-                    <br>
-                </div>
-                <div th:if="*{listKonsultasi.size() != 0}">
-                    <table style="margin: 20px;" class="table table-striped" id="konsultasi-table">
-                        <thead style="background-color: #31318B; color: #ffffff">
-                            <tr>
-                                <th scope="col">No</th>
-                                <th scope="col">Pengajar</th>
-                                <th scope="col">Mata Pelajaran</th>
-                                <th scope="col">Jenjang Kelas</th>
-                                <th scope="col">Tanggal</th>
-                                <th scope="col">Waktu</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="konsultasi, iterationStatus : ${listKonsultasi}">
-                            <td th:text="${iterationStatus.count}"></td>
-                            <td th:text="${konsultasi.pengajarKonsul.name}"></td>
-                            <td th:text="${konsultasi.mapelKonsul.name}"></td>
-                            <td th:text="${konsultasi.jenjangKelas}"></td>
-                            <td th:text="${#temporals.format(konsultasi.startTime, 'dd MMMM yyyy')}"></td>
-                            <td th:text="${#temporals.format(konsultasi.startTime, 'HH:mm')} + ' - ' +${#temporals.format(konsultasi.endTime, 'HH:mm')}"></td>
-                            <td th:if="${konsultasi.status.toString().equals('PENDING')}" style="color:orange" th:text="${konsultasi.status.toString().toLowerCase()}"></td>
-                            <td th:if="${konsultasi.status.toString().equals('DITERIMA')}" style="color:darkblue" th:text="${konsultasi.status.toString().toLowerCase()}"></td>
-                            <td th:if="${konsultasi.status.toString().equals('DITOLAK')}" style="color:red" th:text="${konsultasi.status.toString().toLowerCase()}"></td>
-                            <td th:if="${konsultasi.status.toString().equals('DITUTUP')}" th:text="${konsultasi.status.toString().toLowerCase()}"></td>
-                            <td class="align-content-center">
-                                <a class="btn btn-outline-primary align-content-center" th:href="@{/konsultasi/view/} + ${konsultasi.id}">Detail</a>
-                            </td>
-
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div th:unless="${listKonsultasi.size() != 0}">
-                    <p>Tidak ada jadwal konsultasi!</p>
-                </div>
-
+        <div class="justify-content-center">
+            <div style="margin: auto; padding-top: 10px; width: 100%; padding: 20px; text-align: center">
+                <h2 style="font-weight: bold; padding-top: 10px;" >Daftar Konsultasi</h2>
+                <br>
             </div>
+            <!--            change-->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" data-bs-tabs="tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="true" data-bs-toggle="tab" href="#konsultasi-today">Hari Ini</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#konsultasi-pending">Pending</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#konsultasi-diterima">Diterima</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#konsultasi-ditolak">Ditolak</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#konsultasi-ditutup">Ditutup</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#konsultasi-kadaluarsa">Kadaluarsa</a>
+                        </li>
+                    </ul>
+                </div>
+                <card class="card-body tab-content">
+                    <div class="tab-pane active" id="konsultasi-today">
+                        <div th:if="*{listKonsultasiHariIni.size() != 0}">
+                            <table style="margin: 20px;" class="table table-striped" id="konsultasi-table1">
+                                <thead style="background-color: #31318B; color: #ffffff">
+                                <tr>
+                                    <th scope="col">No</th>
+                                    <th scope="col">Pengajar</th>
+                                    <th scope="col">Mata Pelajaran</th>
+                                    <th scope="col">Waktu</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Aksi</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="konsultasi, iterationStatus : ${listKonsultasiHariIni}">
+                                    <td th:text="${iterationStatus.count}"></td>
+                                    <td th:text="${konsultasi.pengajarKonsul.name}"></td>
+                                    <td th:text="${konsultasi.mapelKonsul.name}"></td>
+                                    <td th:text="${#temporals.format(konsultasi.startTime, 'HH:mm')} + ' - ' +${#temporals.format(konsultasi.endTime, 'HH:mm')}"></td>
+                                    <td th:if="${konsultasi.status.toString().equals('PENDING')}">
+                                        <span class="rounded-pill badge bg-warning mt-2" th:text="${konsultasi.status.displayValue}"></span>
+                                    </td>
+                                    <td th:if="${konsultasi.status.toString().equals('DITERIMA')}">
+                                        <span class="rounded-pill badge bg-success mt-2" th:text="${konsultasi.status.displayValue}"></span>
+                                    </td>
+                                    <td th:if="${konsultasi.status.toString().equals('DITOLAK')}">
+                                        <span class="rounded-pill badge bg-danger mt-2" th:text="${konsultasi.status.displayValue}"></span>
+                                    </td>
+                                    <td th:if="${konsultasi.status.toString().equals('DITUTUP')}">
+                                        <span class="rounded-pill badge bg-dark mt-2" th:text="${konsultasi.status.displayValue}"></span>
+                                    </td>
+                                    <td th:if="${konsultasi.status.toString().equals('KADALUARSA')}">
+                                        <span class="rounded-pill badge bg-secondary mt-2" th:text="${konsultasi.status.displayValue}"></span>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-outline-primary align-content-center" th:href="@{/konsultasi/view/} + ${konsultasi.id}">Detail</a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div th:unless="${listKonsultasiHariIni.size() != 0}">
+                            <p>Tidak ada jadwal konsultasi hari ini</p>
+                        </div>
+                    </div>
+
+
+                    <div class="tab-pane" id="konsultasi-pending">
+                        <!--awal-->
+                        <div th:if="*{listKonsultasiPending.size() != 0}">
+                            <table style="margin: 20px;" class="table table-striped" id="konsultasi-table2">
+                                <thead style="background-color: #31318B; color: #ffffff">
+                                <tr>
+                                    <th scope="col">No</th>
+                                    <th scope="col">Pengajar</th>
+                                    <th scope="col">Mata Pelajaran</th>
+                                    <th scope="col">Tanggal</th>
+                                    <th scope="col">Waktu</th>
+                                    <th scope="col">Aksi</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="konsultasi, iterationStatus : ${listKonsultasiPending}">
+                                    <td th:text="${iterationStatus.count}"></td>
+                                    <td th:text="${konsultasi.pengajarKonsul.name}"></td>
+                                    <td th:text="${konsultasi.mapelKonsul.name}"></td>
+                                    <td th:text="${#temporals.format(konsultasi.startTime, 'dd MMMM yyyy')}"></td>
+                                    <td th:text="${#temporals.format(konsultasi.startTime, 'HH:mm')} + ' - ' +${#temporals.format(konsultasi.endTime, 'HH:mm')}"></td>
+                                    <td>
+                                        <a class="btn btn-outline-primary align-content-center" th:href="@{/konsultasi/view/} + ${konsultasi.id}">Detail</a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div th:unless="${listKonsultasiPending.size() != 0}">
+                            <p>Tidak ada jadwal konsultasi yang pending</p>
+                        </div>
+                        <!--                        akhir-->
+
+                    </div>
+
+                    <div class="tab-pane" id="konsultasi-diterima">
+                        <!--awal-->
+                        <div th:if="*{listKonsultasiDiterima.size() != 0}">
+                            <table style="margin: 20px;" class="table table-striped" id="konsultasi-table3">
+                                <thead style="background-color: #31318B; color: #ffffff">
+                                <tr>
+                                    <th scope="col">No</th>
+                                    <th scope="col">Pengajar</th>
+                                    <th scope="col">Mata Pelajaran</th>
+                                    <th scope="col">Tanggal</th>
+                                    <th scope="col">Waktu</th>
+                                    <th scope="col">Aksi</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="konsultasi, iterationStatus : ${listKonsultasiDiterima}">
+                                    <td th:text="${iterationStatus.count}"></td>
+                                    <td th:text="${konsultasi.pengajarKonsul.name}"></td>
+                                    <td th:text="${konsultasi.mapelKonsul.name}"></td>
+                                    <td th:text="${#temporals.format(konsultasi.startTime, 'dd MMMM yyyy')}"></td>
+                                    <td th:text="${#temporals.format(konsultasi.startTime, 'HH:mm')} + ' - ' +${#temporals.format(konsultasi.endTime, 'HH:mm')}"></td>
+                                    <td>
+                                        <a class="btn btn-outline-primary align-content-center" th:href="@{/konsultasi/view/} + ${konsultasi.id}">Detail</a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div th:unless="${listKonsultasiDiterima.size() != 0}">
+                            <p>Tidak ada jadwal konsultasi yang diterima</p>
+                        </div>
+
+                        <!--                        akhir-->
+
+                    </div>
+
+                    <div class="tab-pane" id="konsultasi-ditolak">
+                        <!--awal-->
+                        <div th:if="*{listKonsultasiDitolak.size() != 0}">
+                            <table style="margin: 20px;" class="table table-striped" id="konsultasi-table4">
+                                <thead style="background-color: #31318B; color: #ffffff">
+                                <tr>
+                                    <th scope="col">No</th>
+                                    <th scope="col">Pengajar</th>
+                                    <th scope="col">Mata Pelajaran</th>
+                                    <th scope="col">Tanggal</th>
+                                    <th scope="col">Waktu</th>
+                                    <th scope="col">Aksi</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="konsultasi, iterationStatus : ${listKonsultasiDitolak}">
+                                    <td th:text="${iterationStatus.count}"></td>
+                                    <td th:text="${konsultasi.pengajarKonsul.name}"></td>
+                                    <td th:text="${konsultasi.mapelKonsul.name}"></td>
+                                    <td th:text="${#temporals.format(konsultasi.startTime, 'dd MMMM yyyy')}"></td>
+                                    <td th:text="${#temporals.format(konsultasi.startTime, 'HH:mm')} + ' - ' +${#temporals.format(konsultasi.endTime, 'HH:mm')}"></td>
+                                    <td>
+                                        <a class="btn btn-outline-primary align-content-center" th:href="@{/konsultasi/view/} + ${konsultasi.id}">Detail</a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div th:unless="${listKonsultasiDitolak.size() != 0}">
+                            <p>Tidak ada jadwal konsultasi yang ditolak</p>
+                        </div>
+                        <!--                        akhir-->
+
+                    </div>
+
+                    <div class="tab-pane" id="konsultasi-ditutup">
+                        <!--awal-->
+                        <div th:if="*{listKonsultasiDitutup.size() != 0}">
+                            <table style="margin: 20px;" class="table table-striped" id="konsultasi-table5">
+                                <thead style="background-color: #31318B; color: #ffffff">
+                                <tr>
+                                    <th scope="col">No</th>
+                                    <th scope="col">Pengajar</th>
+                                    <th scope="col">Mata Pelajaran</th>
+                                    <th scope="col">Tanggal</th>
+                                    <th scope="col">Waktu</th>
+                                    <th scope="col">Aksi</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="konsultasi, iterationStatus : ${listKonsultasiDitutup}">
+                                    <td th:text="${iterationStatus.count}"></td>
+                                    <td th:text="${konsultasi.pengajarKonsul.name}"></td>
+                                    <td th:text="${konsultasi.mapelKonsul.name}"></td>
+                                    <td th:text="${#temporals.format(konsultasi.startTime, 'dd MMMM yyyy')}"></td>
+                                    <td th:text="${#temporals.format(konsultasi.startTime, 'HH:mm')} + ' - ' +${#temporals.format(konsultasi.endTime, 'HH:mm')}"></td>
+                                    <td>
+                                        <a class="btn btn-outline-primary align-content-center" th:href="@{/konsultasi/view/} + ${konsultasi.id}">Detail</a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div th:unless="${listKonsultasiDitutup.size() != 0}">
+                            <p>Tidak ada jadwal konsultasi yang ditutup</p>
+                        </div>
+                        <!--                        akhir-->
+
+                    </div>
+
+                    <div class="tab-pane" id="konsultasi-kadaluarsa">
+                        <!--awal-->
+                        <div th:if="*{listKonsultasiKadaluarsa.size() != 0}">
+                            <table style="margin: 20px;" class="table table-striped" id="konsultasi-table6">
+                                <thead style="background-color: #31318B; color: #ffffff">
+                                <tr>
+                                    <th scope="col">No</th>
+                                    <th scope="col">Pengajar</th>
+                                    <th scope="col">Mata Pelajaran</th>
+                                    <th scope="col">Tanggal</th>
+                                    <th scope="col">Waktu</th>
+                                    <th scope="col">Aksi</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="konsultasi, iterationStatus : ${listKonsultasiKadaluarsa}">
+                                    <td th:text="${iterationStatus.count}"></td>
+                                    <td th:text="${konsultasi.pengajarKonsul.name}"></td>
+                                    <td th:text="${konsultasi.mapelKonsul.name}"></td>
+                                    <td th:text="${#temporals.format(konsultasi.startTime, 'dd MMMM yyyy')}"></td>
+                                    <td th:text="${#temporals.format(konsultasi.startTime, 'HH:mm')} + ' - ' +${#temporals.format(konsultasi.endTime, 'HH:mm')}"></td>
+                                    <td>
+                                        <a class="btn btn-outline-primary align-content-center" th:href="@{/konsultasi/view/} + ${konsultasi.id}">Detail</a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div th:unless="${listKonsultasiKadaluarsa.size() != 0}">
+                            <p>Tidak ada jadwal konsultasi yang kadaluarsa</p>
+                        </div>
+                        <!--                        akhir-->
+
+                    </div>
+                </card>
+            </div>
+
+            <!--            change-->
+
+        </div>
     </div>
 </div>
 
 
+
+
 <script>
     $(document).ready(function () {
-        var t = $('#konsultasi-table').DataTable({
+        var t = $('#konsultasi-table1').DataTable({
+            columnDefs: [
+                {
+                    searchable: false,
+                    orderable: false,
+                    targets: 0,
+                },
+            ],
+            order: [1, 'asc'],
+        });
+
+        var t = $('#konsultasi-table2').DataTable({
+            columnDefs: [
+                {
+                    searchable: false,
+                    orderable: false,
+                    targets: 0,
+                },
+            ],
+            order: [1, 'asc'],
+        });
+
+        var t = $('#konsultasi-table3').DataTable({
+            columnDefs: [
+                {
+                    searchable: false,
+                    orderable: false,
+                    targets: 0,
+                },
+            ],
+            order: [1, 'asc'],
+        });
+
+        var t = $('#konsultasi-table4').DataTable({
+            columnDefs: [
+                {
+                    searchable: false,
+                    orderable: false,
+                    targets: 0,
+                },
+            ],
+            order: [1, 'asc'],
+        });
+
+        var t = $('#konsultasi-table5').DataTable({
+            columnDefs: [
+                {
+                    searchable: false,
+                    orderable: false,
+                    targets: 0,
+                },
+            ],
+            order: [1, 'asc'],
+        });
+
+        var t = $('#konsultasi-table6').DataTable({
             columnDefs: [
                 {
                     searchable: false,

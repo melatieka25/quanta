@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-//@RequestMapping("/konsultasi")
 public class KonsultasiController {
     @Qualifier("konsultasiServiceImpl")
     @Autowired
@@ -85,21 +84,41 @@ public class KonsultasiController {
 
     @GetMapping("/konsultasi")
     public String viewJadwalKonsultasi(Model model, Principal principal) {
+        konsultasiService.reloadStatus();
         UserModel user = userService.getUserByEmail(principal.getName());
 
         if(user.getRole().toString().equals("ADMIN")){
-            List<KonsultasiModel> listKonsultasi = konsultasiService.getListKonsultasi();
-            model.addAttribute("listKonsultasi", listKonsultasi);
+            List<KonsultasiModel> listKonsultasiHariIni = konsultasiService.getListKonsultasiHariIni();
+            List<KonsultasiModel> listKonsultasiPending = konsultasiService.getListKonsultasiStatus(PENDING);
+            List<KonsultasiModel> listKonsultasiDiterima = konsultasiService.getListKonsultasiStatus(DITERIMA);
+            List<KonsultasiModel> listKonsultasiDitolak = konsultasiService.getListKonsultasiStatus(DITOLAK);
+            List<KonsultasiModel> listKonsultasiDitutup = konsultasiService.getListKonsultasiStatus(DITUTUP);
+            List<KonsultasiModel> listKonsultasiKadaluarsa = konsultasiService.getListKonsultasiStatus(KADALUARSA);
+
+            model.addAttribute("listKonsultasiHariIni", listKonsultasiHariIni);
+            model.addAttribute("listKonsultasiPending", listKonsultasiPending);
+            model.addAttribute("listKonsultasiDiterima", listKonsultasiDiterima);
+            model.addAttribute("listKonsultasiDitolak", listKonsultasiDitolak);
+            model.addAttribute("listKonsultasiDitutup", listKonsultasiDitutup);
+            model.addAttribute("listKonsultasiKadaluarsa", listKonsultasiKadaluarsa);
             return "konsultasi/admin-viewall";
         }
 
         else if(user.getRole().toString().equals("PENGAJAR")){
             PengajarModel pengajar = pengajarService.findPengajarByEmail(principal.getName());
-            List<KonsultasiModel> myListKonsultasi = konsultasiService.getListMyKonsultasiPengajar(pengajar);
-            List<KonsultasiModel> myListRequestKonsultasi = konsultasiService.getListMyRequestKonsultasi(pengajar);
+            List<KonsultasiModel> myListKonsultasiHariIni = konsultasiService.getListKonsultasiByPengajarAndTanggal(pengajar, LocalDate.now());
+            List<KonsultasiModel> myListKonsultasiPending = konsultasiService.getListMyKonsultasiPengajarAndStatus(pengajar, PENDING);
+            List<KonsultasiModel> myListKonsultasiDiterima = konsultasiService.getListMyKonsultasiPengajarAndStatus(pengajar, DITERIMA);
+            List<KonsultasiModel> myListKonsultasiDitolak = konsultasiService.getListMyKonsultasiPengajarAndStatus(pengajar, DITOLAK);
+            List<KonsultasiModel> myListKonsultasiDitutup = konsultasiService.getListMyKonsultasiPengajarAndStatus(pengajar, DITUTUP);
+            List<KonsultasiModel> myListKonsultasiKadaluarsa = konsultasiService.getListMyKonsultasiPengajarAndStatus(pengajar, KADALUARSA);
 
-            model.addAttribute("myListKonsultasi", myListKonsultasi);
-            model.addAttribute("myListRequestKonsultasi", myListRequestKonsultasi);
+            model.addAttribute("myListKonsultasiHariIni", myListKonsultasiHariIni);
+            model.addAttribute("myListKonsultasiPending", myListKonsultasiPending);
+            model.addAttribute("myListKonsultasiDiterima", myListKonsultasiDiterima);
+            model.addAttribute("myListKonsultasiDitolak", myListKonsultasiDitolak);
+            model.addAttribute("myListKonsultasiDitutup", myListKonsultasiDitutup);
+            model.addAttribute("myListKonsultasiKadaluarsa", myListKonsultasiKadaluarsa);
             return "konsultasi/landing-page-pengajar";
 
         }
@@ -107,19 +126,44 @@ public class KonsultasiController {
         else if(user.getRole().toString().equals("SISWA")){
             SiswaModel siswa = siswaService.findSiswaByEmail(principal.getName());
             Jenjang jenjang = siswa.getJenjang();
-            List<SiswaKonsultasiModel> listMySiswaKonsultasi = siswaKonsultasiService.getListKonsultasiBySiswa(siswa);
-            List<KonsultasiModel> listKonsultasiJenjang = konsultasiService.getListKonsultasiByJenjang(jenjang);
+            List<SiswaKonsultasiModel> listMySiswaKonsultasiHariIni = siswaKonsultasiService.getListKonsultasiBySiswaAndTanggal(siswa, LocalDate.now());
+            List<SiswaKonsultasiModel> listMySiswaKonsultasiPending = siswaKonsultasiService.getListKonsultasiBySiswaAndStatus(siswa, PENDING);
+            List<SiswaKonsultasiModel> listMySiswaKonsultasiDiterima = siswaKonsultasiService.getListKonsultasiBySiswaAndStatus(siswa, DITERIMA);
+            List<SiswaKonsultasiModel> listMySiswaKonsultasiDitolak = siswaKonsultasiService.getListKonsultasiBySiswaAndStatus(siswa, DITOLAK);
+            List<SiswaKonsultasiModel> listMySiswaKonsultasiDitutup = siswaKonsultasiService.getListKonsultasiBySiswaAndStatus(siswa, DITUTUP);
+            List<SiswaKonsultasiModel> listMySiswaKonsultasiKadaluarsa = siswaKonsultasiService.getListKonsultasiBySiswaAndStatus(siswa, KADALUARSA);
+
+
+            List<KonsultasiModel> listKonsultasiJenjangHariIni = konsultasiService.getListKonsultasiByJenjangHariIni(jenjang);
+            List<KonsultasiModel> listKonsultasiJenjangPending = konsultasiService.getListKonsultasiByJenjangAndStatus(jenjang, PENDING);
+            List<KonsultasiModel> listKonsultasiJenjangDiterima = konsultasiService.getListKonsultasiByJenjangAndStatus(jenjang, DITERIMA);
+            List<KonsultasiModel> listKonsultasiJenjangDitolak = konsultasiService.getListKonsultasiByJenjangAndStatus(jenjang, DITOLAK);
+            List<KonsultasiModel> listKonsultasiJenjangDitutup = konsultasiService.getListKonsultasiByJenjangAndStatus(jenjang, DITUTUP);
+            List<KonsultasiModel> listKonsultasiJenjangKadaluarsa = konsultasiService.getListKonsultasiByJenjangAndStatus(jenjang, KADALUARSA);
 
             model.addAttribute("siswa", siswa);
-            model.addAttribute("listMySiswaKonsultasi", listMySiswaKonsultasi);
-            model.addAttribute("listKonsultasiJenjang", listKonsultasiJenjang);
+            model.addAttribute("listMySiswaKonsultasiHariIni", listMySiswaKonsultasiHariIni);
+            model.addAttribute("listMySiswaKonsultasiPending", listMySiswaKonsultasiPending);
+            model.addAttribute("listMySiswaKonsultasiDiterima", listMySiswaKonsultasiDiterima);
+            model.addAttribute("listMySiswaKonsultasiDitolak", listMySiswaKonsultasiDitolak);
+            model.addAttribute("listMySiswaKonsultasiDitutup", listMySiswaKonsultasiDitutup);
+            model.addAttribute("listMySiswaKonsultasiKadaluarsa", listMySiswaKonsultasiKadaluarsa);
+
+            model.addAttribute("listKonsultasiJenjangHariIni", listKonsultasiJenjangHariIni);
+            model.addAttribute("listKonsultasiJenjangPending", listKonsultasiJenjangPending);
+            model.addAttribute("listKonsultasiJenjangDiterima", listKonsultasiJenjangDiterima);
+            model.addAttribute("listKonsultasiJenjangDitolak", listKonsultasiJenjangDitolak);
+            model.addAttribute("listKonsultasiJenjangDitutup", listKonsultasiJenjangDitutup);
+            model.addAttribute("listKonsultasiJenjangKadaluarsa", listKonsultasiJenjangKadaluarsa);
             return "konsultasi/landing-page-siswa";
         }
         return "error";
     }
 
     @GetMapping("/konsultasi/view/{idKonsultasi}" )
-    public String viewDetailKonsultasiPage(@PathVariable Integer idKonsultasi, Model model) {
+    public String viewDetailKonsultasiPage(@PathVariable Integer idKonsultasi, Principal principal, Model model) {
+        UserModel user = userService.getUserByEmail(principal.getName());
+
         KonsultasiModel konsultasi = konsultasiService.getKonsultasi(idKonsultasi);
         List<SiswaKonsultasiModel> listSiswaKonsultasi = siswaKonsultasiService.getListSiswaByKonsultasi(konsultasi);
 
@@ -128,28 +172,59 @@ public class KonsultasiController {
             siswaKonsultasi.getSiswaKonsul().setKelasBimbel(kelas);
         }
 
+        if(user.getRole().toString().equals("PENGAJAR")){
+            boolean isToValidate = false;
+            boolean isToClose = false;
+
+            if (konsultasi.getStatus().equals(PENDING)){
+                isToValidate = true;
+            } else if (konsultasi.getStatus().equals(DITERIMA)) {
+                isToClose = true;
+            }
+
+            model.addAttribute("isToValidate", isToValidate);
+            model.addAttribute("isToClose", isToClose);
+        }
+
+        if(user.getRole().toString().equals("SISWA")){
+            boolean isJoinable = false;
+            boolean isCancelable = false;
+            boolean isExtendable = false;
+
+            if (konsultasi.getStatus().equals(PENDING)){
+                if (null!=siswaKonsultasiService.getBySiswaAndKonsultasi((SiswaModel) user, konsultasi.getId())){
+                    isCancelable = true;
+                } else {
+                    isJoinable = true;
+                }
+            }
+            else if (konsultasi.getStatus().equals(DITERIMA)) {
+                if (null!=siswaKonsultasiService.getBySiswaAndKonsultasi((SiswaModel) user, konsultasi.getId())){
+                    if (konsultasi.getStartTime().isBefore(LocalDateTime.now())
+                            && konsultasi.getEndTime().isAfter(LocalDateTime.now())){
+                        isExtendable = true;
+                    }
+                }
+                else {
+                    if (konsultasi.getStartTime().minusMinutes(10).isAfter(LocalDateTime.now())){
+                        isJoinable = true;
+                    }
+                }
+
+
+            }
+
+
+            model.addAttribute("isCancelable", isCancelable);
+            model.addAttribute("isExtendable", isExtendable);
+            model.addAttribute("isJoinable", isJoinable);
+        }
+
+        model.addAttribute("role", user.getRole().toString());
         model.addAttribute("konsultasi", konsultasi);
         model.addAttribute("listSiswaKonsultasi", listSiswaKonsultasi);
 
         return "konsultasi/view-detail";
-    }
-
-    @GetMapping("/konsultasi/siswa/view/{idKonsultasi}" )
-    public String viewDetailKonsultasiPageSiswa(@PathVariable Integer idKonsultasi, Authentication authentication, Model model) {
-        KonsultasiModel konsultasi = konsultasiService.getKonsultasi(idKonsultasi);
-        SiswaModel siswa = siswaService.findSiswaByEmail(authentication.getName());
-        List<SiswaKonsultasiModel> listSiswaKonsultasi = siswaKonsultasiService.getListSiswaByKonsultasi(konsultasi);
-
-        for (SiswaKonsultasiModel siswaKonsultasi: listSiswaKonsultasi) {
-            KelasModel kelas = siswaService.getKelasBimbel(siswaKonsultasi.getSiswaKonsul());
-            siswaKonsultasi.getSiswaKonsul().setKelasBimbel(kelas);
-        }
-
-        model.addAttribute("konsultasi", konsultasi);
-        model.addAttribute("siswa", siswa);
-        model.addAttribute("listSiswaKonsultasi", listSiswaKonsultasi);
-
-        return "konsultasi/siswa-view-detail";
     }
 
 
@@ -186,17 +261,12 @@ public class KonsultasiController {
     @GetMapping("/konsultasi/add")
     public String addKonsultasiFormPage(Model model) {
         KonsultasiModel konsultasi = new KonsultasiModel();
-        getAllDropdownList(konsultasi, model);
+        List<MataPelajaranModel> listMapel = mataPelajaranService.getListMapel();
+
+        model.addAttribute("listMapel", listMapel);
         return "konsultasi/form-add";
     }
 
-    private List<LocalTime> getListWaktuAwalKonsultasi(){
-        List<LocalTime> listWaktuMulaiKonsul = new ArrayList<>();
-        for (int i = 10; i < 20; i++) {
-            listWaktuMulaiKonsul.add(LocalTime.of(i,00));
-        }
-        return listWaktuMulaiKonsul;
-    }
 
     @PostMapping(value = "/konsultasi/add", params = {"save"})
     public String addKonsultasiSubmit(@ModelAttribute KonsultasiModel konsultasi,
@@ -259,9 +329,8 @@ public class KonsultasiController {
         model.addAttribute("listSiswaKonsultasi", allListSiswaKonsultasi);
 
         String emailPenerima = konsultasi.getPengajarKonsul().getEmail();
-//        String emailPenerima = "ameliaputrifadillah@gmail.com";
         String emailSubject = "ANDA MENDAPATKAN PERMINTAAN KONSULTASI BARU!";
-        String emailBody = "Mohon segera konfirmasi sebelum tanggal " + konsultasi.getStartTime().toLocalDate() + " pukul " + konsultasi.getStartTime().minusHours(1).toLocalTime()
+        String emailBody = "Mohon segera konfirmasi sebelum tanggal " + konsultasi.getStartTime().toLocalDate() + " pukul " + konsultasi.getStartTime().minusHours(2).toLocalTime()
                 + "\n\nDetail konsultasi"
                 + "\n- Waktu konsultasi: " + konsultasi.getStartTime().toLocalTime() + " - " + konsultasi.getEndTime().toLocalTime()
                 + "\n- Tanggal: " + konsultasi.getStartTime().toLocalDate()
@@ -276,19 +345,6 @@ public class KonsultasiController {
     }
 
 
-
-
-    public void getAllDropdownList(KonsultasiModel konsultasi, Model model) {
-        List<PengajarModel> listPengajar = pengajarService.getListPengajarActive();
-        List<MataPelajaranModel> listMapel = mataPelajaranService.getListMapel();
-        List<LocalTime> listWaktuMulaiKonsul = getListWaktuAwalKonsultasi();
-
-        // pass data
-        model.addAttribute("konsultasi", konsultasi);
-        model.addAttribute("listMapel", listMapel);
-        model.addAttribute("listPengajar", listPengajar);
-        model.addAttribute("listWaktuMulaiKonsul", listWaktuMulaiKonsul);
-    }
 
 //    end create konsultasi
 

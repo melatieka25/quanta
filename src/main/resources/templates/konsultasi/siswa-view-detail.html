@@ -87,6 +87,7 @@ line-height: 140%;">Data Konsultasi</h5>
                             <p th:if="${konsultasi.status.toString().equals('DITERIMA')}" style="color:darkblue" th:text="${konsultasi.status.toString().toLowerCase()}"></p>
                             <p th:if="${konsultasi.status.toString().equals('DITOLAK')}" style="color:red" th:text="${konsultasi.status.toString().toLowerCase()}"></p>
                             <p th:if="${konsultasi.status.toString().equals('DITUTUP')}" th:text="${konsultasi.status.toString().toLowerCase()}"></p>
+                            <p th:if="${konsultasi.status.toString().equals('KADALUARSA')}" style="color:dimgray"  th:text="${konsultasi.status.toString().toLowerCase()}"></p>
                         </div>
                     </div>
                     <a class="btn btn-primary w-100" style="background-color: #31318B" href="/konsultasi">Lihat Daftar Konsultasi</a>

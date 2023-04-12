@@ -1,6 +1,7 @@
 package com.projectpop.quanta.siswakonsultasi.service;
 
 import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
+import com.projectpop.quanta.konsultasi.model.StatusKonsul;
 import com.projectpop.quanta.konsultasi.repository.KonsultasiDb;
 import com.projectpop.quanta.siswa.model.SiswaModel;
 import com.projectpop.quanta.siswa.repository.SiswaDb;
@@ -10,9 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.projectpop.quanta.konsultasi.model.StatusKonsul.PENDING;
+import static com.projectpop.quanta.konsultasi.model.StatusKonsul.*;
 
 
 @Service
@@ -70,5 +74,33 @@ public class SiswaKonsultasiServiceImpl implements SiswaKonsultasiService{
     @Override
     public SiswaKonsultasiModel createSiswaKonsultasi(SiswaKonsultasiModel siswaKonsultasi) {
         return siswaKonsultasiDb.save(siswaKonsultasi);
+    }
+
+    @Override
+    public List<SiswaKonsultasiModel> getListKonsultasiBySiswaAndStatus(SiswaModel siswa, StatusKonsul status) {
+        List<SiswaKonsultasiModel> listSiswaKonsultasi =  siswaKonsultasiDb.findAllBySiswaKonsul(siswa);
+        List<SiswaKonsultasiModel> listSiswaKonsultasiStatus = new ArrayList<>();
+
+        for (SiswaKonsultasiModel siswaKonsultasi: listSiswaKonsultasi) {
+            if (siswaKonsultasi.getKonsultasi().getStatus().equals(status)){
+                listSiswaKonsultasiStatus.add(siswaKonsultasi);
+            }
+        } return listSiswaKonsultasiStatus;
+
+
+    }
+
+    @Override
+    public List<SiswaKonsultasiModel> getListKonsultasiBySiswaAndTanggal(SiswaModel siswa, LocalDate tanggal) {
+        List<SiswaKonsultasiModel> listSiswaKonsultasi =  siswaKonsultasiDb.findAllBySiswaKonsul(siswa);
+        List<SiswaKonsultasiModel> listSiswaKonsultasiTanggal = new ArrayList<>();
+
+        for (SiswaKonsultasiModel siswaKonsultasi: listSiswaKonsultasi) {
+            if (siswaKonsultasi.getKonsultasi().getStartTime().toLocalDate().equals(tanggal)){
+                listSiswaKonsultasiTanggal.add(siswaKonsultasi);
+            }
+        } return listSiswaKonsultasiTanggal;
+
+//
     }
 }
