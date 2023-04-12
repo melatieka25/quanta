@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.projectpop.quanta.admin.model.AdminModel;
+import com.projectpop.quanta.admin.service.AdminService;
 import com.projectpop.quanta.orangtua.model.OrtuModel;
 import com.projectpop.quanta.orangtua.service.OrtuService;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
@@ -39,6 +41,9 @@ public class UserController {
 
     @Autowired
     private PengajarService pengajarService;
+
+    @Autowired
+    private AdminService adminService;
 
 
     @GetMapping("/profil")
@@ -69,7 +74,10 @@ public class UserController {
             model.addAttribute("dateOfBirth", dateOfBirth);
             return "akun-saya/profil-ortu";
         } else {
-            return "home";
+            UserModel admin = userService.getUserById(user.getId());
+            model.addAttribute("admin", admin);
+            model.addAttribute("dateOfBirth", dateOfBirth);
+            return "akun-saya/profil-admin";
         }
         
     }
@@ -91,6 +99,7 @@ public class UserController {
             if (updatePassword.getPasswordBaru().equals(updatePassword.getKonfirmasiPasswordBaru())){
                 if (PasswordManager.validationChecker(updatePassword.getPasswordBaru())){
                     user.setPassword(bcrypt.encode(updatePassword.getPasswordBaru()));
+                    user.setIsPassUpdated(true);
                     userService.updateUser(user);
                     redirectAttrs.addFlashAttribute("message", "Password untuk akunmu berhasil diubah!");
                     return "redirect:/profil";
