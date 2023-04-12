@@ -31,157 +31,86 @@
     </div>
   <div class="container">
     <h2 style="font-weight: bold; text-align:center; padding:20px">Profil Saya</h2>
-    <div class="container" style="width:100%;">
+    <div class="container" style="width:50%;">
     <div class="card mt-3" style="background-color:#F7FAFC">
       <div class="card-body">
         <div class="container">
           <br>
           <div class="row">
-            <div class="col">
-              <h4 style="padding-bottom:20px; font-weight: bold;" >Data Utama</h4>
-            </div>
-            <div class="col">
-              <h4 style="padding-bottom:20px; font-weight: bold;">Data Pelengkap</h4>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
+            <div class="col-4">
               <p style="font-weight: bold; color: #31318B">Nama Lengkap</p>
             </div>
-            <div class="col-4">
-              <p th:text="${ortu.name}"></p>
-            </div>
             <div class="col">
-              <p style="font-weight: bold; color: #31318B">Pekerjaan</p>
-            </div>
-            <div class="col-4">
-              <p th:text="${ortu.job}"></p>
+              <p th:text="${admin.name}"></p>
             </div>
           </div>
           <div class="row">
-            <div class="col">
+            <div class="col-4">
               <p style="font-weight: bold; color: #31318B">Nama Panggilan</p>
             </div>
-            <div class="col-4">
-              <p th:text="${ortu.nickname}"></p>
-            </div>
             <div class="col">
-              <p style="font-weight: bold; color: #31318B">Kantor</p>
-            </div>
-            <div class="col-4">
-              <p th:text="${ortu.kantor}"></p>
+              <p th:text="${admin.nickname}"></p>
             </div>
           </div>
           <div class="row">
-            <div class="col">
+            <div class="col-4">
               <p style="font-weight: bold; color: #31318B">Email</p>
             </div>
-            <div class="col-4">
-              <p th:text="${ortu.email}"></p>
-            </div>
             <div class="col">
-              <p style="font-weight: bold; color: #31318B">Nama Anak</p>
-            </div>
-            <div class="col-4">
-              <p th:text="${ortu.anakAktif}"></p>
+              <p th:text="${admin.email}"></p>
             </div>
           </div>
           <div class="row">
-            <div class="col">
+            <div class="col-4">
               <p style="font-weight: bold; color: #31318B">Alamat</p>
             </div>
-            <div class="col-4">
-              <p th:text="${ortu.address}"></p>
-            </div>
             <div class="col">
-              <p></p>
-            </div>
-            <div class="col-4">
-              <p></p>
+              <p th:text="${admin.address}"></p>
             </div>
           </div>
           <div class="row">
-            <div class="col">
+            <div class="col-4">
               <p style="font-weight: bold; color: #31318B">No. Telp</p>
             </div>
-            <div class="col-4">
-              <p th:text="'(+62)' + ${ortu.phone_num}"></p>
-            </div>
             <div class="col">
-              <p></p>
-            </div>
-            <div class="col-4">
-              <p></p>
+              <p th:text="'(+62)' + ${admin.phone_num}"></p>
             </div>
           </div>
           <div class="row">
-            <div class="col">
+            <div class="col-4">
               <p style="font-weight: bold; color: #31318B">Tempat Lahir</p>
             </div>
-            <div class="col-4">
-              <p th:text="${ortu.pob}"></p>
-            </div>
             <div class="col">
-              <p></p>
-            </div>
-            <div class="col-4">
-              <p></p>
+              <p th:text="${admin.pob}"></p>
             </div>
           </div>
           <div class="row">
-            <div class="col">
+            <div class="col-4">
               <p style="font-weight: bold; color: #31318B">Tanggal Lahir</p>
             </div>
-            <div class="col-4">
+            <div class="col">
               <p th:text="${dateOfBirth}"></p>
             </div>
-            <div class="col">
-              <p></p>
-            </div>
-            <div class="col-4">
-              <p></p>
-            </div>
           </div>
           <div class="row">
-            <div class="col">
+            <div class="col-4">
               <p style="font-weight: bold; color: #31318B">Jenis Kelamin</p>
             </div>
-            <div class="col-4">
-              <p th:text="${ortu.gender.displayValue}"></p>
-            </div>
             <div class="col">
-              <p></p>
-            </div>
-            <div class="col-4">
-              <p></p>
+              <p th:text="${admin.gender.displayValue}"></p>
             </div>
           </div>
           <div class="row">
-            <div class="col">
+            <div class="col-4">
               <p style="font-weight: bold; color: #31318B">Agama</p>
             </div>
-            <div class="col-4">
-              <p th:text="${ortu.religion.displayValue}"></p>
-            </div>
             <div class="col">
-              <p></p>
-            </div>
-            <div class="col-4">
-              <p></p>
+              <p th:text="${admin.religion.displayValue}"></p>
             </div>
           </div>
           <div class="row">
             <div class="col">
-              <p></p>
-            </div>
-            <div class="col-4">
-              <a class="btn btn-outline-primary" href="https://wa.link/ozqu1r" style="display:block; width:100%; margin-top:20px;" >Hubungi Admin</a>
-            </div>
-            <div class="col-4">
               <a class="btn btn-primary" th:href="@{/update-password}" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B">Ubah Password</a>
-            </div>
-            <div class="col">
-              <p></p>
             </div>
           </div>
           <br>
