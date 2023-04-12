@@ -23,10 +23,16 @@
 </head>
 <body>
     <div class="alert alert-success alert-dismissible d-flex align-items-center" role="alert" th:if="${param.loginSuccess}" >
-    <div class="d-flex align-items-center">
-        <p style="margin-bottom: 0px; margin-top: 0px;"><strong>Login Sukses!</strong> Selamat datang di sistem QUANTA!</p>
+        <div class="d-flex align-items-center">
+            <p style="margin-bottom: 0px; margin-top: 0px;"><strong>Login Sukses!</strong> Selamat datang kembali di sistem QUANTA!</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="alert alert-success alert-dismissible d-flex align-items-center" role="alert" th:if="${param.firstLoginSuccess}" >
+        <div class="d-flex align-items-center">
+            <p style="margin-bottom: 0px; margin-top: 0px;"><strong>Login Sukses!</strong> Selamat datang di sistem QUANTA! Kamu adalah penggguna baru, ayo ubah password-mu <a th:href="@{/update-password}">disini!</a></p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     <nav th:replace="fragments/fragment :: navbar(beranda)"></nav>
     <h1>Hello, this is B03</h1>
@@ -39,7 +45,7 @@
             $(".alert").fadeTo(500, 0).slideUp(1000, function(){
                 $(this).remove();
             });
-        }, 2000);
+        }, 5000);
 
     });
 
