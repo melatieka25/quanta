@@ -43,29 +43,37 @@ public class JadwalKelasServiceImpl implements JadwalKelasService{
         return jadwalKelasDb.findAll();
     }
 
-    public void setListPresensi(JadwalKelasModel jadwalKelas) {
+    public void createListPresensi(JadwalKelasModel jadwalKelas) {
         List<PresensiModel> listPresensi = new ArrayList<>();
         
         // create presensi per student
+        // System.out.println("==== " + jadwalKelas.getKelas().getName());
         List<SiswaKelasModel> listSiswa = jadwalKelas.getKelas().getListSiswaKelas();
         for (SiswaKelasModel siswa : listSiswa) {
+            System.out.println(siswa.getKelasSiswa().getName());
             PresensiModel presensi = presensiService.createPresensi(jadwalKelas);
             presensi.setSiswa(siswa.getSiswa());
-            listPresensi.add(presensi);
+            PresensiModel newPresensi = presensiService.updatePresensi(presensi);
+            listPresensi.add(newPresensi);
         }
         jadwalKelas.setListPresensi(listPresensi);
     }
 
     @Override
     public void addJadwalKelas(JadwalKelasModel jadwalKelas) {
-        setListPresensi(jadwalKelas);
+        createListPresensi(jadwalKelas);
         jadwalKelasDb.save(jadwalKelas);
     }
 
     @Override
     public void updateJadwalKelas(JadwalKelasModel jadwalKelas) {
-        setListPresensi(jadwalKelas);
-        jadwalKelasDb.save(jadwalKelas);
+        // System.out.println(jadwalKelas.getListPresensi());
+        presensiService.deletePresensi(jadwalKelas);
+        List<PresensiModel> newPresensi = new ArrayList<>();
+        jadwalKelas.setListPresensi(newPresensi);
+
+        // createListPresensi(jadwalKelas);
+        // jadwalKelasDb.save(jadwalKelas);
     }
 
     @Override

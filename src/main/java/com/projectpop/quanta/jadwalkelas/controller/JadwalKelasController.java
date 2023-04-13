@@ -61,7 +61,7 @@ public class JadwalKelasController {
             canUpdate = false;
         } else if (now.isEqual(jadwal.getStartDateClass())) {
             canUpdate = false;
-        }
+        } 
         model.addAttribute("jadwal", jadwal);
         model.addAttribute("canUpdate", canUpdate);
         return "jadwalkelas/jadwalkelas-view-detail";
@@ -159,6 +159,9 @@ public class JadwalKelasController {
         model.addAttribute("jamSelesai", jamSelesai);
         model.addAttribute("jadwalKelas", jadwalKelas);  
 
+        // reset list presensi and delete presensimodel
+        jadwalKelasService.updateJadwalKelas(jadwalKelas);
+
         return "jadwalkelas/jadwalkelas-update-form";
     }
 
@@ -196,7 +199,7 @@ public class JadwalKelasController {
             return "redirect:/jadwal-kelas/update/" + jadwalKelas.getId();
         }
 
-        jadwalKelasService.updateJadwalKelas(jadwalKelas);
+        jadwalKelasService.addJadwalKelas(jadwalKelas);
         redirectAttrs.addFlashAttribute("message", "Perubahan jadwal berhasil dilakukan!");
         return "redirect:/jadwal-kelas/" + jadwalKelas.getId();
     }
@@ -212,7 +215,7 @@ public class JadwalKelasController {
 
             if (jadwalFromDb.getId() != jadwalKelas.getId()){    
                 //cek kesamaan yang mungkin menyebabkan bentrok
-                System.out.println(jadwalFromDb.getId() + "======" +jadwalKelas.getId());
+                // System.out.println(jadwalFromDb.getId() + "======" +jadwalKelas.getId());
 
                 // cek kesamaan pengajar
                 boolean isPossible = false;
@@ -295,15 +298,22 @@ public class JadwalKelasController {
         JadwalKelasModel jadwalKelas = jadwalKelasService.getJadwalKelasById(id);
         LocalDateTime now = LocalDateTime.now();
         boolean isOngoing = false;
+        boolean hasPassed = false;
         if (now.isAfter(jadwalKelas.getStartDateClass()) && now.isBefore(jadwalKelas.getEndDateClass())) {
             isOngoing = true;
         } else if (now.isEqual(jadwalKelas.getStartDateClass())) {
             isOngoing = true;
+        } else if (now.isAfter(jadwalKelas.getEndDateClass())) {
+            hasPassed = true;
         }
 
         if (isOngoing) {
             redirectAttrs.addFlashAttribute("deletefailed", "Jadwal sedang berlangsung! Penghapusan jadwal gagal dilakukan");
-        } else {
+            return "redirect:/jadwal-kelas/" + id;
+        } else if (hasPassed){
+            redirectAttrs.addFlashAttribute("deletefailed", "Jadwal sudah selesai berlangsung! Penghapusan jadwal gagal dilakukan");
+            return "redirect:/jadwal-kelas/" + id;
+        }else {
             redirectAttrs.addFlashAttribute("message", "Jadwal berhasil dihapus!");
             jadwalKelasService.deleteJadwalKelas(jadwalKelas);
         }

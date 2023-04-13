@@ -43,7 +43,19 @@ public class KelasServiceImpl implements KelasService{
         } else if (day == 2|| day == 4 || day==6){
             listKelas = kelasDb.findByDays(JadwalAvail.SelasaKamisSabtu);
         }
-        return listKelas;
+        List<KelasModel> res = getListKelasAktif(listKelas);
+        return res;
+    }
+
+    @Override
+    public List<KelasModel> getListKelasAktif(List<KelasModel> listKelas) {
+        List<KelasModel> res = new ArrayList<>();
+        for (KelasModel kelas : listKelas) {
+            if (kelas.getTahunAjar().getIsAktif()) {
+                res.add(kelas);
+            }
+        }
+        return res;
     }
 
     @Override
