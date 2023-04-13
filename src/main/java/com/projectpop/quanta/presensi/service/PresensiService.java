@@ -10,4 +10,5 @@ public interface PresensiService {
     List<PresensiModel> getListPresensi();
     PresensiModel updatePresensi(PresensiModel presensiModel);
     PresensiModel createPresensi(JadwalKelasModel jadwal);
+    void deletePresensi(JadwalKelasModel jadwal);
 }

@@ -9,15 +9,40 @@
       body {
           font-family: 'DM Sans';
       }
+      .alert {
+        position:fixed;
+        top: 7rem;
+        left: 5%;
+        width: 90%;
+        z-index:9999;
+    }
   </style>  
 </head>
 <body>
   <nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
+  <br>
+  <div class="alert alert-success alert-dismissible d-flex align-items-center" role="alert" th:if="${message}">
+    <div class="d-flex align-items-center">
+      <p th:text="${message}" style="margin-bottom: 0px; margin-top: 0px;"></p>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${deletefailed}">
+    <div class="d-flex align-items-center">
+      <p th:text="${deletefailed}" style="margin-bottom: 0px; margin-top: 0px;"></p>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
   <a class="btn btn-link" style="color: #31318B" href="/jadwal-kelas"> Kembali ke Daftar Jadwal Kelas</a>
+
+  
   <div class="container" style="width:75%; padding-top:20px;">
+    
     <h2 style="font-weight: bold; text-align:center; padding:20px">Detail Jadwal Kelas</h2>
-    <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
-    <div class="alert alert-danger" role="alert" th:text="${errorMessage}" th:if="${errorMessage}"></div>
+    <!-- <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
+    <div class="alert alert-danger" role="alert" th:text="${errorMessage}" th:if="${errorMessage}"></div> -->
     <div class="container" style="width:100%;">
     <div class="card mt-3" style="background-color:#F7FAFC">
       <div class="card-body">
@@ -28,7 +53,9 @@
               <p style="font-weight: bold; color: #31318B">Tanggal Kelas</p>
             </div>
             <div class="col">
-              <p th:text="${#temporals.format(jadwal.startDateClass, 'dd MM yyyy')}"></p>
+              <!-- <p th:text="${#temporals.format(jadwal.startDateClass, 'dd MM yyyy')}"></p> -->
+              <p th:text="${#temporals.format(jadwal.startDateClass, 'EEEE, d MMMM yyyy', #locale.US)}"></p>
+
             </div>
             <div class="col">
               <p style="font-weight: bold; color: #31318B">Jam Kelas</p>
@@ -72,9 +99,17 @@
               <p></p>
             </div>
             <div class="col">
+              <div th:if="${canUpdate}">
                 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-delete" style="display:block; width:100%; margin-top:20px;">
-                    Hapus
+                  Hapus
                 </button>
+              </div>
+              <div th:unless="${canUpdate}">
+                <button type="button" disabled class="btn btn-danger" data-toggle="modal" data-target="#modal-delete" style="display:block; width:100%; margin-top:20px;">
+                  Hapus
+                </button>
+              </div>
+                
             </div>
             <div class="col">
               <div th:if="${canUpdate}">
@@ -92,7 +127,7 @@
             <p></p>
           </div>
           <div th:unless="${canUpdate}" class="row">
-            <small style="text-align:center; color: red;">* Jadwal yang sudah atau sedang berlangsung tidak dapat diubah</small>
+            <small style="text-align:center; color: red;">* Jadwal yang sudah atau sedang berlangsung tidak dapat diubah ataupun dihapus</small>
           </div>
           <br>
         </div>
@@ -124,4 +159,16 @@
 
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript">
+
+  $(document).ready( () => {
+      window.setTimeout(function() {
+          $(".alert").fadeTo(500, 0).slideUp(1000, function(){
+              $(this).remove();
+          });
+      }, 4000);
+
+  });
+
+</script>
 </html>

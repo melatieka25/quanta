@@ -47,7 +47,16 @@ public class PresensiServiceImpl implements PresensiService{
     public PresensiModel createPresensi(JadwalKelasModel jadwal) {
         PresensiModel presensi = new PresensiModel();
         presensi.setJadwal(jadwal);
-        presensi.setStatus(PresensiStatus.ALPHA);
+        presensi.setStatus(PresensiStatus.KOSONG);
         return presensi;
+    }
+
+    @Override
+    public void deletePresensi(JadwalKelasModel jadwal) {
+        List<PresensiModel> listPresensi = jadwal.getListPresensi();
+        // System.out.println(listPresensi);
+        for (PresensiModel presensi : listPresensi) {
+            presensiDb.delete(presensi);
+        }
     }
 }
