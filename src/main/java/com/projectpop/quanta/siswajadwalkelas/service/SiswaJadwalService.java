@@ -8,7 +8,4 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface SiswaJadwalService {
-    List<SiswaJadwalModel> getListSiswaJadwalBySiswa(SiswaModel siswa);
-    List<SiswaJadwalModel> getListSiswaJadwalBySiswaAndDate(SiswaModel siswa, LocalDate tanggal);
-
 }

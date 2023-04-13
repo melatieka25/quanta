@@ -100,7 +100,20 @@ public class SiswaKonsultasiServiceImpl implements SiswaKonsultasiService{
                 listSiswaKonsultasiTanggal.add(siswaKonsultasi);
             }
         } return listSiswaKonsultasiTanggal;
+    }
 
-//
+    @Override
+    public List<SiswaKonsultasiModel> getListKonsultasiBySiswaAndTanggalPendingAndDiterima(SiswaModel siswa, LocalDate tanggal) {
+        List<SiswaKonsultasiModel> listSiswaKonsultasi =  siswaKonsultasiDb.findAllBySiswaKonsul(siswa);
+        List<SiswaKonsultasiModel> listSiswaKonsultasiTanggal = new ArrayList<>();
+
+        for (SiswaKonsultasiModel siswaKonsultasi: listSiswaKonsultasi) {
+            KonsultasiModel konsultasi = siswaKonsultasi.getKonsultasi();
+            if (konsultasi.getStartTime().toLocalDate().equals(tanggal)
+                    && (konsultasi.getStatus().equals(PENDING)
+                    || konsultasi.getStatus().equals(DITERIMA)) ){
+                listSiswaKonsultasiTanggal.add(siswaKonsultasi);
+            }
+        } return listSiswaKonsultasiTanggal;
     }
 }
