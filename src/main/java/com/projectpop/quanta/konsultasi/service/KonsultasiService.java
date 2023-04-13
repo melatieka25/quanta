@@ -4,8 +4,12 @@ import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
 import com.projectpop.quanta.konsultasi.model.StatusKonsul;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.siswa.model.Jenjang;
+import com.projectpop.quanta.siswa.model.SiswaModel;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface KonsultasiService {
@@ -32,7 +36,15 @@ public interface KonsultasiService {
 
     List<KonsultasiModel> getListKonsultasiByPengajarAndStatusAndTanggal(PengajarModel pengajar, StatusKonsul satus, LocalDate tanggal);
 
+    KonsultasiModel updateKonsultasi(KonsultasiModel konsultasi);
 
+    boolean getIsSiswaAvailable(SiswaModel siswa, KonsultasiModel konsultasi);
 
+    ArrayList<LocalTime> getNotAvailableWaktuKonsulPengajar(PengajarModel pengajar, LocalDate tanggal);
 
+    boolean getIsPengajarAvailable(PengajarModel pengajar, KonsultasiModel konsultasi);
+
+    List<LocalTime> getListWaktuAwalKonsultasi(LocalDate tanggal);
+
+    boolean isInRangeTimeExtend(LocalDateTime waktuAwalKonsul, LocalDateTime waktuAkirKonsulExtend);
 }

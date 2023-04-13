@@ -2,8 +2,7 @@ package com.projectpop.quanta.konsultasi.restcontroller;
 
 import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
-import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
-import static com.projectpop.quanta.konsultasi.model.StatusKonsul.*;
+import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.konsultasi.service.KonsultasiService;
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
 import com.projectpop.quanta.mapel.service.MataPelajaranService;
@@ -18,7 +17,6 @@ import com.projectpop.quanta.siswajadwalkelas.service.SiswaJadwalService;
 import com.projectpop.quanta.siswakonsultasi.model.SiswaKonsultasiModel;
 import com.projectpop.quanta.siswakonsultasi.service.SiswaKonsultasiService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +27,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/v1/konsultasi")
@@ -81,14 +78,14 @@ public class KonsultasiRestController {
         SiswaModel siswa = siswaService.findSiswaByEmail(principal.getName());
         PengajarModel pengajar = pengajarService.getPengajarById(idPengajar);
 
-        List<SiswaJadwalModel> listSiswaJadwal = siswaJadwalService.getListSiswaJadwalBySiswaAndDate(siswa, LocalDate.parse(tanggal));
+        List<JadwalKelasModel> listJadwalSiswa = jadwalKelasService.getListJadwalKelasByKelasAndTanggal(LocalDate.parse(tanggal), siswaService.getKelasBimbel(siswa));
         List<ArrayList<LocalTime>> listWaktuTidakTersedia = new ArrayList<ArrayList<LocalTime>>();
 
 //        ambil jadwal siswa
-        if (listSiswaJadwal.size() != 0) {
-            for (SiswaJadwalModel siswaJadwal : listSiswaJadwal) {
-                LocalTime waktuMulaiSiswa = siswaJadwal.getJadwalKelas().getStartDateClass().toLocalTime();
-                LocalTime waktuSelesaiSiswa = siswaJadwal.getJadwalKelas().getEndDateClass().toLocalTime();
+        if (listJadwalSiswa.size() != 0) {
+            for (JadwalKelasModel jadwalSiswa : listJadwalSiswa) {
+                LocalTime waktuMulaiSiswa = jadwalSiswa.getStartDateClass().toLocalTime();
+                LocalTime waktuSelesaiSiswa = jadwalSiswa.getEndDateClass().toLocalTime();
                 ArrayList<LocalTime> waktuTidakTersedia = new ArrayList<LocalTime>(2);
                 waktuTidakTersedia.add(waktuMulaiSiswa);
                 waktuTidakTersedia.add(waktuSelesaiSiswa);
@@ -110,7 +107,7 @@ public class KonsultasiRestController {
         }
         
 //        ambil jadwal konsul siswa
-        List<SiswaKonsultasiModel> listJadwalKonsultasiSiswa = siswaKonsultasiService.getListKonsultasiBySiswaAndTanggal(siswa, LocalDate.parse(tanggal));
+        List<SiswaKonsultasiModel> listJadwalKonsultasiSiswa = siswaKonsultasiService.getListKonsultasiBySiswaAndTanggalPendingAndDiterima(siswa, LocalDate.parse(tanggal));
         if (listJadwalKonsultasiSiswa.size() != 0) {
             for (SiswaKonsultasiModel siswaKonsul: listJadwalKonsultasiSiswa) {
                 LocalTime waktuMulaiKonsul = siswaKonsul.getKonsultasi().getStartTime().toLocalTime();
@@ -123,7 +120,7 @@ public class KonsultasiRestController {
         }
 
 //      ambil jadwal konsultasi pengajar -> dengan jumlah konsultasi > 3 dalam 1 waktu
-        ArrayList<LocalTime> listNotAvailableTimePengajar = getNotAvailableWaktuKonsulPengajar(pengajar, LocalDate.parse(tanggal));
+        ArrayList<LocalTime> listNotAvailableTimePengajar = konsultasiService.getNotAvailableWaktuKonsulPengajar(pengajar, LocalDate.parse(tanggal));
         if (null != listNotAvailableTimePengajar) {
             for (LocalTime notAvailTimeAwal : listNotAvailableTimePengajar) {
                 ArrayList<LocalTime> waktuTidakTersedia = new ArrayList<LocalTime>(2);
@@ -135,7 +132,7 @@ public class KonsultasiRestController {
 
 
 //        ambil jadwal konsul harian
-        List<LocalTime> listWaktuAwalKonsultasi = getListWaktuAwalKonsultasi(LocalDate.parse(tanggal));
+        List<LocalTime> listWaktuAwalKonsultasi = konsultasiService.getListWaktuAwalKonsultasi(LocalDate.parse(tanggal));
         List<LocalTime> listWaktuAwalKonsultasiTersedia = new ArrayList<LocalTime>();
         listWaktuAwalKonsultasiTersedia.addAll(listWaktuAwalKonsultasi);
 
@@ -174,54 +171,5 @@ public class KonsultasiRestController {
 
     }
 
-    @GetMapping("/get-waktu-default")
-    private List<LocalTime> getListWaktuAwalKonsultasi(LocalDate tanggal){
-        List<LocalTime> listWaktuMulaiKonsul = new ArrayList<>();
-        int hari = tanggal.getDayOfWeek().getValue();
-        if ((hari >= 1) && (hari <= 5)) {
-            for (int i = 14; i < 20; i++) {
-
-                listWaktuMulaiKonsul.add(LocalTime.of(i,00));
-
-            }
-        } else if (hari == 6) {
-            for (int i = 10; i < 16; i++) {
-                listWaktuMulaiKonsul.add(LocalTime.of(i,00));
-
-            }
-        }
-        return listWaktuMulaiKonsul;
-    }
-
-    private ArrayList<LocalTime> getNotAvailableWaktuKonsulPengajar(PengajarModel pengajar, LocalDate tanggal){
-        List<KonsultasiModel> listTheDayKonsul = konsultasiService.getListKonsultasiByPengajarAndStatusAndTanggal(pengajar, DITERIMA, tanggal);
-        if (listTheDayKonsul.size() != 0) {
-            HashMap<LocalTime, Integer> timeCount = new HashMap<>();
-            LocalTime timeCek = listTheDayKonsul.get(0).getStartTime().toLocalTime();
-            if (listTheDayKonsul.size()>1) {
-                for (int i = 1; i < listTheDayKonsul.size(); i++) {
-                    LocalTime thisTime = listTheDayKonsul.get(i).getStartTime().toLocalTime();
-                    for (int j = 0; j < listTheDayKonsul.get(i).getDuration(); j++) {
-                        if (timeCek.equals(thisTime.plusHours(j))) {
-                            if (!timeCount.containsKey(thisTime)) {
-                                timeCount.put(thisTime, 1);
-                            } else {
-                                timeCount.put(thisTime, timeCount.get(thisTime) + 1);
-                            }
-
-                        }
-                    }
-                }
-            }
-
-            ArrayList<LocalTime> notAvailableWaktu = new ArrayList<LocalTime>();
-            timeCount.forEach((key, value) -> {
-                if (value > 3) {
-                    notAvailableWaktu.add(key);
-                }
-            }); return notAvailableWaktu;
-        }
-        return null;
-    }
 
 }

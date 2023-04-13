@@ -16,4 +16,5 @@ public interface JadwalKelasService {
     void deleteJadwalKelas(JadwalKelasModel jadwalKelas);
     List<JadwalKelasModel> getListJadwalKelasByIdPengajar(Integer idPengajar);
     List<JadwalKelasModel> getListJadwalKelasByKelas(KelasModel kelas);
+    List<JadwalKelasModel> getListJadwalKelasByKelasAndTanggal(LocalDate tanggal, KelasModel kelas);
 }

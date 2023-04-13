@@ -106,4 +106,15 @@ public class JadwalKelasServiceImpl implements JadwalKelasService{
         }
         return new ArrayList<>();
     }
+
+    @Override
+    public List<JadwalKelasModel> getListJadwalKelasByKelasAndTanggal(LocalDate tanggal, KelasModel kelas) {
+        List<JadwalKelasModel> listJadwalKelas = jadwalKelasDb.findAllByKelas(kelas);
+        List<JadwalKelasModel> listJadwalKelasTanggal = new ArrayList<>();
+        for (JadwalKelasModel jadwalKelas: listJadwalKelas) {
+            if (jadwalKelas.getStartDateClass().toLocalDate().equals(tanggal)){
+                listJadwalKelasTanggal.add(jadwalKelas);
+            }
+        } return listJadwalKelasTanggal;
+    }
 }
