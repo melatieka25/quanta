@@ -13,10 +13,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.opencsv.CSVReader;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.bean.HeaderColumnNameTranslateMappingStrategy;
 import com.projectpop.quanta.orangtua.model.OrtuModel;
 import com.projectpop.quanta.orangtua.service.OrtuService;
+import com.projectpop.quanta.siswa.model.SiswaCsvModel;
 import com.projectpop.quanta.siswa.model.SiswaModel;
 import com.projectpop.quanta.siswa.service.SiswaService;
 import com.projectpop.quanta.user.model.UserModel;
@@ -29,7 +32,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/siswa")
@@ -205,7 +210,7 @@ public class SiswaController {
     }
 
     @PostMapping("update")
-    public String updatePengajarSubmitPage(@ModelAttribute SiswaModel siswa, Model model, RedirectAttributes redirectAttrs) {
+    public String updateSiswaSubmitPage(@ModelAttribute SiswaModel siswa, Model model, RedirectAttributes redirectAttrs) {
         SiswaModel oldSiswa = siswaService.getSiswaById(siswa.getId());
         oldSiswa.setName(siswa.getName());
         oldSiswa.setNickname(siswa.getNickname());
@@ -227,45 +232,155 @@ public class SiswaController {
         return "manajemen-user/form-import-siswa";
     }
 
-    @PostMapping("/import-csv/status")
-    public String ImportCsvStatusPage(@RequestParam("file") MultipartFile file, Model model) {
+    @PostMapping("/import-csv")
+    public String ImportCsvStatusPage(@RequestParam("file") MultipartFile file, Model model, RedirectAttributes redirectAttrs) {
 
         // validate file
         if (file.isEmpty()) {
-            model.addAttribute("message", "Please select a CSV file to upload.");
-            model.addAttribute("status", false);
+            redirectAttrs.addFlashAttribute("error", "Belum ada berkas CSV dipilih. Harap pilih satu berkas CSV!");
+            return "redirect:/siswa/import-csv";
+            
         } else {
-
             // parse CSV file to create a list of `User` objects
             try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
 
                 // create csv bean reader
-                CsvToBean<SiswaModel> csvToBean = new CsvToBeanBuilder(reader)
-                        .withType(SiswaModel.class)
+                CsvToBean<SiswaCsvModel> csvToBean = new CsvToBeanBuilder(reader)
+                        .withType(SiswaCsvModel.class)
                         .withSeparator(';')
                         .withIgnoreLeadingWhiteSpace(true)
                         .build();
 
                 // convert `CsvToBean` object to list of users
-                List<SiswaModel> listSiswa = csvToBean.parse();
+                List<SiswaCsvModel> listSiswaCsv = csvToBean.parse();
+                List<SiswaModel> listSiswa = new ArrayList<SiswaModel>();
+                List<OrtuModel> listOrtu = new ArrayList<OrtuModel>();
 
-                for (int i =0; i < listSiswa.size(); i++){
-                    System.out.println(listSiswa.get(0).getName());
+                int counterSiswa = 0;
+                int counterOrtu = 0;
+                for (int i =0; i < listSiswaCsv.size(); i++){
+                    if (siswaService.getSiswaByEmail(listSiswaCsv.get(i).getEmail()) == null){
+                        SiswaModel siswa = siswaService.convertSiswaCsv(listSiswaCsv.get(i));
+                        String password = PasswordManager.generateCommonTextPassword();
+                        siswa.setPassword(password);
+                        siswa.setPasswordPertama(password);
+                        siswaService.addSiswa(siswa);
+                        listSiswa.add(siswa);
+                        counterSiswa++;
+                        if (ortuService.getOrtuByEmail(listSiswaCsv.get(i).getEmailOrtu()) == null) {
+                            OrtuModel ortu = ortuService.convertOrtuCsv(listSiswaCsv.get(i));
+                            String passwordOrtu = PasswordManager.generateCommonTextPassword();
+                            ortu.setPassword(passwordOrtu);
+                            ortu.setPasswordPertama(passwordOrtu);
+                            ortuService.addOrtu(ortu);
+                            siswa.setOrtu(ortu);;
+                            listOrtu.add(ortu);
+                            counterOrtu++;
+                        }
+                    }
                 }
-
-                // TODO: save users in DB?
 
                 // save users list on model
                 model.addAttribute("listSiswa", listSiswa);
-                model.addAttribute("status", true);
-
+                model.addAttribute("listOrtu", listOrtu);
+                if (counterSiswa == 0 && counterOrtu == 0) {
+                    model.addAttribute("error", "Gagal menambahkan siswa dan wali. Semua siswa beserta wali yang ingin ditambahkan telah tersimpan di sistem QUANTA");
+                } else {
+                    model.addAttribute("message", "Berhasil menambahkan data " + counterSiswa + " orang siswa dan " + counterOrtu + " orang wali");
+                }
+                
             } catch (Exception ex) {
-                model.addAttribute("message", "An error occurred while processing the CSV file.");
-                model.addAttribute("status", false);
+                // Hashmap to map CSV data to
+                // Bean attributes.
+                Map<String, String> mapping = new HashMap<String, String>();
+                mapping.put("id", "id");
+                mapping.put("fullName", "fullName");
+                mapping.put("address", "address");
+                mapping.put("dob", "dob");
+                mapping.put("email", "email");
+                mapping.put("gender", "gender");
+                mapping.put("nickname", "nickname");
+                mapping.put("phone_num", "phone_num");
+                mapping.put("pob", "pob");
+                mapping.put("religion", "religion");
+                mapping.put("jenjang", "jenjang");
+                mapping.put("sekolah", "sekolah");
+                mapping.put("fullNameOrtu", "fullNameOrtu");
+                mapping.put("addressOrtu", "addressOrtu");
+                mapping.put("dobOrtu", "dobOrtu");
+                mapping.put("emailOrtu", "emailOrtu");
+                mapping.put("genderOrtu", "genderOrtu");
+                mapping.put("nicknameOrtu", "nicknameOrtu");
+                mapping.put("phone_numOrtu", "phone_numOrtu");
+                mapping.put("pobOrtu", "pobOrtu");
+                mapping.put("religionOrtu", "religionOrtu");
+                mapping.put("jobOrtu", "jobOrtu");
+                mapping.put("kantorOrtu", "kantorOrtu");
+        
+
+                HeaderColumnNameTranslateMappingStrategy<SiswaCsvModel> strategy =
+                    new HeaderColumnNameTranslateMappingStrategy<>();
+                strategy.setType(SiswaCsvModel.class);
+                strategy.setColumnMapping(mapping);
+        
+                // Create csvtobean and csvreader object
+                CSVReader csvReader = null;
+                try {
+                    Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
+                    csvReader = new CSVReader(reader);
+                }
+                catch (Exception e) {
+                    redirectAttrs.addFlashAttribute("error", "Berkas yang dimasukkan tidak sesuai. Harap masukkan berkas yang sesuai untuk mengimpor data siswa!");
+                    return "redirect:/siswa/import-csv";
+                }
+                CsvToBean<SiswaCsvModel> csvToBean = new CsvToBeanBuilder<SiswaCsvModel>(csvReader)
+                        .withMappingStrategy(strategy)
+                        .withSeparator(',')
+                        .withIgnoreLeadingWhiteSpace(true)
+                        .build();
+
+                // convert `CsvToBean` object to list of users
+                List<SiswaCsvModel> listSiswaCsv = csvToBean.parse();
+                List<SiswaModel> listSiswa = new ArrayList<SiswaModel>();
+                List<OrtuModel> listOrtu = new ArrayList<OrtuModel>();
+
+                int counterSiswa = 0;
+                int counterOrtu = 0;
+                for (int i =0; i < listSiswaCsv.size(); i++){
+                    if (siswaService.getSiswaByEmail(listSiswaCsv.get(i).getEmail()) == null){
+                        SiswaModel siswa = siswaService.convertSiswaCsv(listSiswaCsv.get(i));
+                        String password = PasswordManager.generateCommonTextPassword();
+                        siswa.setPassword(password);
+                        siswa.setPasswordPertama(password);
+                        siswaService.addSiswa(siswa);
+                        listSiswa.add(siswa);
+                        counterSiswa++;
+                        if (ortuService.getOrtuByEmail(listSiswaCsv.get(i).getEmailOrtu()) == null) {
+                            OrtuModel ortu = ortuService.convertOrtuCsv(listSiswaCsv.get(i));
+                            String passwordOrtu = PasswordManager.generateCommonTextPassword();
+                            ortu.setPassword(passwordOrtu);
+                            ortu.setPasswordPertama(passwordOrtu);
+                            ortuService.addOrtu(ortu);
+                            siswa.setOrtu(ortu);;
+                            listOrtu.add(ortu);
+                            counterOrtu++;
+                        }
+                    }
+                }
+
+                // save users list on model
+                model.addAttribute("listSiswa", listSiswa);
+                model.addAttribute("listOrtu", listOrtu);
+                if (counterSiswa == 0 && counterOrtu == 0) {
+                    model.addAttribute("error", "Gagal menambahkan siswa dan wali. Semua siswa beserta wali yang ingin ditambahkan telah tersimpan di sistem QUANTA");
+                } else {
+                    model.addAttribute("message", "Berhasil menambahkan data " + counterSiswa + " orang siswa dan " + counterOrtu + " orang wali");
+                }
+                
             }
         }
 
-        return "file-upload-status";
+        return "manajemen-user/list-siswa-imported";
     }
 
 }
