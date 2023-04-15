@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <title>Create Pengajar</title>
+    <object th:include="fragments/fragment :: css" th:remove="tag"></object>
+    <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+    <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
+    <style>
+        body {
+            font-family: 'DM Sans';
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            height: 60vh;
+            width: 100%;
+            align-items: center;
+            display: flex;
+            justify-content: center;
+            background-color: #fcfcfc;
+        }
+
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.3);
+            width: 600px;
+            height: 260px;
+            background-color: #ffffff;
+            padding: 10px 30px 40px;
+        }
+
+        .card h3 {
+            font-size: 22px;
+            font-weight: 600;
+            
+        }
+
+        .drop_box {
+            margin: 10px 0;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            border: 3px dotted #a3a3a3;
+            border-radius: 5px;
+        }
+
+        .drop_box h4 {
+            font-size: 16px;
+            font-weight: 400;
+            color: #2e2e2e;
+        }
+
+        .drop_box p {
+            margin-top: 10px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: #a3a3a3;
+        }
+
+        .btn {
+            text-decoration: none;
+            background-color: #005af0;
+            color: #ffffff;
+            padding: 10px 20px;
+            border: none;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .form input {
+            margin: 10px 0;
+            width: 100%;
+            background-color: #e2e2e2;
+            border: none;
+            outline: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+        }
+    </style>  
+</head>
+<body>
+<nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
+  <div style="margin: auto; width: 80%; text-align: center; padding-top: 20px">
+    <h2 style="font-weight: bold; text-align:center; padding:20px">Tambah Pengajar dengan Import CSV</h2>
+    <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
+    <div class="alert alert-danger" role="alert" th:text="${errorMessage}" th:if="${errorMessage}"></div>
+  </div>
+    <div class="container">
+        <div class="card">
+            <div class="drop_box">
+            <header>
+                <h4 style="font-weight: bold; color: #31318B">Pilih Berkas CSV Disini</h4>
+            </header>
+            <p>Berkas Didukung: CSV</p>
+            <input type="file" hidden accept=".csv" name="file" id="file" style="display:none;">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-update" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B" >Pilih Berkas</button>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    const dropArea = document.querySelector(".drop_box"),
+    button = dropArea.querySelector("button"),
+    dragText = dropArea.querySelector("header"),
+    input = dropArea.querySelector("input");
+    let file;
+    var filename;
+
+    button.onclick = () => {
+    input.click();
+    };
+
+    input.addEventListener("change", function (e) {
+    var fileName = e.target.files[0].name;
+    let filedata = `
+        <form action="" method="post">
+        <div class="form">
+        <h4>${fileName}</h4>
+        <input type="email" placeholder="Enter email upload file">
+        <button class="btn">Upload</button>
+        </div>
+        </form>`;
+    dropArea.innerHTML = filedata;
+    });
+</script>
+</html>

@@ -42,7 +42,15 @@
     <div class="justify-content-center">
         <div style="margin: auto; padding-top: 10px; width: 80%; padding: 20px; text-align: center">
             <h2 style="font-weight: bold; padding-top: 10px;" >List Pengajar</h2>
-            <a class="btn btn-primary" href="/pengajar/create-pengajar" style="margin: 12px; background-color: #31318B; font-weight: bold; border: none; width:30%;">Tambah Pengajar +</a>
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" style="margin: 12px; background-color: #31318B; font-weight: bold; border: none; width:30%;" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Tambah Pengajar
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="/pengajar/create-pengajar">Isi Form</a>
+                    <a class="dropdown-item" href="/pengajar/import-csv">Impor Berkas CSV</a>
+                </div>
+            </div>
             <br>
         </div>
         <table style="margin: 20px; " class="table table-striped align-middle" id="pengajar-table">
@@ -81,6 +89,8 @@
 
 <script>
     $(document).ready( () => {
+
+        $('.dropdown-toggle').dropdown()
 
         window.setTimeout(function() {
             $(".alert").fadeTo(500, 0).slideUp(1000, function(){

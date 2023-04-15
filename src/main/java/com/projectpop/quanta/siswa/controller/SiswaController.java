@@ -10,8 +10,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
 import com.projectpop.quanta.orangtua.model.OrtuModel;
 import com.projectpop.quanta.orangtua.service.OrtuService;
 import com.projectpop.quanta.siswa.model.SiswaModel;
@@ -21,6 +24,9 @@ import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.user.service.UserService;
 import com.projectpop.quanta.user.auth.PasswordManager;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -214,6 +220,52 @@ public class SiswaController {
         SiswaModel updatedSiswa = siswaService.updateSiswa(oldSiswa);
         redirectAttrs.addFlashAttribute("message", "Siswa dengan nama " + updatedSiswa.getNameEmail() + " telah berhasil diubah datanya!");
         return "redirect:/siswa/detail/" + updatedSiswa.getId();
+    }
+
+    @GetMapping("/import-csv")
+    public String addSiswaImportCsvPage() {
+        return "manajemen-user/form-import-siswa";
+    }
+
+    @PostMapping("/import-csv/status")
+    public String ImportCsvStatusPage(@RequestParam("file") MultipartFile file, Model model) {
+
+        // validate file
+        if (file.isEmpty()) {
+            model.addAttribute("message", "Please select a CSV file to upload.");
+            model.addAttribute("status", false);
+        } else {
+
+            // parse CSV file to create a list of `User` objects
+            try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+
+                // create csv bean reader
+                CsvToBean<SiswaModel> csvToBean = new CsvToBeanBuilder(reader)
+                        .withType(SiswaModel.class)
+                        .withSeparator(';')
+                        .withIgnoreLeadingWhiteSpace(true)
+                        .build();
+
+                // convert `CsvToBean` object to list of users
+                List<SiswaModel> listSiswa = csvToBean.parse();
+
+                for (int i =0; i < listSiswa.size(); i++){
+                    System.out.println(listSiswa.get(0).getName());
+                }
+
+                // TODO: save users in DB?
+
+                // save users list on model
+                model.addAttribute("listSiswa", listSiswa);
+                model.addAttribute("status", true);
+
+            } catch (Exception ex) {
+                model.addAttribute("message", "An error occurred while processing the CSV file.");
+                model.addAttribute("status", false);
+            }
+        }
+
+        return "file-upload-status";
     }
 
 }
