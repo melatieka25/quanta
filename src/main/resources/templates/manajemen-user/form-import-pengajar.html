@@ -2,6 +2,7 @@
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
     <title>Create Pengajar</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <object th:include="fragments/fragment :: css" th:remove="tag"></object>
     <object th:include="fragments/fragment :: js" th:remove="tag"></object>
     <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
@@ -29,7 +30,7 @@
             border-radius: 10px;
             box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.3);
             width: 600px;
-            height: 260px;
+            height: 300px;
             background-color: #ffffff;
             padding: 10px 30px 40px;
         }
@@ -64,16 +65,6 @@
             color: #a3a3a3;
         }
 
-        .btn {
-            text-decoration: none;
-            background-color: #005af0;
-            color: #ffffff;
-            padding: 10px 20px;
-            border: none;
-            outline: none;
-            transition: 0.3s;
-        }
-
         .form input {
             margin: 10px 0;
             width: 100%;
@@ -94,40 +85,61 @@
   </div>
     <div class="container">
         <div class="card">
-            <div class="drop_box">
-            <header>
-                <h4 style="font-weight: bold; color: #31318B">Pilih Berkas CSV Disini</h4>
-            </header>
-            <p>Berkas Didukung: CSV</p>
-            <input type="file" hidden accept=".csv" name="file" id="file" style="display:none;">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-update" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B" >Pilih Berkas</button>
-            </div>
+            <form th:action="@{/pengajar/import-csv}" method="POST" enctype="multipart/form-data">
+                <div class="drop_box">
+                    <header>
+                        <h4 style="font-weight: bold; color: #31318B">Pilih Berkas CSV Disini</h4>
+                    </header>
+                    <span class="material-icons md-48">
+                    upload_file
+                    </span>
+                    <p>Berkas Didukung: CSV</p>
+                    <input type="file" hidden accept=".csv" name="file" id="file" style="display:none;">
+                    <div class="part" style="width:100%">
+                        <div class="row">
+                            <div class="col">
+                                <a href="/pengajar" class="btn btn-outline-secondary" style="display:block; width:100%; margin-top:20px;">
+                                Kembali
+                                </a>
+                            </div>
+                            <div class="col">
+                                <button type="button" class="btn btn-primary" id="btn-pilih" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B" >Pilih Berkas</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </body>
 <script>
     const dropArea = document.querySelector(".drop_box"),
-    button = dropArea.querySelector("button"),
+    part = document.querySelector(".part");
+    button = document.getElementById("btn-pilih")
     dragText = dropArea.querySelector("header"),
     input = dropArea.querySelector("input");
     let file;
     var filename;
 
     button.onclick = () => {
-    input.click();
+        input.click();
     };
 
     input.addEventListener("change", function (e) {
-    var fileName = e.target.files[0].name;
-    let filedata = `
-        <form action="" method="post">
-        <div class="form">
-        <h4>${fileName}</h4>
-        <input type="email" placeholder="Enter email upload file">
-        <button class="btn">Upload</button>
-        </div>
-        </form>`;
-    dropArea.innerHTML = filedata;
+        var fileName = e.target.files[0].name;
+        let filedata = `
+            <h4> <span style="font-weight: bold; color: #31318B">File diimport: </span>${fileName}</h4>
+            <div class="row" style="width:100%">
+                <div class="col">
+                    <a href="/pengajar" class="btn btn-outline-secondary" style="display:block; width:100%; margin-top:20px;">
+                    Kembali
+                    </a>
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn btn-primary" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B" >Import Pengajar</button>
+                </div>
+            </div>`;
+        part.innerHTML = filedata;
     });
 </script>
 </html>

@@ -2,7 +2,11 @@ package com.projectpop.quanta.pengajar.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.projectpop.quanta.pengajar.model.Education;
+import com.projectpop.quanta.pengajar.model.PengajarCsvModel;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
+import com.projectpop.quanta.pengajar.model.StatusPernikahan;
 import com.projectpop.quanta.pengajar.repository.PengajarDb;
 
 import java.util.ArrayList;
@@ -14,10 +18,15 @@ import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
 import com.projectpop.quanta.mapel.repository.MataPelajaranDb;
 import com.projectpop.quanta.pengajarmapel.model.PengajarMapelModel;
+import com.projectpop.quanta.user.model.Gender;
+import com.projectpop.quanta.user.model.Religion;
+import com.projectpop.quanta.user.model.UserRole;
+
 import static com.projectpop.quanta.user.auth.PasswordManager.encrypt;
 
 import javax.transaction.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -146,7 +155,7 @@ public class PengajarServiceImpl implements PengajarService {
     }
 
     @Override
-    public PengajarModel findPengajarByEmail(String email) {
+    public PengajarModel getPengajarByEmail(String email) {
         Optional<PengajarModel> pengajar = pengajarDb.findByEmail(email);
         if(pengajar.isPresent()) {
             return pengajar.get();
@@ -158,5 +167,32 @@ public class PengajarServiceImpl implements PengajarService {
     public List<PengajarModel> getListKakakAsuh() {
         Optional<List<PengajarModel>> kakakAsuhList = pengajarDb.findKakakAsuh();
         return kakakAsuhList.orElse(null);
+    }
+
+
+    @Override
+    public PengajarModel convertPengajarCsv(PengajarCsvModel pengajarCsv) {
+        PengajarModel pengajar = new PengajarModel();
+        pengajar.setName(pengajarCsv.getFullName());
+        pengajar.setAddress(pengajarCsv.getAddress());
+        pengajar.setNickname(pengajarCsv.getNickname());
+        pengajar.setPhone_num(pengajarCsv.getPhone_num());
+        pengajar.setGender(Gender.valueOf(pengajarCsv.getGender()));
+        pengajar.setEmail(pengajarCsv.getEmail());
+        pengajar.setRole(UserRole.valueOf("PENGAJAR"));
+        pengajar.setIsPassUpdated(false);
+        pengajar.setPob(pengajarCsv.getPob());
+        pengajar.setDob(pengajarCsv.getDob());
+        pengajar.setReligion(Religion.valueOf(pengajarCsv.getReligion()));
+        pengajar.setIsActive(true);
+        pengajar.setKtp(pengajarCsv.getKtp());
+        pengajar.setStatus(StatusPernikahan.valueOf(pengajarCsv.getStatus()));
+        pengajar.setLastEdu(Education.valueOf(pengajarCsv.getLastEdu()));
+        pengajar.setJurusan(pengajarCsv.getJurusan());
+        pengajar.setIsKakakAsuh(false);
+        pengajar.setStartDate(LocalDate.now());
+        pengajar.setUniversity(pengajarCsv.getUniversity());
+
+        return pengajar;
     }
 }

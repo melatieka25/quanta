@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
-    <title>List Pengajar</title>
+    <title>List Import Pengajar</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
@@ -26,9 +26,9 @@
 </head>
 <body>
 <nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
-<div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${errorMessage}" >
+<div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${error}" >
     <div class="d-flex align-items-center">
-        <p th:text="${errorMessage}" style="margin-bottom: 0px; margin-top: 0px;"></p>
+        <p th:text="${error}" style="margin-bottom: 0px; margin-top: 0px;"></p>
     </div>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
@@ -38,46 +38,33 @@
     </div>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
-<div class="container" style="width:75%; padding-top:20px;">
+  <a class="btn btn-link" style="color: #31318B" href="/pengajar"><- List Pengajar</a>
+<div class="container" style="width:100%; padding-top:20px;">
     <div class="justify-content-center">
         <div style="margin: auto; padding-top: 10px; width: 80%; padding: 20px; text-align: center">
-            <h2 style="font-weight: bold; padding-top: 10px;" >List Pengajar</h2>
-            <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" style="margin: 12px; background-color: #31318B; font-weight: bold; border: none; width:30%;" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Tambah Pengajar
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="/pengajar/create-pengajar">Isi Form</a>
-                    <a class="dropdown-item" href="/pengajar/import-csv">Import Berkas CSV</a>
-                </div>
-            </div>
-            <br>
+            <h2 style="font-weight: bold; padding-top: 10px;" >List Pengajar Ditambahkan</h2>
         </div>
-        <table class="table table-striped align-middle" id="pengajar-table">
+        <table style="margin-top: 20px; " class="table table-striped align-middle" id="pengajar-table">
             <thead style="background-color: #31318B; color: #ffffff">
             <tr>
                 <th scope="col">No</th>
                 <th scope="col">Nama</th>
-                <th scope="col">Mata Pelajaran</th>
+                <th scope="col">Nama Panggilan</th>
                 <th scope="col">Email</th>
+                <th scope="col">Alamat</th>
                 <th scope="col">Nomor Telepon</th>
-                <th scope="col">Status</th>
-                <th scope="col">Aksi</th>
+                <th scope="col">Password</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="pengajar, iterationStatus : ${listPengajar}">
                 <th scope="row"></th>
                 <td th:text="${pengajar.name}"></td>
-                <td th:if="${pengajar.listPengajarMapel.size() == 0}">-</td>
-                <td th:if="${pengajar.listPengajarMapel.size() > 0}" th:text="${pengajar.listMapel}"></td>
+                <td th:text="${pengajar.nickname}"></td>
                 <td th:text="${pengajar.email}"></td>
-                <td th:text="'(+62)' + ${pengajar.phone_num}"></td>
-                <td th:if="${pengajar.isActive}">Aktif</td>
-                <td th:if="${!pengajar.isActive}">Non-Aktif</td>
-                <td class="align-content-center">
-                    <a class="btn btn-outline-primary align-content-center" th:href="@{/pengajar/detail/} + ${pengajar.id}">Detail</a>
-                </td>
+                <td th:text="${pengajar.address}"></td>
+                <td th:text="'(+62)' + ${pengajar.phone_num}"></td>  
+                <td th:text="${pengajar.passwordPertama}"
             </tr>
             </tbody>
         </table>
@@ -85,12 +72,8 @@
     </div>
 </div>
 
-</div>
-
 <script>
     $(document).ready( () => {
-
-        $('.dropdown-toggle').dropdown()
 
         window.setTimeout(function() {
             $(".alert").fadeTo(500, 0).slideUp(1000, function(){

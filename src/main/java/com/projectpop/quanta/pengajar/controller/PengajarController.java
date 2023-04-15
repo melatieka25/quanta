@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
+import com.projectpop.quanta.pengajar.model.PengajarCsvModel;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.service.PengajarService;
 import com.projectpop.quanta.user.model.UserModel;
@@ -27,6 +28,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -188,45 +190,59 @@ public class PengajarController {
         return "manajemen-user/form-import-pengajar";
     }
 
-    @PostMapping("/import-csv/status")
-    public String ImportCsvStatusPage(@RequestParam("file") MultipartFile file, Model model) {
+    @PostMapping("/import-csv")
+    public String ImportCsvStatusPage(@RequestParam("file") MultipartFile file, Model model, RedirectAttributes redirectAttrs) {
 
         // validate file
         if (file.isEmpty()) {
-            model.addAttribute("message", "Please select a CSV file to upload.");
-            model.addAttribute("status", false);
+            redirectAttrs.addFlashAttribute("error", "Belum ada berkas CSV dipilih. Harap pilih satu berkas CSV!");
+            return "redirect:/pengajar/import-csv";
+            
         } else {
-
             // parse CSV file to create a list of `User` objects
             try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
 
                 // create csv bean reader
-                CsvToBean<PengajarModel> csvToBean = new CsvToBeanBuilder(reader)
-                        .withType(PengajarModel.class)
+                CsvToBean<PengajarCsvModel> csvToBean = new CsvToBeanBuilder(reader)
+                        .withType(PengajarCsvModel.class)
                         .withSeparator(';')
                         .withIgnoreLeadingWhiteSpace(true)
                         .build();
 
                 // convert `CsvToBean` object to list of users
-                List<PengajarModel> listPengajar = csvToBean.parse();
+                List<PengajarCsvModel> listPengajarCsv = csvToBean.parse();
+                List<PengajarModel> listPengajar = new ArrayList<PengajarModel>();
 
-                for (int i =0; i < listPengajar.size(); i++){
-                    System.out.println(listPengajar.get(0).getName());
+                int counter = 0;
+                for (int i =0; i < listPengajarCsv.size(); i++){
+                    if (pengajarService.getPengajarByEmail(listPengajarCsv.get(i).getEmail()) == null){
+                        PengajarModel pengajar = pengajarService.convertPengajarCsv(listPengajarCsv.get(i));
+                        String password = PasswordManager.generateCommonTextPassword();
+                        pengajar.setPassword(password);
+                        pengajar.setPasswordPertama(password);
+                        pengajarService.addPengajar(pengajar);
+                        listPengajar.add(pengajar);
+                        counter++;
+                    }
                 }
-
-                // TODO: save users in DB?
 
                 // save users list on model
                 model.addAttribute("listPengajar", listPengajar);
-                model.addAttribute("status", true);
+                if (counter == 0) {
+                    model.addAttribute("error", "Gagal menambahkan pengajar. Semua pengajar yang ingin ditambahkan telah tersimpan di sistem QUANTA");
+                } else {
+                    model.addAttribute("message", "Berhasil menambahkan data " + counter + " orang pengajar.");
+                }
+                
+                
 
             } catch (Exception ex) {
-                model.addAttribute("message", "An error occurred while processing the CSV file.");
-                model.addAttribute("status", false);
+                redirectAttrs.addFlashAttribute("error", "Berkas yang dimasukkan tidak sesuai. Harap masukkan berkas yang sesuai untuk mengimpor data pengajar!");
+                return "redirect:/pengajar/import-csv";
             }
         }
 
-        return "file-upload-status";
+        return "manajemen-user/list-pengajar-imported";
     }
 
 }

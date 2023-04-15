@@ -105,7 +105,7 @@ public class KonsultasiController {
         }
 
         else if(user.getRole().toString().equals("PENGAJAR")){
-            PengajarModel pengajar = pengajarService.findPengajarByEmail(principal.getName());
+            PengajarModel pengajar = pengajarService.getPengajarByEmail(principal.getName());
             List<KonsultasiModel> myListKonsultasiHariIni = konsultasiService.getListKonsultasiByPengajarAndTanggal(pengajar, LocalDate.now());
             List<KonsultasiModel> myListKonsultasiPending = konsultasiService.getListMyKonsultasiPengajarAndStatus(pengajar, PENDING);
             List<KonsultasiModel> myListKonsultasiDiterima = konsultasiService.getListMyKonsultasiPengajarAndStatus(pengajar, DITERIMA);
