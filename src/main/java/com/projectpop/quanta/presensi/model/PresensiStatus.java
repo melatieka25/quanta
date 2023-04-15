@@ -4,7 +4,8 @@ public enum PresensiStatus {
     HADIR("HADIR"),
     ALPHA("ALPHA"),
     SAKIT("SAKIT"),
-    IZIN("IZIN");
+    IZIN("IZIN"),
+    KOSONG("KOSONG");
 
     private final String displayValue;
 

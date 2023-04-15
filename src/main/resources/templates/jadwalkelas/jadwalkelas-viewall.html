@@ -11,11 +11,25 @@
         font-family: 'DM Sans';
     }
 </style>
-<nav th:replace="fragments/fragment :: navbar('')"></nav>
+<nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
 
 <div sec:authorize="hasRole('ADMIN')">
-<div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
-<div class="alert alert-danger" role="alert" th:text="${deletefailed}" th:if="${deletefailed}"></div>
+    <div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${deletefailed}" >
+        <div class="d-flex align-items-center">
+            <p th:text="${deletefailed}" style="margin-bottom: 0px; margin-top: 0px;"></p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="alert alert-success alert-dismissible d-flex align-items-center" role="alert" th:if="${message}">
+        <div class="d-flex align-items-center">
+          <p th:text="${message}" style="margin-bottom: 0px; margin-top: 0px;"></p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+
+<!-- <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
+<div class="alert alert-danger" role="alert" th:text="${deletefailed}" th:if="${deletefailed}"></div> -->
 <div class="container" style="width:75%; padding-top:20px;">
     <div class="justify-content-center">
         <div style="margin: auto; padding-top: 10px; width: 80%; padding: 20px; text-align: center">
@@ -129,6 +143,12 @@
 
 <script>
     $(document).ready(() => {
+        window.setTimeout(function() {
+          $(".alert").fadeTo(500, 0).slideUp(1000, function(){
+              $(this).remove();
+          });
+      }, 4000);
+
         var t = $('#jadwalkelas-table').DataTable({
             columnDefs: [
                 {

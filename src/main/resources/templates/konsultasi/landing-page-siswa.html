@@ -10,10 +10,27 @@
     body {
         font-family: 'DM Sans';
     }
+    .alert {
+        position:fixed;
+        top: 5rem;
+        left: 10%;
+        width: 80%;
+        z-index:9999;
+    }
 </style>
 <nav th:replace="fragments/fragment :: navbar (${'konsultasi'})"></nav>
-<div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
-<div class="alert alert-danger" role="alert" th:text="${errorMessage}" th:if="${errorMessage}"></div>
+<div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${errorMessage}" >
+    <div class="d-flex align-items-center">
+        <p th:text="${errorMessage}" style="margin-bottom: 0px; margin-top: 0px;"></p>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<div class="alert alert-success alert-dismissible d-flex align-items-center" role="alert" th:if="${message}" >
+    <div class="d-flex align-items-center">
+        <p th:text="${message}" style="margin-bottom: 0px; margin-top: 0px;"></p>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 <div class="container" style="width:90%; padding-top:20px;">
     <div class="card m-4 p-4">
         <div class="justify-content-center">

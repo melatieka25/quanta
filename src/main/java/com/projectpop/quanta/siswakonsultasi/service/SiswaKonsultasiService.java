@@ -23,4 +23,5 @@ public interface SiswaKonsultasiService {
     List<SiswaKonsultasiModel> getListKonsultasiBySiswaAndStatus(SiswaModel siswa, StatusKonsul status);
 
     List<SiswaKonsultasiModel> getListKonsultasiBySiswaAndTanggal(SiswaModel siswa, LocalDate tanggal);
+    List<SiswaKonsultasiModel> getListKonsultasiBySiswaAndTanggalPendingAndDiterima(SiswaModel siswa, LocalDate tanggal);
 }
