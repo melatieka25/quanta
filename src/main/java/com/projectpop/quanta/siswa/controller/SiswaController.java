@@ -267,15 +267,20 @@ public class SiswaController {
                         siswaService.addSiswa(siswa);
                         listSiswa.add(siswa);
                         counterSiswa++;
-                        if (ortuService.getOrtuByEmail(listSiswaCsv.get(i).getEmailOrtu()) == null) {
-                            OrtuModel ortu = ortuService.convertOrtuCsv(listSiswaCsv.get(i));
+                        OrtuModel ortu = ortuService.getOrtuByEmail(listSiswaCsv.get(i).getEmailOrtu());
+                        if (ortu == null) {
+                            ortu = ortuService.convertOrtuCsv(listSiswaCsv.get(i));
                             String passwordOrtu = PasswordManager.generateCommonTextPassword();
                             ortu.setPassword(passwordOrtu);
                             ortu.setPasswordPertama(passwordOrtu);
                             ortuService.addOrtu(ortu);
-                            siswa.setOrtu(ortu);;
+                            siswa.setOrtu(ortu);
+                            siswaService.updateSiswa(siswa);
                             listOrtu.add(ortu);
                             counterOrtu++;
+                        } else {
+                            siswa.setOrtu(ortu);
+                            siswaService.updateSiswa(siswa);
                         }
                     }
                 }
@@ -355,15 +360,20 @@ public class SiswaController {
                         siswaService.addSiswa(siswa);
                         listSiswa.add(siswa);
                         counterSiswa++;
-                        if (ortuService.getOrtuByEmail(listSiswaCsv.get(i).getEmailOrtu()) == null) {
-                            OrtuModel ortu = ortuService.convertOrtuCsv(listSiswaCsv.get(i));
+                        OrtuModel ortu = ortuService.getOrtuByEmail(listSiswaCsv.get(i).getEmailOrtu());
+                        if (ortu == null) {
+                            ortu = ortuService.convertOrtuCsv(listSiswaCsv.get(i));
                             String passwordOrtu = PasswordManager.generateCommonTextPassword();
                             ortu.setPassword(passwordOrtu);
                             ortu.setPasswordPertama(passwordOrtu);
                             ortuService.addOrtu(ortu);
-                            siswa.setOrtu(ortu);;
+                            siswa.setOrtu(ortu);
+                            siswaService.updateSiswa(siswa);
                             listOrtu.add(ortu);
                             counterOrtu++;
+                        } else {
+                            siswa.setOrtu(ortu);
+                            siswaService.updateSiswa(siswa);
                         }
                     }
                 }
