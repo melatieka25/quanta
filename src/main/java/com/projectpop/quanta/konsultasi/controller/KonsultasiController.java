@@ -93,7 +93,7 @@ public class KonsultasiController {
         }
 
         else if(user.getRole().toString().equals("PENGAJAR")){
-            PengajarModel pengajar = pengajarService.findPengajarByEmail(principal.getName());
+            PengajarModel pengajar = pengajarService.getPengajarByEmail(principal.getName());
             List<KonsultasiModel> myListKonsultasiHariIni = konsultasiService.getListKonsultasiByPengajarAndTanggal(pengajar, LocalDate.now());
             List<KonsultasiModel> myListKonsultasiPending = konsultasiService.getListMyKonsultasiPengajarAndStatus(pengajar, PENDING);
             List<KonsultasiModel> myListKonsultasiDiterima = konsultasiService.getListMyKonsultasiPengajarAndStatus(pengajar, DITERIMA);
@@ -350,7 +350,7 @@ public class KonsultasiController {
     @PostMapping(value = "/konsultasi/terima/{idKonsultasi}", params = {"save"})
     public String submitFormTerimaKonsultasi(Principal principal,  @PathVariable Integer idKonsultasi, String place, RedirectAttributes redirectAttributes) {
         KonsultasiModel konsultasi = konsultasiService.getKonsultasi(idKonsultasi);
-        PengajarModel pengajar = pengajarService.findPengajarByEmail(principal.getName());
+        PengajarModel pengajar = pengajarService.getPengajarByEmail(principal.getName());
 
         String formattedDate = getFormattedDate(konsultasi.getStartTime().toLocalDate());
 

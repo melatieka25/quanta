@@ -4,10 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.projectpop.quanta.kelas.model.KelasModel;
+import com.projectpop.quanta.orangtua.model.OrtuModel;
+import com.projectpop.quanta.siswa.model.Jenjang;
+import com.projectpop.quanta.siswa.model.SiswaCsvModel;
 import com.projectpop.quanta.siswa.model.SiswaModel;
 import com.projectpop.quanta.siswa.repository.SiswaDb;
 import com.projectpop.quanta.siswakelas.model.SiswaKelasModel;
 import com.projectpop.quanta.siswakonsultasi.model.SiswaKonsultasiModel;
+import com.projectpop.quanta.user.model.Gender;
+import com.projectpop.quanta.user.model.Religion;
+import com.projectpop.quanta.user.model.UserRole;
 
 import static com.projectpop.quanta.user.auth.PasswordManager.encrypt;
 
@@ -112,5 +118,34 @@ public class SiswaServiceImpl implements SiswaService {
         }
 
         return listSiswa2;
+    }
+
+    @Override
+    public SiswaModel getSiswaByEmail(String email) {
+        Optional<SiswaModel> siswa = siswaDb.findByEmail(email);
+        if(siswa.isPresent()) {
+            return siswa.get();
+        } else return null;
+    }
+
+    @Override
+    public SiswaModel convertSiswaCsv(SiswaCsvModel siswaCsv) {
+        SiswaModel siswa = new SiswaModel();
+        siswa.setName(siswaCsv.getFullName());
+        siswa.setAddress(siswaCsv.getAddress());
+        siswa.setNickname(siswaCsv.getNickname());
+        siswa.setPhone_num(siswaCsv.getPhone_num());
+        siswa.setGender(Gender.valueOf(siswaCsv.getGender()));
+        siswa.setEmail(siswaCsv.getEmail());
+        siswa.setRole(UserRole.valueOf("SISWA"));
+        siswa.setIsPassUpdated(false);
+        siswa.setPob(siswaCsv.getPob());
+        siswa.setDob(siswaCsv.getDob());
+        siswa.setReligion(Religion.valueOf(siswaCsv.getReligion()));
+        siswa.setIsActive(true);
+        siswa.setSekolah(siswaCsv.getSekolah());
+        siswa.setJenjang(Jenjang.valueOf(siswaCsv.getJenjang()));
+
+        return siswa;
     }
 }

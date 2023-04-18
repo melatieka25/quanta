@@ -75,5 +75,4 @@ public class PengajarModel extends UserModel {
 
     private transient String listMapel;
     private transient String kelasDiasuh;
-    private transient String passwordPertama;
 }

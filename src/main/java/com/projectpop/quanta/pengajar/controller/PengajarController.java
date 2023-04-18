@@ -9,8 +9,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.opencsv.CSVReader;
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.bean.HeaderColumnNameTranslateMappingStrategy;
+import com.projectpop.quanta.pengajar.model.PengajarCsvModel;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.service.PengajarService;
 import com.projectpop.quanta.user.model.UserModel;
@@ -18,9 +25,17 @@ import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.user.service.UserService;
 import com.projectpop.quanta.user.auth.PasswordManager;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/pengajar")
@@ -174,6 +189,130 @@ public class PengajarController {
         PengajarModel updatedPengajar = pengajarService.updatePengajar(oldPengajar);
         redirectAttrs.addFlashAttribute("message", "Pengajar dengan nama " + updatedPengajar.getNameEmail() + " telah berhasil diubah datanya!");
         return "redirect:/pengajar/detail/" + updatedPengajar.getId();
+    }
+
+    @GetMapping("/import-csv")
+    public String addPengajarImportCsvPage() {
+        return "manajemen-user/form-import-pengajar";
+    }
+
+    @PostMapping("/import-csv")
+    public String ImportCsvStatusPage(@RequestParam("file") MultipartFile file, Model model, RedirectAttributes redirectAttrs) {
+
+        // validate file
+        if (file.isEmpty()) {
+            redirectAttrs.addFlashAttribute("error", "Belum ada berkas CSV dipilih. Harap pilih satu berkas CSV!");
+            return "redirect:/pengajar/import-csv";
+            
+        } else {
+            // parse CSV file to create a list of `User` objects
+            try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+
+                // create csv bean reader
+                CsvToBean<PengajarCsvModel> csvToBean = new CsvToBeanBuilder(reader)
+                        .withType(PengajarCsvModel.class)
+                        .withSeparator(';')
+                        .withIgnoreLeadingWhiteSpace(true)
+                        .build();
+
+                // convert `CsvToBean` object to list of users
+                List<PengajarCsvModel> listPengajarCsv = csvToBean.parse();
+                List<PengajarModel> listPengajar = new ArrayList<PengajarModel>();
+
+                int counter = 0;
+                for (int i =0; i < listPengajarCsv.size(); i++){
+                    if (pengajarService.getPengajarByEmail(listPengajarCsv.get(i).getEmail()) == null){
+                        PengajarModel pengajar = pengajarService.convertPengajarCsv(listPengajarCsv.get(i));
+                        String password = PasswordManager.generateCommonTextPassword();
+                        pengajar.setPassword(password);
+                        pengajar.setPasswordPertama(password);
+                        pengajarService.addPengajar(pengajar);
+                        listPengajar.add(pengajar);
+                        counter++;
+                    }
+                }
+
+                // save users list on model
+                model.addAttribute("listPengajar", listPengajar);
+                if (counter == 0) {
+                    model.addAttribute("error", "Gagal menambahkan pengajar. Semua pengajar yang ingin ditambahkan telah tersimpan di sistem QUANTA");
+                } else {
+                    model.addAttribute("message", "Berhasil menambahkan data " + counter + " orang pengajar.");
+                }
+                
+                
+
+            } catch (Exception ex) {
+                // Hashmap to map CSV data to
+                // Bean attributes.
+                Map<String, String> mapping = new HashMap<String, String>();
+                mapping.put("id", "id");
+                mapping.put("fullName", "fullName");
+                mapping.put("address", "address");
+                mapping.put("dob", "dob");
+                mapping.put("email", "email");
+                mapping.put("gender", "gender");
+                mapping.put("nickname", "nickname");
+                mapping.put("phone_num", "phone_num");
+                mapping.put("pob", "pob");
+                mapping.put("religion", "religion");
+                mapping.put("jurusan", "jurusan");
+                mapping.put("ktp", "ktp");
+                mapping.put("lastEdu", "lastEdu");
+                mapping.put("status", "status");
+                mapping.put("university", "university");
+        
+
+                HeaderColumnNameTranslateMappingStrategy<PengajarCsvModel> strategy =
+                    new HeaderColumnNameTranslateMappingStrategy<>();
+                strategy.setType(PengajarCsvModel.class);
+                strategy.setColumnMapping(mapping);
+        
+                // Create csvtobean and csvreader object
+                CSVReader csvReader = null;
+                try {
+                    Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
+                    csvReader = new CSVReader(reader);
+                }
+                catch (Exception e) {
+                    redirectAttrs.addFlashAttribute("error", "Berkas yang dimasukkan tidak sesuai. Harap masukkan berkas yang sesuai untuk mengimpor data pengajar!");
+                    return "redirect:/pengajar/import-csv";
+                }
+                CsvToBean<PengajarCsvModel> csvToBean = new CsvToBeanBuilder<PengajarCsvModel>(csvReader)
+                        .withMappingStrategy(strategy)
+                        .withSeparator(',')
+                        .withIgnoreLeadingWhiteSpace(true)
+                        .build();
+
+                // convert `CsvToBean` object to list of users
+                List<PengajarCsvModel> listPengajarCsv = csvToBean.parse();
+                List<PengajarModel> listPengajar = new ArrayList<PengajarModel>();
+
+                int counter = 0;
+                for (int i =0; i < listPengajarCsv.size(); i++){
+                    if (pengajarService.getPengajarByEmail(listPengajarCsv.get(i).getEmail()) == null){
+                        PengajarModel pengajar = pengajarService.convertPengajarCsv(listPengajarCsv.get(i));
+                        String password = PasswordManager.generateCommonTextPassword();
+                        pengajar.setPassword(password);
+                        pengajar.setPasswordPertama(password);
+                        pengajarService.addPengajar(pengajar);
+                        listPengajar.add(pengajar);
+                        counter++;
+                    }
+                }
+
+                // save users list on model
+                model.addAttribute("listPengajar", listPengajar);
+                if (counter == 0) {
+                    model.addAttribute("error", "Gagal menambahkan pengajar. Semua pengajar yang ingin ditambahkan telah tersimpan di sistem QUANTA");
+                } else {
+                    model.addAttribute("message", "Berhasil menambahkan data " + counter + " orang pengajar.");
+                }
+                
+            }
+        }
+
+        return "manajemen-user/list-pengajar-imported";
     }
 
 }
