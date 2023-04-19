@@ -1,13 +1,9 @@
 package com.projectpop.quanta.statistics;
 
-import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
 import com.projectpop.quanta.kelas.model.KelasModel;
-import com.projectpop.quanta.kelas.repository.KelasDb;
 import com.projectpop.quanta.kelas.service.KelasService;
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
 import com.projectpop.quanta.mapel.service.MapelService;
-import com.projectpop.quanta.presensi.model.PresensiModel;
-import com.projectpop.quanta.statistics.model.StatsMapelModel;
 import com.projectpop.quanta.tahunajar.model.TahunAjarModel;
 import com.projectpop.quanta.tahunajar.service.TahunAjarService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/statistics")
+@RequestMapping("/statistik")
 public class StatisticsController {
     @Qualifier("mapelServiceImpl")
     @Autowired
@@ -44,7 +38,7 @@ public class StatisticsController {
     private StatisticsService statisticsService;
 
 
-    @GetMapping("")
+    @GetMapping("/mapel")
     public String viewStatisticMapel(Model model, @RequestParam(value = "tahun-ajar", required = false) String tahunAjarId, @RequestParam(value = "month", required = false) Integer month){
         List<TahunAjarModel> listTahunAjar = tahunAjarService.getAllTahunAjar();
         TahunAjarModel tahunAjar = null;

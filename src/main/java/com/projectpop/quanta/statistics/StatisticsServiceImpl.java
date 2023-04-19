@@ -7,7 +7,7 @@ import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.kelas.repository.KelasDb;
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
 import com.projectpop.quanta.presensi.model.PresensiModel;
-import com.projectpop.quanta.statistics.model.StatsMapelModel;
+import com.projectpop.quanta.statistics.model.StatsModel;
 import com.projectpop.quanta.tahunajar.model.TahunAjarModel;
 import com.projectpop.quanta.tahunajar.repository.TahunAjarDb;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,9 +113,9 @@ public class StatisticsServiceImpl implements StatisticsService{
         List<JadwalKelasModel> listJadwalKelas = jadwalKelasDb.findAllByTahunAjarAndMonth(tahunAjar, month);
 
 
-        StatsMapelModel[][] copyListPersentasePresensiMapel = new StatsMapelModel[2][];
-        copyListPersentasePresensiMapel[0] = new StatsMapelModel[listNamaKategori[0].length];
-        copyListPersentasePresensiMapel[1] = new StatsMapelModel[listNamaKategori[1].length];
+        StatsModel[][] copyListPersentasePresensiMapel = new StatsModel[2][];
+        copyListPersentasePresensiMapel[0] = new StatsModel[listNamaKategori[0].length];
+        copyListPersentasePresensiMapel[1] = new StatsModel[listNamaKategori[1].length];
         Map<String, String> mapMapel = new HashMap<>();
 
 
@@ -123,7 +123,7 @@ public class StatisticsServiceImpl implements StatisticsService{
             if(jadwalKelas.getKelas().getTahunAjar().equals(tahunAjar) && jadwalKelas.getStartDateClass().getMonthValue() == month){
                 for (int i =0; i < listPersentasePresensiMapel.length; i++){
                     for (int j=0; j < listPersentasePresensiMapel[i].length; j++){
-                        StatsMapelModel newModel = new StatsMapelModel(listNamaKategori[i][j], listPersentasePresensiMapel[i][j]);
+                        StatsModel newModel = new StatsModel(listNamaKategori[i][j], listPersentasePresensiMapel[i][j]);
                         copyListPersentasePresensiMapel[i][j] = newModel;
                     }
                 }
@@ -131,10 +131,10 @@ public class StatisticsServiceImpl implements StatisticsService{
                 Arrays.sort(copyListPersentasePresensiMapel[0]);
                 Arrays.sort(copyListPersentasePresensiMapel[1]);
 
-                String SMPLowest = copyListPersentasePresensiMapel[0][0].getMapelName();
-                String SMPHighest = copyListPersentasePresensiMapel[0][copyListPersentasePresensiMapel[0].length-1].getMapelName();
-                String SMALowest = copyListPersentasePresensiMapel[1][0].getMapelName();
-                String SMAHighest = copyListPersentasePresensiMapel[1][copyListPersentasePresensiMapel[1].length-1].getMapelName();
+                String SMPLowest = copyListPersentasePresensiMapel[0][0].getName();
+                String SMPHighest = copyListPersentasePresensiMapel[0][copyListPersentasePresensiMapel[0].length-1].getName();
+                String SMALowest = copyListPersentasePresensiMapel[1][0].getName();
+                String SMAHighest = copyListPersentasePresensiMapel[1][copyListPersentasePresensiMapel[1].length-1].getName();
 
                 mapMapel.put("Presensi Mapel SMP Tertinggi", SMPHighest);
                 mapMapel.put("Presensi Mapel SMP Terendah", SMPLowest);
