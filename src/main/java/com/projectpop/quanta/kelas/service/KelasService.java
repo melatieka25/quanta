@@ -1,6 +1,8 @@
 package com.projectpop.quanta.kelas.service;
 
 import com.projectpop.quanta.kelas.model.KelasModel;
+import com.projectpop.quanta.mapel.model.MataPelajaranModel;
+
 import java.util.List;
 
 public interface KelasService {
@@ -11,5 +13,8 @@ public interface KelasService {
     void addKelas(KelasModel kelas);
     void deleteKelas(KelasModel kelas);
     List<KelasModel> getListKelasAktif(List<KelasModel> listKelas);
+
+    List<KelasModel> getKelasSMP();
+    List<KelasModel> getKelasSMA();
 
 }

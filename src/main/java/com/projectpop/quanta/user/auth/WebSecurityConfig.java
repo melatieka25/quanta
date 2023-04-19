@@ -24,7 +24,7 @@ public class WebSecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/css/**").permitAll()
                 .antMatchers("/js/**").permitAll()
-                .antMatchers("/konsultasi/admin/**").hasRole("ADMIN")
+                .antMatchers("/konsultasi/admin/**", "/statistics", "/statistics/**").hasRole("ADMIN")
                 .antMatchers("/konsultasi/siswa/**").hasRole("SISWA")
                 .antMatchers("/konsultasi/pengajar/**").hasRole("PENGAJAR")
                 .antMatchers("/konsultasi/**").hasAnyRole("ADMIN", "SISWA", "PENGAJAR")
