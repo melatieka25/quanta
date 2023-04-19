@@ -42,6 +42,12 @@ public class KelasModel implements Serializable {
     @Enumerated(value=EnumType.STRING)
     private JadwalAvail days;
 
+    @Column
+    private Boolean isSMP;
+
+    @Column
+    private Boolean isSMA;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name="kakak_asuh_id", nullable=false)

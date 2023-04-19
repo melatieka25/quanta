@@ -11,6 +11,7 @@ import com.projectpop.quanta.siswakelas.model.SiswaKelasModel;
 
 import java.util.Optional;
 
+import com.projectpop.quanta.tahunajar.model.TahunAjarModel;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -105,6 +106,11 @@ public class JadwalKelasServiceImpl implements JadwalKelasService{
             return jadwalKelasDb.findAllByPengajarKelas(pengajarKelas.get());
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public List<JadwalKelasModel> getListJadwalKelasByTahunAjarAndMonth(TahunAjarModel tahunAjar, Integer month) {
+        return jadwalKelasDb.findAllByTahunAjarAndMonth(tahunAjar, month);
     }
 
     @Override
