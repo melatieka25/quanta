@@ -16,11 +16,30 @@
     body {
       font-family: 'DM Sans' ;
     }
+
+    .alert {
+        position:fixed;
+        top: 5rem;
+        left: 5%;
+        width: 90%;
+        z-index:9999;
+    }
   </style>
 </head>
 <body>
 <nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
-<div class="container" style="margin-top: 5rem; margin-bottom: 5rem">
+<div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${errorMessage}" >
+    <div class="d-flex align-items-center">
+        <p th:text="${errorMessage}" style="margin-bottom: 0px; margin-top: 0px;"></p>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<div class="alert alert-success alert-dismissible d-flex align-items-center" role="alert" th:if="${message}" >
+    <div class="d-flex align-items-center">
+        <p th:text="${message}" style="margin-bottom: 0px; margin-top: 0px;"></p>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div><div class="container" style="margin-top: 5rem; margin-bottom: 5rem">
   <div class="row">
     <div class="col-lg-4">
       <h5 style="font-family: 'DM Sans';
@@ -70,6 +89,16 @@ line-height: 140%;">Data Konsultasi</h5>
               <p th:text="${#temporals.format(konsultasi.startTime, 'HH:mm')} + ' - ' +${#temporals.format(konsultasi.endTime, 'HH:mm')}"></p>
             </div>
           </div>
+            <span th:if="${null != konsultasi.place}">
+                <div class="row">
+                    <div class="col">
+                        <p style="font-weight: bold">Tempat Konsultasi</p>
+                    </div>
+                    <div class="col">
+                        <p th:text="${konsultasi.place}"></p>
+                    </div>
+                </div>
+            </span>
           <div class="row">
               <div class="col">
               <p style="font-weight: bold">Jumlah Peserta</p>
@@ -97,19 +126,19 @@ line-height: 140%;">Data Konsultasi</h5>
             <a class="btn btn-primary w-100" style="background-color: #E2EEFD; color: #0A2647; font-weight: bold; outline-color: #82B0D9" href="/konsultasi">Lihat Daftar Konsultasi</a>
         </div>
           <span th:if="${role.equals('SISWA')}">
-            <a th:if="${isCancelable == true}" class="btn btn-outline-danger w-100" style="font-weight: bold" data-toggle="modal" data-target="#modal-cancel">Batalkan Konsultasi</a>
+            <a th:if="${isCancelable == true}" class="btn btn-outline-danger w-100" style="font-weight: bold" data-toggle="modal" data-target="#modal-cancel">Batalkan Ikuti Konsultasi</a>
             <!-- Modal -->
                     <div class="modal fade" id="modal-cancel" tabindex="-1" role="dialog" aria-labelledby="popupLabel1" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="popupLabel1"><strong>Konfirmasi Batal Mengikuti Konsultasi</strong></h5>
+                                    <h5 class="modal-title" id="popupLabel1"><strong>Apakah Anda yakin ingin membatalkan konsultasi ini?</strong></h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    Apakah Anda yakin ingin batal mengikuti konsultasi ini?
+                                    Jika konsultasi sudah tidak memiliki anggota, konsultasi akan dihapus.
                                     <br>
                                 </div>
                                 <div class="modal-footer">
@@ -128,19 +157,18 @@ line-height: 140%;">Data Konsultasi</h5>
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="popupLabel2"><strong>Konfirmasi Mengikuti Konsultasi</strong></h5>
+                                    <h5 class="modal-title" id="popupLabel2"><strong>Apakah Anda yakin ingin mengikuti konsultasi?</strong></h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    Apakah Anda yakin ingin mengikuti konsultasi ini?
+                                    Jika pengajar sudah menerima konsultasi, anda tidak dapat melakukan pembatalan.
                                     <br>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-<!--                                    <a class="btn btn-primary"  style="background-color: #31318B; border-color: #31318B" th:href="@{/konsultasi/join/} + ${konsultasi.id}">Yakin</a>-->
-                                    <a class="btn btn-primary w-100" style="background-color: #E2EEFD" href="/konsultasi">Yakin</a>
+                                    <a class="btn btn-primary"  style="background-color: #31318B; border-color: #31318B" th:href="@{/konsultasi/ikuti/} + ${konsultasi.id}">Yakin</a>
 
                                 </div>
                             </div>
@@ -155,19 +183,19 @@ line-height: 140%;">Data Konsultasi</h5>
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="popupLabel3"><strong>Konfirmasi Extend Konsultasi</strong></h5>
+                                    <h5 class="modal-title" id="popupLabel3"><strong>Apakah Anda yakin ingin memperpanjang durasi konsultasi?</strong></h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    Apakah Anda yakin ingin extend konsultasi ini?
+                                    Perpanjangan durasi tidak dapat dibatalkan.
                                     <br>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
 <!--                                    <a class="btn btn-primary"  style="background-color: #31318B; border-color: #31318B" th:href="@{/konsultasi/extend/} + ${konsultasi.id}">Yakin</a>-->
-                                    <a class="btn btn-primary w-100" style="background-color: #E2EEFD" href="/konsultasi">Yakin</a>
+                                    <a class="btn btn-primary"  style="background-color: #31318B; border-color: #31318B" th:href="@{/konsultasi/extend/} + ${konsultasi.id}">Yakin</a>
                                 </div>
                             </div>
                             <br>
@@ -185,21 +213,26 @@ line-height: 140%;">Data Konsultasi</h5>
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="popupLabel4"><strong>Konfirmasi Terima Konsultasi</strong></h5>
+                                    <h5 class="modal-title" id="popupLabel4"><strong>Apakah Anda yakin ingin menerima konsultasi?</strong></h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
+                                <form th:action="@{/konsultasi/terima/} + ${konsultasi.id}" th:object="${konsultasi}" method="POST">
                                 <div class="modal-body">
-                                    Apakah Anda yakin ingin menerima konsultasi ini?
-                                    <br>
+                                      <div class="form-group">
+                                          Tempat konsultasi:
+                                          <input type="text" class="form-control" placeholder="Tempat Konsultasi..." id="inputFieldPlace" name="place" th:value="${place}" th:text="${place}" required/>
+                                          <br>
+                                      </div>
+                                        Konsultasi yang sudah diterima tidak dapat dibatalkan.
+                                        <!-- Additional input fields as needed -->
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-<!--                                    <a class="btn btn-primary"  style="background-color: #31318B; border-color: #31318B" th:href="@{/konsultasi/terima/} + ${konsultasi.id}">Yakin</a>-->
-                                    <a class="btn btn-primary w-100" style="background-color: #E2EEFD" href="/konsultasi">Yakin</a>
-
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Kembali</button>
+                                    <button class="btn btn-primary" type="submit" name="save" style="background-color: #31318B; border-color: #31318B">Yakin</button>
                                 </div>
+                                    </form>
                             </div>
                             <br>
                         </div>
@@ -212,19 +245,18 @@ line-height: 140%;">Data Konsultasi</h5>
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="popupLabel5"><strong>Konfirmasi Tolak Konsultasi</strong></h5>
+                                    <h5 class="modal-title" id="popupLabel5"><strong>Apakah Anda yakin ingin menolak konsultasi?</strong></h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    Apakah Anda yakin ingin menolak konsultasi ini?
+                                    Verivikasi penolakan tidak dapat diubah.
                                     <br>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-<!--                                    <a class="btn btn-primary"  style="background-color: #31318B; border-color: #31318B" th:href="@{/konsultasi/tolak/} + ${konsultasi.id}">Yakin</a>-->
-          <a class="btn btn-primary w-100" style="background-color: #E2EEFD" href="/konsultasi">Yakin</a>
+                                    <a class="btn btn-primary"  style="background-color: #31318B; border-color: #31318B" th:href="@{/konsultasi/tolak/} + ${konsultasi.id}">Yakin</a>
                                 </div>
                             </div>
                             <br>
@@ -232,7 +264,6 @@ line-height: 140%;">Data Konsultasi</h5>
                     </div>
                   <!--end modal-->
               </span >
-<!--          <a class="btn btn-primary w-100" style="background-color: #E2EEFD" th:href="@{/konsultasi/tutup/} + ${konsultasi.id}">Tutup Konsultasi</a>-->
           <a th:if="${isToClose == true}" class="btn btn-primary w-100" style="background-color: #31318B" href="/konsultasi">Tutup Konsultasi</a>
           </span>
 

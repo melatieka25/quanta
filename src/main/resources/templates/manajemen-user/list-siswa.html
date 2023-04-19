@@ -43,11 +43,19 @@
         <div style="margin: auto; padding-top: 10px; width: 80%; padding: 20px; text-align: center">
             <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
             <h2 style="font-weight: bold; padding-top: 10px;" >List Siswa</h2>
-            <a class="btn btn-primary" href="/siswa/create-siswa" style="margin: 12px; background-color: #31318B; font-weight: bold; border: none; width:30%;">Tambah Siswa  +</a>
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" style="margin: 12px; background-color: #31318B; font-weight: bold; border: none; width:30%;" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Tambah Siswa
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="/siswa/create-siswa">Isi Form</a>
+                    <a class="dropdown-item" href="/siswa/import-csv">Import Berkas CSV</a>
+                </div>
+            </div>
 
             <br>
         </div>
-        <table style="margin: 20px;" class="table table-striped align-middle" id="siswa-table">
+        <table class="table table-striped align-middle" id="siswa-table">
             <thead style="background-color: #31318B; color: #ffffff">
             <tr>
                 <th scope="col">No</th>
@@ -83,6 +91,8 @@
 <script>
     $(document).ready( () => {
 
+        $('.dropdown-toggle').dropdown()
+
         window.setTimeout(function() {
             $(".alert").fadeTo(500, 0).slideUp(1000, function(){
                 $(this).remove();
@@ -107,7 +117,6 @@
                 this.data(i++);
             });
         }).draw();
-
     });
 </script>
 </body>

@@ -1,6 +1,7 @@
 package com.projectpop.quanta.pengajar.service;
 import java.util.List;
 
+import com.projectpop.quanta.pengajar.model.PengajarCsvModel;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 
 public interface PengajarService {
@@ -15,7 +16,9 @@ public interface PengajarService {
     PengajarModel updatePengajar(PengajarModel pengajar);
     int getNumberOfKelasAktif(PengajarModel pengajar);
     int getNumberOfKonsultasiAktif(PengajarModel pengajar);
-    PengajarModel findPengajarByEmail(String email);
+    PengajarModel getPengajarByEmail(String email);
     List<PengajarModel> getListKakakAsuh();
+    PengajarModel convertPengajarCsv(PengajarCsvModel pengajarCsv);
+
 
 }

@@ -10,5 +10,6 @@ public interface KelasService {
     List<KelasModel> getKelasByName(String name);
     void addKelas(KelasModel kelas);
     void deleteKelas(KelasModel kelas);
+    List<KelasModel> getListKelasAktif(List<KelasModel> listKelas);
 
 }

@@ -58,6 +58,11 @@ public class UserModel implements Serializable {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Lob
+    @NotNull
+    @Column(name = "password_pertama", nullable = false)
+    private String passwordPertama;
+
     @NotNull
     @Column(nullable = false)
     private Boolean isPassUpdated;
