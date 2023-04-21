@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface MapelService {
     List<MataPelajaranModel> getAllMapel();
+    List<MataPelajaranModel> getMapelSMP();
+    List<MataPelajaranModel> getMapelSMA();
     MataPelajaranModel getMapelbyId(Integer id);
     MataPelajaranModel addMapel(MataPelajaranModel mapel);
     void deleteMapel(MataPelajaranModel mapel);

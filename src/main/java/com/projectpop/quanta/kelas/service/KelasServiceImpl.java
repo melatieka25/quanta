@@ -1,5 +1,6 @@
 package com.projectpop.quanta.kelas.service;
 
+import com.projectpop.quanta.mapel.model.MataPelajaranModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -68,5 +69,15 @@ public class KelasServiceImpl implements KelasService{
     public List<KelasModel> getKelasByName(String name) {
         List<KelasModel> kelas = kelasDb.findByName(name);
         return kelas;
+    }
+
+    @Override
+    public List<KelasModel> getKelasSMP() {
+        return kelasDb.findByIsSMPIsTrue().orElse(null);
+    }
+
+    @Override
+    public List<KelasModel> getKelasSMA() {
+        return kelasDb.findByIsSMAIsTrue().orElse(null);
     }
 }

@@ -20,6 +20,16 @@ public class MapelServiceImpl implements MapelService{
     }
 
     @Override
+    public List<MataPelajaranModel> getMapelSMP() {
+        return mataPelajaranDb.findByIsSMPIsTrue().orElse(null);
+    }
+
+    @Override
+    public List<MataPelajaranModel> getMapelSMA() {
+        return mataPelajaranDb.findByIsSMAIsTrue().orElse(null);
+    }
+
+    @Override
     public MataPelajaranModel getMapelbyId(Integer id) {
         return mataPelajaranDb.findById(id).orElse(null);
     }

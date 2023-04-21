@@ -34,6 +34,12 @@ public class MataPelajaranModel implements Serializable {
     @Column(nullable = false)
     private String abbr;
 
+    @Column
+    private Boolean isSMP;
+
+    @Column
+    private Boolean isSMA;
+
     @JsonIgnore
     @OneToMany(mappedBy = "mapel", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<PengajarMapelModel> listPengajarMapel;
