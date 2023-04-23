@@ -4,6 +4,7 @@ import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
 import com.projectpop.quanta.konsultasi.model.StatusKonsul;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.siswa.model.Jenjang;
+import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.siswa.model.SiswaModel;
 
 import java.time.LocalDate;
@@ -27,6 +28,8 @@ public interface KonsultasiService {
     List<KonsultasiModel> getListKonsultasiByPengajarAndTanggal(PengajarModel pengajar, LocalDate tanggal);
 
     KonsultasiModel createKonsultasi(KonsultasiModel konsultasiModel);
+
+    List<KonsultasiModel> getListKonsultasiByUser(UserModel user);
 
     void reloadStatus();
 

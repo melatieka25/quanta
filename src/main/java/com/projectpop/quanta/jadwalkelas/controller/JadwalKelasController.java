@@ -5,11 +5,20 @@ import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.kelas.service.KelasService;
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
 import com.projectpop.quanta.mapel.service.MataPelajaranService;
+import com.projectpop.quanta.orangtua.model.OrtuModel;
+import com.projectpop.quanta.orangtua.service.OrtuService;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.service.PengajarService;
 import com.projectpop.quanta.pengajarmapel.model.PengajarMapelModel;
 import com.projectpop.quanta.pengajarmapel.service.PengajarMapelService;
+import com.projectpop.quanta.siswa.model.SiswaModel;
+import com.projectpop.quanta.siswa.service.SiswaService;
+import com.projectpop.quanta.user.model.UserModel;
+import com.projectpop.quanta.user.model.UserRole;
+import com.projectpop.quanta.user.service.UserService;
+
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.security.Principal;
 
 
 import java.time.LocalDateTime;
@@ -43,11 +52,44 @@ public class JadwalKelasController {
     @Autowired
     private PengajarMapelService pengajarMapelService;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private OrtuService ortuService;
+
+    @Autowired
+    private SiswaService siswaService;
+
     // VIEW ALL
     @GetMapping("")
-    public String viewAllJadwalKelas(Model model) {
+    public String viewAllJadwalKelas(Principal principal, Model model) {
+        UserModel user = userService.getUserByEmail(principal.getName());
+
+        // ORTU
+        if (user.getRole() == UserRole.ORTU) {
+            OrtuModel ortu = ortuService.getOrtuById(user.getId());
+           
+            SiswaModel anak = ortuService.getDefaultAnakTerpilih(ortu);
+            model.addAttribute("anak", anak);
+            return "redirect:/jadwal-kelas/anak/" + anak.getId();
+
+        }
+
+        // ADMIN
         List<JadwalKelasModel> listJadwalKelas = jadwalKelasService.getListJadwalKelas();
         model.addAttribute("listJadwal", listJadwalKelas);
+        return "jadwalkelas/jadwalkelas-viewall";
+    }
+
+    @GetMapping("/anak/{id}")
+    public String viewAllJadwalKelasOrtu(@PathVariable("id") Integer id, Principal principal, Model model) {
+        SiswaModel siswa = siswaService.getSiswaById(id);
+        List<JadwalKelasModel> listJadwalAnak = jadwalKelasService.getListJadwalKelasByKelas(siswaService.getKelasBimbel(siswa));
+        // System.out.println("===== cek nama " + siswa.getName());
+        model.addAttribute("listJadwal", listJadwalAnak);
+        model.addAttribute("anak", siswa);
+
         return "jadwalkelas/jadwalkelas-viewall";
     }
 

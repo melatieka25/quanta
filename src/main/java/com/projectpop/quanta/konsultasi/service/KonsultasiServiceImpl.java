@@ -5,13 +5,19 @@ import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
 import com.projectpop.quanta.konsultasi.model.StatusKonsul;
 import com.projectpop.quanta.konsultasi.repository.KonsultasiDb;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
+import com.projectpop.quanta.pengajar.service.PengajarService;
 import com.projectpop.quanta.siswa.model.Jenjang;
 import com.projectpop.quanta.siswa.model.SiswaModel;
 import com.projectpop.quanta.siswa.service.SiswaService;
-import com.projectpop.quanta.siswajadwalkelas.model.SiswaJadwalModel;
-import com.projectpop.quanta.siswajadwalkelas.service.SiswaJadwalService;
 import com.projectpop.quanta.siswakonsultasi.model.SiswaKonsultasiModel;
 import com.projectpop.quanta.siswakonsultasi.service.SiswaKonsultasiService;
+import com.projectpop.quanta.user.model.UserModel;
+import com.projectpop.quanta.user.model.UserRole;
+import com.projectpop.quanta.orangtua.model.OrtuModel;
+import com.projectpop.quanta.orangtua.service.OrtuService;
+
+import com.projectpop.quanta.siswajadwalkelas.model.SiswaJadwalModel;
+import com.projectpop.quanta.siswajadwalkelas.service.SiswaJadwalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +46,12 @@ public class KonsultasiServiceImpl implements KonsultasiService{
 
     @Autowired
     private JadwalKelasService jadwalKelasService;
+
+    @Autowired
+    private PengajarService pengajarService;
+
+    @Autowired
+    OrtuService ortuService;
 
     @Override
     public List<KonsultasiModel> getListKonsultasiHariIni() {
@@ -330,5 +342,59 @@ public class KonsultasiServiceImpl implements KonsultasiService{
         }
 
         return true;
+    }
+
+    @Override
+    public List<KonsultasiModel> getListKonsultasiByUser(UserModel user) {
+        List<KonsultasiModel> listKonsul = new ArrayList<>();
+        
+        if (user.getRole() == UserRole.SISWA) {
+            SiswaModel siswa = siswaService.getSiswaById(user.getId());
+            List<SiswaKonsultasiModel> listSiswaKonsul = siswaKonsultasiService.getListKonsultasiBySiswa(siswa);
+
+            for (SiswaKonsultasiModel siswaKonsul : listSiswaKonsul) {
+                listKonsul.add(siswaKonsul.getKonsultasi());
+            }
+
+            
+        } else if (user.getRole() == UserRole.PENGAJAR) {
+            PengajarModel pengajar = pengajarService.getPengajarById(user.getId());
+            listKonsul = konsultasiDb.findAllByPengajarKonsul(pengajar);
+
+        }  else if (user.getRole() == UserRole.ORTU) {
+            OrtuModel ortu = ortuService.getOrtuById(user.getId());
+            List<SiswaModel> listAnak= ortu.getListAnak();
+            SiswaModel anakSelected = listAnak.get(0);
+
+            if (!anakSelected.getIsActive()){    
+                for (SiswaModel anak : listAnak) {
+                    if (anak.getIsActive()) {
+                        anakSelected = anak;
+                        break;
+                    }
+                }
+            }
+
+            List<SiswaKonsultasiModel> listSiswaKonsul = siswaKonsultasiService.getListKonsultasiBySiswa(anakSelected);
+
+            for (SiswaKonsultasiModel siswaKonsul : listSiswaKonsul) {
+                listKonsul.add(siswaKonsul.getKonsultasi());
+            }
+        }
+
+        
+        return getListKonsulHariIni(listKonsul);
+    }
+
+    public List<KonsultasiModel> getListKonsulHariIni(List<KonsultasiModel> listKonsul) {
+        List<KonsultasiModel> res = new ArrayList<>();
+        LocalDate tanggal = LocalDate.now();
+        for (KonsultasiModel konsul : listKonsul) {
+            if (konsul.getStartTime().toLocalDate().equals(tanggal) && konsul.getStatus() == StatusKonsul.DITERIMA) {
+                res.add(konsul);
+            }
+        }
+
+        return res;
     }
 }
