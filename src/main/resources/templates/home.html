@@ -8,9 +8,17 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
+
+
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.0/fullcalendar.min.css' />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.0/fullcalendar.min.js'></script>
     <style>
         body {
             font-family: 'DM Sans';
+            height: 100%;
+            margin: 0;
         }
         .alert {
             position:fixed;
@@ -19,6 +27,52 @@
             width: 90%;
             z-index:9999;
         }
+        
+        /* The hero image */
+        .hero-image {
+        /* Use "linear-gradient" to add a darken background effect to the image (photographer.jpg). This will make the text easier to read */
+        background-image: linear-gradient(#31318bcc, #31318bcc), url('https://i.ibb.co/445k8Wz/1apcwh4-N-2x.jpg');
+
+        /* Set a specific height */
+        height: 400px;
+
+        /* Position and center the image to scale nicely on all screens */
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        position: relative;
+        }
+
+        /* Place text in the middle of the image */
+        .hero-text {
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        }
+
+        #calendar {
+            max-width: 1100px;
+            margin: 40px auto;
+        }
+
+        #calendar .fc-today {
+            background: #EDF2f7;
+        }
+
+        #calendar .fc-widget-header{
+            background-color:#2a2a80;
+            color: white;
+        }
+
+        /* #calendar .fc-header-center {
+            text-align: left;
+            font-size: 1em !important;
+        } */
+        
+      
     </style>
 </head>
 <body>
@@ -34,20 +88,180 @@
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    <nav th:replace="fragments/fragment :: navbar(beranda)"></nav>
-    <h1>Hello, this is B03</h1>
+
+    <nav th:replace="fragments/fragment :: navbar('beranda')"></nav>
+
+    <div class="w-100 p-3 hero-image">
+        <div class="hero-text">
+            <h4>Welcome to</h4>
+            <h1><strong>Quantum Assistant</strong></h1>
+        </div>
+    </div>
+
+    <div class="container" style="padding-top: 40px; width: 75%;">
+        <div sec:authorize="hasAnyRole('PENGAJAR', 'SISWA', 'ORTU')"> 
+            <div class="d-flex justify-content-between">
+                <div class="p-2">
+                  <img class="img-fluid" src="https://i.ibb.co/4mHbqt9/education.png" alt="education">
+                </div>
+                  <div class="p-2">
+                      <div class="row mb-3">
+                          <h3><strong>Jadwal Kelas Hari Ini</strong></h3>
+                      </div>
+                      <div th:if="${listJadwalHariIni.size() != 0}">
+
+                        <div class="row mb-3" th:each="jadwal, iterationStatus : ${listJadwalHariIni}"> 
+                            <div class="card" style="width: 20rem;">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-3" th:text="${jadwal.mapelJadwal.name}"></h5>
+                                    <table class="card-text mb-3">
+                                        <tbody>
+                                            <tr>
+                                                <td>Pukul</td>
+                                                <td>:</td>
+                                                <td th:text="${#temporals.format(jadwal.startDateClass, 'HH:mm')} + ' - ' +${#temporals.format(jadwal.endDateClass, 'HH:mm')}"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Ruang</td>
+                                                <td>:</td>
+                                                <td th:text="${jadwal.ruangKelas}"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Kelas</td>
+                                                <td>:</td>
+                                                <td th:text="${jadwal.kelas.name}"></td>
+                                            </tr>
+                                        </tbody>
+        
+                                    </table>
+                                    <a th:href="@{/presensi/read/} + ${jadwal.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
+                                        Lihat Presensi </a>                            
+        
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+
+                      <div th:unless="${listJadwalHariIni.size() != 0}">
+                        <p th:text="'Tidak ada jadwal hari ini'"></p>
+                      </div>
+                      
+                      
+                  </div>
+                  <div class="p-2">
+                    <div class="row mb-3">
+                        <h3><strong>Konsultasi Hari Ini</strong></h3>
+                    </div>
+                    <div th:if="${listKonsulHariIni.size() != 0}">
+                        <div class="row mb-3" th:each="konsul, iterationStatus : ${listKonsulHariIni}">
+                            <div class="card" style="width: 20rem;">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-3" th:text="${konsul.mapelKonsul.name}"></h5>
+                                    <table class="card-text mb-3">
+                                        <tbody>
+                                            <tr>
+                                                <td>Pukul</td>
+                                                <td>:</td>
+                                                <td th:text="${#temporals.format(konsul.startTime, 'HH:mm')} + ' - ' +${#temporals.format(konsul.endTime, 'HH:mm')}"></td>
+                                                </tr>
+                                            <tr>
+                                                <td>Ruang</td>
+                                                <td>:</td>
+                                                <td th:text="${konsul.place}"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Jenjang Kelas</td>
+                                                <td>:</td>
+                                                <td th:text="${konsul.jenjangKelas.displayValue}"></td>
+                                            </tr>
+                                        </tbody>
+            
+                                        </table>
+                                        <div sec:authorize="hasRole('PENGAJAR')"> 
+                                            <a th:href="@{/konsultasi/view/} + ${konsul.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
+                                            Lihat Detail </a>
+                                        </div>
+                                        <div sec:authorize="hasRole('SISWA')"> 
+                                            <a th:href="@{/konsultasi/siswa/view/} + ${konsul.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
+                                            Lihat Detail </a>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                    <div th:unless="${listKonsulHariIni.size() != 0}">
+                        <p th:text="'Tidak ada konsultasi hari ini'"></p>
+                      </div>
+                  </div>
+            </div>
+        </div>
+
+        <h3 style="text-align: center; padding-top: 40px;"><strong>Jadwal Quantum Research</strong></h3>
+        <div id='calendar'></div>
+    </div>
+    
 </body>
 
 <script type="text/javascript">
+    
+    
+    
 
     $(document).ready( () => {
+        
         window.setTimeout(function() {
             $(".alert").fadeTo(500, 0).slideUp(1000, function(){
                 $(this).remove();
             });
         }, 5000);
 
+      
+
+        var todayDate = moment().startOf("day");
+        var TODAY = todayDate.format("YYYY-MM-DD");
+
+
+        $("#calendar").fullCalendar({
+            eventBackgroundColor: "#31318B",
+            eventBorderColor: "#31318B",
+
+            defaultView: 'agendaWeek',
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek'
+            },
+
+            height: 800,
+            contentHeight: 500,
+            aspectRatio: 3,
+            initialDate: TODAY,
+            allDaySlot: false,
+
+            minTime: "07:00:00",
+            maxTime: "21:00:00",
+
+
+            views: {
+                month : {
+                columnFormat: 'ddd' // set format for month here
+                },
+                week: {
+                    columnFormat: 'ddd D MMM' // set format for week here
+                },
+                
+            },
+
+
+            // example: todo sprint 3
+            events: 'https://fullcalendar.io/api/demo-feeds/events.json'
+        })
+
+
     });
+    
+
+    
 
 </script>
 
