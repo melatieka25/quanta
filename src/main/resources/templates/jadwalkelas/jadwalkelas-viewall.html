@@ -11,131 +11,75 @@
         font-family: 'DM Sans';
     }
 </style>
-<nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
+<nav th:replace="fragments/fragment :: navbar ('jadwalKelas')"></nav>
 
-<div sec:authorize="hasRole('ADMIN')">
-    <div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${deletefailed}" >
-        <div class="d-flex align-items-center">
-            <p th:text="${deletefailed}" style="margin-bottom: 0px; margin-top: 0px;"></p>
-        </div>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${deletefailed}" >
+    <div class="d-flex align-items-center">
+        <p th:text="${deletefailed}" style="margin-bottom: 0px; margin-top: 0px;"></p>
     </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 
-    <div class="alert alert-success alert-dismissible d-flex align-items-center" role="alert" th:if="${message}">
-        <div class="d-flex align-items-center">
-          <p th:text="${message}" style="margin-bottom: 0px; margin-top: 0px;"></p>
-        </div>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
+<div class="alert alert-success alert-dismissible d-flex align-items-center" role="alert" th:if="${message}">
+    <div class="d-flex align-items-center">
+        <p th:text="${message}" style="margin-bottom: 0px; margin-top: 0px;"></p>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 
-<!-- <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
-<div class="alert alert-danger" role="alert" th:text="${deletefailed}" th:if="${deletefailed}"></div> -->
+
 <div class="container" style="width:75%; padding-top:20px;">
     <div class="justify-content-center">
         <div style="margin: auto; padding-top: 10px; width: 80%; padding: 20px; text-align: center">
             <h2 style="font-weight: bold; padding-top: 10px;" >Daftar Jadwal Kelas</h2>
-            <a class="btn" style="background-color: #31318B; color: white;" th:href="@{/jadwal-kelas/add}">Buat Jadwal</a>
+            <div sec:authorize="hasRole('ADMIN')">
+                <a class="btn" style="background-color: #31318B; color: white;" th:href="@{/jadwal-kelas/add}">Buat Jadwal</a>
+            </div>
             <br>
         </div>
-
-        <table style="margin: 20px;" class ="table table-striped" id="jadwalkelas-table">
-            <thead style="background-color: #31318B; color: #ffffff">
-            <tr>
-                <th scope="col">No</th>
-                <th scope="col">Mata Pelajaran</th>
-                <th scope="col">Pengajar</th>
-                <th scope="col">Kelas</th>
-                <th scope="col">Ruang Kelas</th>
-                <th scope="col">Tanggal Kelas</th>
-                <th scope="col">Waktu Kelas</th>
-                <th scope="col"></th>
-            </tr>
-            </thead>
-            <tbody>
-                <tr th:each="jadwal, iterationStatus : ${listJadwal}">
-                    <th scope="row"></th>
-                    <td th:text="${jadwal.mapelJadwal.name}"></td>
-                    <td th:text="${jadwal.pengajarKelas.name}"></td>
-                    <td th:text="${jadwal.kelas.name}"></td>
-                    <td th:text="${jadwal.ruangKelas}"></td>
-                    <td th:text="${#temporals.format(jadwal.startDateClass, 'dd MMMM yyyy')}"></td>
-                    <td th:text="${#temporals.format(jadwal.startDateClass, 'HH:mm')} + ' - ' +${#temporals.format(jadwal.endDateClass, 'HH:mm')}"></td>
-
-                    <td>
-                        <div class="justify-content-center">
-                            <a class="btn btn-outline-primary align-content-center" th:href="@{/jadwal-kelas/} + ${jadwal.id}">Detail</a>               
-                        </div>
-                    </td>                 
+        <div th:if="${listJadwal.size() != 0}">
+            <table style="margin: 20px;" class ="table table-striped" id="jadwalkelas-table">
+                <thead style="background-color: #31318B; color: #ffffff">
+                <tr>
+                    <th scope="col">No</th>
+                    <th scope="col">Mata Pelajaran</th>
+                    <th scope="col">Pengajar</th>
+                    <th scope="col">Kelas</th>
+                    <th scope="col">Ruang Kelas</th>
+                    <th scope="col">Tanggal Kelas</th>
+                    <th scope="col">Waktu Kelas</th>
+                    <th scope="col"></th>
                 </tr>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <tr th:each="jadwal, iterationStatus : ${listJadwal}">
+                        <th scope="row"></th>
+                        <td th:text="${jadwal.mapelJadwal.name}"></td>
+                        <td th:text="${jadwal.pengajarKelas.name}"></td>
+                        <td th:text="${jadwal.kelas.name}"></td>
+                        <td th:text="${jadwal.ruangKelas}"></td>
+                        <td th:text="${#temporals.format(jadwal.startDateClass, 'dd MMMM yyyy')}"></td>
+                        <td th:text="${#temporals.format(jadwal.startDateClass, 'HH:mm')} + ' - ' +${#temporals.format(jadwal.endDateClass, 'HH:mm')}"></td>
+    
+                        <td>
+                            <div class="justify-content-center" sec:authorize="hasRole('ADMIN')">
+                                <a class="btn btn-outline-primary align-content-center" th:href="@{/jadwal-kelas/} + ${jadwal.id}">Detail</a>               
+                            </div>
+                        </td>                 
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        
         <br>
-        <div th:unless="${listJadwal.size() != 0}">
+        <div th:unless="${listJadwal.size() != 0}" style="text-align: center;">
             <p>Tidak ada jadwal kelas!</p>
         </div>
     </div>
 </div>
 
-</div>
-</div>
 
-
-<!-- <div class="container m-5">
-        <div class="card-body">
-            <div class="content-center">
-                <h2 style="font-weight: bolder;">Daftar Jadwal Kelas</h2>
-                <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
-                <div class="alert alert-danger" role="alert" th:text="${deletefailed}" th:if="${deletefailed}"></div>
-
-                <br>
-                <div class="col">
-                    <a class="btn" style="background-color: #31318B; color: white;" th:href="@{/jadwal-kelas/add}">Buat Jadwal</a>
-                </div>
-               
-                <br>
-                <div th:if="${listJadwal.size() != 0}">
-                <table class ="table table-striped" id="jadwalkelas-table">
-                    <thead style="background: #31318B; color: white;">
-                    <tr>
-                        <th>No</th>
-                        <th>Mata Pelajaran</th>
-                        <th>Pengajar</th>
-                        <th>Kelas</th>
-                        <th>Ruang Kelas</th>
-                        <th>Tanggal Kelas</th>
-                        <th>Waktu Kelas</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="jadwal, iterationStatus : ${listJadwal}">
-                            <td th:text="${iterationStatus.count}"></td>
-                            <td th:text="${jadwal.mapelJadwal.name}"></td>
-                            <td th:text="${jadwal.pengajarKelas.name}"></td>
-                            <td th:text="${jadwal.kelas.name}"></td>
-                            <td th:text="${jadwal.ruangKelas}"></td>
-                            <td th:text="${#temporals.format(jadwal.startDateClass, 'dd MMMM yyyy')}"></td>
-                            <td th:text="${#temporals.format(jadwal.startDateClass, 'HH:mm')} + ' - ' +${#temporals.format(jadwal.endDateClass, 'HH:mm')}"></td>
-
-                            <td>
-                                <div class="justify-content-center">
-                                    <a class="btn btn-outline-primary align-content-center" th:href="@{/jadwal-kelas/} + ${jadwal.id}">Detail</a>               
-                                </div>
-                            </td>
-
-            
-                           
-                        </tr>
-                    </tbody>
-                </table>
-                </div>
-                <div th:unless="${listJadwal.size() != 0}">
-                    <p>Tidak ada jadwal kelas!</p>
-                </div>
-                <br>
-            </div>
-    </div>
-</div> -->
 
 
  

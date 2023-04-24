@@ -90,6 +90,16 @@ public class OrtuServiceImpl implements OrtuService {
         } else return null;
     }
 
+   @Override
+    public SiswaModel getDefaultAnakTerpilih(OrtuModel ortu) {
+        for (SiswaModel anak : ortu.getListAnak()) {
+            if (anak.getIsActive()) {
+                return anak;
+            }
+        }
+        return null;
+    }
+    
     @Override
     public OrtuModel convertOrtuCsv(SiswaCsvModel siswaCsv) {
         OrtuModel ortu = new OrtuModel();

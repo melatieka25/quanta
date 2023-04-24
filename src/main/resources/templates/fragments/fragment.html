@@ -29,7 +29,10 @@
 <nav th:fragment="navbar (onevar)" class="navbar navbar-light navbar-expand"
      style="background-color: #eDF2F7; border-radius: 0 0 20px 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
      font-size:14px;font-family: 'DM Sans', sans-serif; font-style: normal; font-weight: 700; line-height: 140%; color: #2d3748;">
-    <a class="navbar-brand img-fluid w-20 mx-4" href="/">
+    <a class="navbar-brand img-fluid w-20 mx-4" href="/" sec:authorize="hasAnyRole('PENGAJAR', 'SISWA', 'ADMIN')">
+        <img src="https://i.ibb.co/b18xCYT/qr-logo-navbar.png" alt="qr-logo-navbar" style="width: 160px" />
+    </a>
+    <a sec:authorize="hasRole('ORTU')" class="navbar-brand img-fluid w-20 mx-4" href="/" id="home-ortu">
         <img src="https://i.ibb.co/b18xCYT/qr-logo-navbar.png" alt="qr-logo-navbar" style="width: 160px" />
     </a>
     <button
@@ -54,7 +57,10 @@
                 </ul>
             </li>
             <li class="nav-item">
-                <a sec:authorize="hasAnyRole('PENGAJAR', 'SISWA', 'ORTU')" role="button" class="nav-link">
+                <a sec:authorize="hasAnyRole('PENGAJAR', 'SISWA')" role="button" class="nav-link" th:classappend="${onevar == 'jadwalKelas'} ? active : ''" th:href="@{/jadwal-kelas}">
+                    Jadwal Kelas
+                </a>
+                <a sec:authorize="hasRole('ORTU')" role="button" class="nav-link" th:classappend="${onevar == 'jadwalKelas'} ? active : ''" th:href="@{/jadwal-kelas}" id="jadwal-ortu">
                     Jadwal Kelas
                 </a>
             </li>
@@ -69,7 +75,7 @@
                 </ul>
             </li>
             <li class="nav-item">
-                <a sec:authorize="hasRole('SISWA')" role="button" class="nav-link" th:href="@{/konsultasi}">
+                <a sec:authorize="hasRole('SISWA')" role="button" class="nav-link" th:href="@{/konsultasi}" th:classappend="${onevar == 'konsultasi'} ? active : ''">
                     Konsultasi
                 </a>
             </li>
@@ -78,7 +84,13 @@
                     Rapor Saya
                 </a>
             </li>
-            <li class="nav-item dropdown">
+            <li class="nav-item">
+                <a sec:authorize="hasRole('ORTU')" class="nav-link" th:classappend="${onevar == 'raporAnak'} ? active : ''" th:href="@{/}" 
+                id="navbarDarkDropdownMenuLink raporAnak" role="button">
+                    Rapor Anak
+                </a>
+            </li>
+            <!-- <li class="nav-item dropdown">
                 <a sec:authorize="hasRole('ORTU')" hidden class="nav-link dropdown-toggle invisible" th:classappend="${onevar == 'user'} ? active : ''" href="/" id="navbarDarkDropdownMenuLink raporAnak" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Rapor Anak
                 </a>
@@ -86,7 +98,7 @@
                     <li><a class="dropdown-item invisible" hidden th:href="@{/}">Melati Eka Putri</a></li>
                     <li><a class="dropdown-item invisible" hidden th:href="@{/}">Amelia Putri</a> </li>
                 </ul>
-            </li>
+            </li> -->
             <li class="nav-item dropdown">
                 <a sec:authorize="hasRole('ADMIN')" class="nav-link dropdown-toggle" th:classappend="${onevar == 'user'} ? active : ''" href="/" id="navbarDarkDropdownMenuLink manajemenOperasional" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Manajemen Operasional
@@ -95,7 +107,7 @@
                     <li><a class="dropdown-item" th:href="@{/mapel}">Mata Pelajaran</a></li>
                     <li><a class="dropdown-item" th:href="@{/kelas}">Kelas</a></li>
                     <li><a class="dropdown-item" th:href="@{/jadwal-kelas}">Jadwal</a></li>
-                    <li><a class="dropdown-item invisible" hidden th:href="@{/}">Rapot</a></li>
+                    <li><a class="dropdown-item invisible" hidden th:href="@{/}">Rapor</a></li>
                     <li><a class="dropdown-item" th:href="@{/presensi}">Presensi</a></li>
                     <li><a class="dropdown-item" th:href="@{/konsultasi}">Konsultasi</a></li>
                 </ul>
@@ -110,25 +122,127 @@
                 </ul>
             </li>
         </ul>
-        <ul class="navbar-nav navbar-right mx-5">
-            <li class="dropdown">
-                <a href="/" class="dropdown" id="navbarDropdownMenuLink profilePengguna" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #2d3748; flex-direction: column" >
-                    <div sec:authorize="isAuthenticated()" style="display: flex; align-items: center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-person-fill" style="margin-right: 8px">
-                            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
-                        </svg>
-                        <span sec:authentication="name" class="d-inline-block align-top font-weight-bold"></span>
-                    </div>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink profilePengguna">
-                    <li><a class="dropdown-item" th:href="@{/profil}">Informasi Profil</a></li>
-                    <li><a class="dropdown-item text-danger" th:if="${onevar != 'logged-out'}" th:href="@{/logout}">Logout</a></li>
-                </ul>
-            </li>
-        </ul>
+        <div sec:authorize="hasRole('ORTU')">
+            <ul class="navbar-nav ml-auto navbar-right" style="padding-right: 150px;">
+                <li class="nav-item dropdown col-auto" style="margin-right: 24px">
+                    <a href="/" class="dropdown" id="navbarDropdownMenuLink listAnak" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #2d3748; flex-direction: column;" 
+                    th:text="'Pilih Anak: ' + ${anak.name}">
+                    </a>
+                     <script th:inline="javascript"> 
+                        /*<![CDATA[*/  
+                        userEmail = /*[[${#authentication.getPrincipal().username}]]*/ 'default'; 
+                        /*]]>*/
+                    
+                        var json_url = "/api/v1/ortu/list-anak/" + userEmail;
+                        console.log(json_url);
+                        $("#list-anak").ready(function(){
+                            jQuery.getJSON(json_url, function(data){
+                            $("#list-anak").html("");
+                                                
+                            jQuery.each(data, function(key, val){
+                                var url = '/anak/' + val.id;
+                                $("#list-anak").append("<a class='dropdown-item' href=" + url + ">"+ val.name + "</a>")
+                            });
+                             
+                        });
+    
+                        });
+                        $("#list-jadwal-anak").ready(function(){
+                            jQuery.getJSON(json_url, function(data){
+                            $("#list-jadwal-anak").html("");
+                                                
+                            jQuery.each(data, function(key, val){
+                                var url = '/jadwal-kelas/anak/' + val.id;
+                                $("#list-jadwal-anak").append("<a class='dropdown-item' href=" + url + ">"+ val.name + "</a>")
+                            });
+                             
+                            });
+    
+                        });
+    
+                        $("#list-rapor-anak").ready(function(){
+                            jQuery.getJSON(json_url, function(data){
+                            $("#list-rapor-anak").html("");
+                                                
+                            jQuery.each(data, function(key, val){
+                                var url = '/siswa/rapor-siswa' + val.id;
+                                $("#list-rapor-anak").append("<a class='dropdown-item' href=" + url + ">"+ val.name + "</a>")
+                            });
+                             
+                            });
+                        });
+    
+                        var theLocation = window.location;
+                        var lastPart = (theLocation.href).split('/').slice(-1)[0];
+                        console.log(lastPart);
+    
+                        var homeUrl = "/anak/" + lastPart
+    
+                        $("#home-ortu").attr('href', homeUrl);
+    
+                        var jadwalURL = "/jadwal-kelas/anak/" + lastPart
+                        $("#jadwal-ortu").attr('href', jadwalURL);
+    
+                   
+                    </script>
+                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink listAnak">
+                        <div th:if="${onevar == 'beranda'}">
+                            <li id="list-anak"></li>
+                        </div>
+                        <div th:if="${onevar == 'jadwalKelas'}">
+                            <li id="list-jadwal-anak"></li>
+                        </div>
+                        <div th:if="${onevar == 'raporAnak'}">
+                            <li id="list-rapor-anak"></li>
+                        </div>
+                    </ul>
+                </li>
+    
+                <li class="nav-item dropdown">
+                    <a href="/" class="dropdown" id="navbarDropdownMenuLink profilePengguna" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #2d3748; flex-direction: column" >
+                        <div sec:authorize="isAuthenticated()" style="display: flex; align-items: center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-person-fill" style="margin-right: 8px">
+                                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+                            </svg>
+                            <span sec:authentication="name" class="d-inline-block align-top font-weight-bold"></span>
+                        </div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink profilePengguna">
+                        <li><a class="dropdown-item" th:href="@{/profil}">Informasi Profil</a></li>
+                        <li><a class="dropdown-item text-danger" th:if="${onevar != 'logged-out'}" th:href="@{/logout}">Logout</a></li>
+                    </ul>
+                </li>
+    
+                
+            </ul>
+        </div>
+
+        <div sec:authorize="hasAnyRole('ADMIN', 'SISWA', 'PENGAJAR')">
+            <ul class="navbar-nav navbar-right mx-5">
+                <li class="dropdown">
+                    <a href="/" class="dropdown" id="navbarDropdownMenuLink profilePengguna" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #2d3748; flex-direction: column" >
+                        <div sec:authorize="isAuthenticated()" style="display: flex; align-items: center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-person-fill" style="margin-right: 8px">
+                                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+                            </svg>
+                            <span sec:authentication="name" class="d-inline-block align-top font-weight-bold"></span>
+                        </div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink profilePengguna">
+                        <li><a class="dropdown-item" th:href="@{/profil}">Informasi Profil</a></li>
+                        <li><a class="dropdown-item text-danger" th:if="${onevar != 'logged-out'}" th:href="@{/logout}">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+    
+        </div>
+       
     </div>
 
 </nav>
 </body>
+
+
+
 </html>
 
