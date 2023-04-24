@@ -110,9 +110,9 @@
 </head>
 <body>
 <nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
-<div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${error}" >
+<div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${errorMessage}" >
     <div class="d-flex align-items-center">
-        <p th:text="${error}" style="margin-bottom: 0px; margin-top: 0px;"></p>
+        <p th:text="${errorMessage}" style="margin-bottom: 0px; margin-top: 0px;"></p>
     </div>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
@@ -143,7 +143,7 @@
                     </a>
                 </div>
                 <div class="col">
-                    <button type="submit" class="btn btn-primary" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B" >Import Siswa</button>
+                    <button type="submit" class="btn btn-primary" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B" >Simpan</button>
                 </div>
             </div>
             </form>
