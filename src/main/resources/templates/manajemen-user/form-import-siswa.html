@@ -143,7 +143,7 @@
                     </a>
                 </div>
                 <div class="col">
-                    <button type="submit" class="btn btn-primary" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B" >Simpan</button>
+                    <button type="submit" class="btn btn-primary" id="simpan-button" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B" disabled>Simpan</button>
                 </div>
             </div>
             </form>
@@ -169,6 +169,7 @@
     deleteFileBtn = document.getElementById("delete-button");
     imgUpload = document.getElementById("img-upload");
     head = document.getElementById("head");
+    simpanBtn = document.getElementById("simpan-button")
     let file;
     var filename;
 
@@ -187,6 +188,7 @@
         dropArea.onclick = null;
         dropArea.style.setProperty('cursor', 'initial');
         deleteFileBtn.style.setProperty('display', 'flex');
+        simpanBtn.disabled = false;
     });
 
     deleteFileBtn.addEventListener("click", function () {
@@ -202,6 +204,7 @@
         dropArea.onclick = () => {
             input.click();
         };
+        simpanBtn.disabled = true;
     });
 
 </script>
