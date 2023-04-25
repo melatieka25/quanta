@@ -237,7 +237,7 @@ public class SiswaController {
 
         // validate file
         if (file.isEmpty()) {
-            redirectAttrs.addFlashAttribute("error", "Belum ada berkas CSV dipilih. Harap pilih satu berkas CSV!");
+            redirectAttrs.addFlashAttribute("errorMessage", "Belum ada berkas CSV dipilih. Harap pilih satu berkas CSV!");
             return "redirect:/siswa/import-csv";
             
         } else {
@@ -289,7 +289,8 @@ public class SiswaController {
                 model.addAttribute("listSiswa", listSiswa);
                 model.addAttribute("listOrtu", listOrtu);
                 if (counterSiswa == 0 && counterOrtu == 0) {
-                    model.addAttribute("error", "Gagal menambahkan siswa dan wali. Semua siswa beserta wali yang ingin ditambahkan telah tersimpan di sistem QUANTA");
+                    redirectAttrs.addFlashAttribute("errorMessage", "Gagal menambahkan siswa dan wali. Semua siswa beserta wali yang ingin ditambahkan telah tersimpan di sistem QUANTA");
+                    return "redirect:/siswa";
                 } else {
                     model.addAttribute("message", "Berhasil menambahkan data " + counterSiswa + " orang siswa dan " + counterOrtu + " orang wali");
                 }
@@ -333,58 +334,60 @@ public class SiswaController {
                 try {
                     Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
                     csvReader = new CSVReader(reader);
-                }
-                catch (Exception e) {
-                    redirectAttrs.addFlashAttribute("error", "Berkas yang dimasukkan tidak sesuai. Harap masukkan berkas yang sesuai untuk mengimpor data siswa!");
-                    return "redirect:/siswa/import-csv";
-                }
-                CsvToBean<SiswaCsvModel> csvToBean = new CsvToBeanBuilder<SiswaCsvModel>(csvReader)
+
+                    CsvToBean<SiswaCsvModel> csvToBean = new CsvToBeanBuilder<SiswaCsvModel>(csvReader)
                         .withMappingStrategy(strategy)
                         .withSeparator(',')
                         .withIgnoreLeadingWhiteSpace(true)
                         .build();
 
-                // convert `CsvToBean` object to list of users
-                List<SiswaCsvModel> listSiswaCsv = csvToBean.parse();
-                List<SiswaModel> listSiswa = new ArrayList<SiswaModel>();
-                List<OrtuModel> listOrtu = new ArrayList<OrtuModel>();
+                    // convert `CsvToBean` object to list of users
+                    List<SiswaCsvModel> listSiswaCsv = csvToBean.parse();
+                    List<SiswaModel> listSiswa = new ArrayList<SiswaModel>();
+                    List<OrtuModel> listOrtu = new ArrayList<OrtuModel>();
 
-                int counterSiswa = 0;
-                int counterOrtu = 0;
-                for (int i =0; i < listSiswaCsv.size(); i++){
-                    if (siswaService.getSiswaByEmail(listSiswaCsv.get(i).getEmail()) == null){
-                        SiswaModel siswa = siswaService.convertSiswaCsv(listSiswaCsv.get(i));
-                        String password = PasswordManager.generateCommonTextPassword();
-                        siswa.setPassword(password);
-                        siswa.setPasswordPertama(password);
-                        siswaService.addSiswa(siswa);
-                        listSiswa.add(siswa);
-                        counterSiswa++;
-                        OrtuModel ortu = ortuService.getOrtuByEmail(listSiswaCsv.get(i).getEmailOrtu());
-                        if (ortu == null) {
-                            ortu = ortuService.convertOrtuCsv(listSiswaCsv.get(i));
-                            String passwordOrtu = PasswordManager.generateCommonTextPassword();
-                            ortu.setPassword(passwordOrtu);
-                            ortu.setPasswordPertama(passwordOrtu);
-                            ortuService.addOrtu(ortu);
-                            siswa.setOrtu(ortu);
-                            siswaService.updateSiswa(siswa);
-                            listOrtu.add(ortu);
-                            counterOrtu++;
-                        } else {
-                            siswa.setOrtu(ortu);
-                            siswaService.updateSiswa(siswa);
+                    int counterSiswa = 0;
+                    int counterOrtu = 0;
+                    for (int i =0; i < listSiswaCsv.size(); i++){
+                        if (siswaService.getSiswaByEmail(listSiswaCsv.get(i).getEmail()) == null){
+                            SiswaModel siswa = siswaService.convertSiswaCsv(listSiswaCsv.get(i));
+                            String password = PasswordManager.generateCommonTextPassword();
+                            siswa.setPassword(password);
+                            siswa.setPasswordPertama(password);
+                            siswaService.addSiswa(siswa);
+                            listSiswa.add(siswa);
+                            counterSiswa++;
+                            OrtuModel ortu = ortuService.getOrtuByEmail(listSiswaCsv.get(i).getEmailOrtu());
+                            if (ortu == null) {
+                                ortu = ortuService.convertOrtuCsv(listSiswaCsv.get(i));
+                                String passwordOrtu = PasswordManager.generateCommonTextPassword();
+                                ortu.setPassword(passwordOrtu);
+                                ortu.setPasswordPertama(passwordOrtu);
+                                ortuService.addOrtu(ortu);
+                                siswa.setOrtu(ortu);
+                                siswaService.updateSiswa(siswa);
+                                listOrtu.add(ortu);
+                                counterOrtu++;
+                            } else {
+                                siswa.setOrtu(ortu);
+                                siswaService.updateSiswa(siswa);
+                            }
                         }
                     }
-                }
 
-                // save users list on model
-                model.addAttribute("listSiswa", listSiswa);
-                model.addAttribute("listOrtu", listOrtu);
-                if (counterSiswa == 0 && counterOrtu == 0) {
-                    model.addAttribute("error", "Gagal menambahkan siswa dan wali. Semua siswa beserta wali yang ingin ditambahkan telah tersimpan di sistem QUANTA");
-                } else {
-                    model.addAttribute("message", "Berhasil menambahkan data " + counterSiswa + " orang siswa dan " + counterOrtu + " orang wali");
+                    // save users list on model
+                    model.addAttribute("listSiswa", listSiswa);
+                    model.addAttribute("listOrtu", listOrtu);
+                    if (counterSiswa == 0 && counterOrtu == 0) {
+                        redirectAttrs.addFlashAttribute("errorMessage", "Gagal menambahkan siswa dan wali. Semua siswa beserta wali yang ingin ditambahkan telah tersimpan di sistem QUANTA");
+                        return "redirect:/siswa";
+                    } else {
+                        model.addAttribute("message", "Berhasil menambahkan data " + counterSiswa + " orang siswa dan " + counterOrtu + " orang wali");
+                    }
+                }
+                catch (Exception e) {
+                    redirectAttrs.addFlashAttribute("errorMessage", "Berkas yang dimasukkan tidak sesuai. Harap masukkan berkas yang sesuai untuk mengimpor data siswa!");
+                    return "redirect:/siswa/import-csv";
                 }
                 
             }
