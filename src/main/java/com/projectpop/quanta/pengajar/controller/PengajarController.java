@@ -201,7 +201,7 @@ public class PengajarController {
 
         // validate file
         if (file.isEmpty()) {
-            redirectAttrs.addFlashAttribute("error", "Belum ada berkas CSV dipilih. Harap pilih satu berkas CSV!");
+            redirectAttrs.addFlashAttribute("errorMessage", "Belum ada berkas CSV dipilih. Harap pilih satu berkas CSV!");
             return "redirect:/pengajar/import-csv";
             
         } else {
@@ -235,7 +235,8 @@ public class PengajarController {
                 // save users list on model
                 model.addAttribute("listPengajar", listPengajar);
                 if (counter == 0) {
-                    model.addAttribute("error", "Gagal menambahkan pengajar. Semua pengajar yang ingin ditambahkan telah tersimpan di sistem QUANTA");
+                    redirectAttrs.addFlashAttribute("errorMessage", "Gagal menambahkan pengajar. Semua pengajar yang ingin ditambahkan telah tersimpan di sistem QUANTA");
+                    return "redirect:/pengajar";
                 } else {
                     model.addAttribute("message", "Berhasil menambahkan data " + counter + " orang pengajar.");
                 }
@@ -273,40 +274,41 @@ public class PengajarController {
                 try {
                     Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
                     csvReader = new CSVReader(reader);
-                }
-                catch (Exception e) {
-                    redirectAttrs.addFlashAttribute("error", "Berkas yang dimasukkan tidak sesuai. Harap masukkan berkas yang sesuai untuk mengimpor data pengajar!");
-                    return "redirect:/pengajar/import-csv";
-                }
-                CsvToBean<PengajarCsvModel> csvToBean = new CsvToBeanBuilder<PengajarCsvModel>(csvReader)
+                    CsvToBean<PengajarCsvModel> csvToBean = new CsvToBeanBuilder<PengajarCsvModel>(csvReader)
                         .withMappingStrategy(strategy)
                         .withSeparator(',')
                         .withIgnoreLeadingWhiteSpace(true)
                         .build();
 
-                // convert `CsvToBean` object to list of users
-                List<PengajarCsvModel> listPengajarCsv = csvToBean.parse();
-                List<PengajarModel> listPengajar = new ArrayList<PengajarModel>();
+                    // convert `CsvToBean` object to list of users
+                    List<PengajarCsvModel> listPengajarCsv = csvToBean.parse();
+                    List<PengajarModel> listPengajar = new ArrayList<PengajarModel>();
 
-                int counter = 0;
-                for (int i =0; i < listPengajarCsv.size(); i++){
-                    if (pengajarService.getPengajarByEmail(listPengajarCsv.get(i).getEmail()) == null){
-                        PengajarModel pengajar = pengajarService.convertPengajarCsv(listPengajarCsv.get(i));
-                        String password = PasswordManager.generateCommonTextPassword();
-                        pengajar.setPassword(password);
-                        pengajar.setPasswordPertama(password);
-                        pengajarService.addPengajar(pengajar);
-                        listPengajar.add(pengajar);
-                        counter++;
+                    int counter = 0;
+                    for (int i =0; i < listPengajarCsv.size(); i++){
+                        if (pengajarService.getPengajarByEmail(listPengajarCsv.get(i).getEmail()) == null){
+                            PengajarModel pengajar = pengajarService.convertPengajarCsv(listPengajarCsv.get(i));
+                            String password = PasswordManager.generateCommonTextPassword();
+                            pengajar.setPassword(password);
+                            pengajar.setPasswordPertama(password);
+                            pengajarService.addPengajar(pengajar);
+                            listPengajar.add(pengajar);
+                            counter++;
+                        }
+                    }
+
+                    // save users list on model
+                    model.addAttribute("listPengajar", listPengajar);
+                    if (counter == 0) {
+                        redirectAttrs.addFlashAttribute("errorMessage", "Gagal menambahkan pengajar. Semua pengajar yang ingin ditambahkan telah tersimpan di sistem QUANTA");
+                        return "redirect:/pengajar";
+                    } else {
+                        model.addAttribute("message", "Berhasil menambahkan data " + counter + " orang pengajar.");
                     }
                 }
-
-                // save users list on model
-                model.addAttribute("listPengajar", listPengajar);
-                if (counter == 0) {
-                    model.addAttribute("error", "Gagal menambahkan pengajar. Semua pengajar yang ingin ditambahkan telah tersimpan di sistem QUANTA");
-                } else {
-                    model.addAttribute("message", "Berhasil menambahkan data " + counter + " orang pengajar.");
+                catch (Exception e) {
+                    redirectAttrs.addFlashAttribute("errorMessage", "Berkas yang dimasukkan tidak sesuai. Harap masukkan berkas yang sesuai untuk mengimpor data pengajar!");
+                    return "redirect:/pengajar/import-csv";
                 }
                 
             }
