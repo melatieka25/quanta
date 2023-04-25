@@ -31,7 +31,7 @@ public class MataPelajaranModel implements Serializable {
     private String name;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String abbr;
 
     @Column

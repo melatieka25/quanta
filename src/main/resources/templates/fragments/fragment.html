@@ -114,7 +114,7 @@
             </li>
             <li class="nav-item dropdown">
                 <a sec:authorize="hasRole('ADMIN')" class="nav-link dropdown-toggle" th:classappend="${onevar == 'user'} ? active : ''" href="/" id="navbarDarkDropdownMenuLink Statistika" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Statistika
+                    Laporan Presensi
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink Statistika">
                     <li><a class="dropdown-item" th:href="@{/statistik/mapel}">Mata Pelajaran</a></li>

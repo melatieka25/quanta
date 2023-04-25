@@ -2,17 +2,15 @@ package com.projectpop.quanta.konsultasi.restcontroller;
 
 import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
-import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.konsultasi.service.KonsultasiService;
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
-import com.projectpop.quanta.mapel.service.MataPelajaranService;
+import com.projectpop.quanta.mapel.service.MapelService;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.service.PengajarService;
 import com.projectpop.quanta.pengajarmapel.model.PengajarMapelModel;
 import com.projectpop.quanta.pengajarmapel.service.PengajarMapelService;
 import com.projectpop.quanta.siswa.model.SiswaModel;
 import com.projectpop.quanta.siswa.service.SiswaService;
-import com.projectpop.quanta.siswajadwalkelas.model.SiswaJadwalModel;
 import com.projectpop.quanta.siswajadwalkelas.service.SiswaJadwalService;
 import com.projectpop.quanta.siswakonsultasi.model.SiswaKonsultasiModel;
 import com.projectpop.quanta.siswakonsultasi.service.SiswaKonsultasiService;
@@ -35,7 +33,7 @@ public class KonsultasiRestController {
     private PengajarMapelService pengajarMapelService;
 
     @Autowired
-    private MataPelajaranService mataPelajaranService;
+    private MapelService mapelService;
 
     @Autowired
     private PengajarService pengajarService;
@@ -58,7 +56,7 @@ public class KonsultasiRestController {
 
     @GetMapping("/get-pengajar-mapel/{idMapel}")
     private List<PengajarModel> getListPengajarByMapel(@PathVariable("idMapel") Integer idMapel) {
-        MataPelajaranModel mataPelajaran = mataPelajaranService.getMapelById(idMapel);
+        MataPelajaranModel mataPelajaran = mapelService.getMapelById(idMapel);
         List<PengajarMapelModel> listPMapel = pengajarMapelService.getListPengajarByMapel(mataPelajaran);
 
         // get value of mapel
