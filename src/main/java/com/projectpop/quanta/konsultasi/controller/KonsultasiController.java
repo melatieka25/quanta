@@ -5,7 +5,7 @@ import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
 import com.projectpop.quanta.konsultasi.service.KonsultasiService;
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
-import com.projectpop.quanta.mapel.service.MataPelajaranService;
+import com.projectpop.quanta.mapel.service.MapelService;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.service.PengajarService;
 import com.projectpop.quanta.siswa.model.Jenjang;
@@ -17,16 +17,11 @@ import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 
 import static com.projectpop.quanta.konsultasi.model.StatusKonsul.*;
 
@@ -37,7 +32,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -59,9 +53,9 @@ public class KonsultasiController {
     @Autowired
     private PengajarService pengajarService;
 
-    @Qualifier("mataPelajaranServiceImpl")
+    @Qualifier("mapelServiceImpl")
     @Autowired
-    private MataPelajaranService mataPelajaranService;
+    private MapelService mapelService;
 
     @Qualifier("userServiceImpl")
     @Autowired
@@ -250,7 +244,7 @@ public class KonsultasiController {
     @GetMapping("/konsultasi/add")
     public String addKonsultasiFormPage(Model model) {
         KonsultasiModel konsultasi = new KonsultasiModel();
-        List<MataPelajaranModel> listMapel = mataPelajaranService.getListMapel();
+        List<MataPelajaranModel> listMapel = mapelService.getAllMapel();
 
         model.addAttribute("listMapel", listMapel);
         return "konsultasi/form-add";
@@ -271,7 +265,7 @@ public class KonsultasiController {
 
         SiswaModel siswa = siswaService.findSiswaByEmail(authentication.getName());
 
-        konsultasi.setMapelKonsul(mataPelajaranService.getMapelById(Integer.parseInt(mataPelajaran)));
+        konsultasi.setMapelKonsul(mapelService.getMapelById(Integer.parseInt(mataPelajaran)));
         konsultasi.setPengajarKonsul(pengajarService.getPengajarById(Integer.parseInt(pengajarMapel)));
         konsultasi.setTopic(topik);
         konsultasi.setDuration(1);

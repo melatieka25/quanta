@@ -53,7 +53,7 @@
                         Kakak Asuh
                         <select required class="form-select" th:field="*{kakakAsuh.id}">
                             <option th:each="kkAsuhOpt : ${listKakakAsuh}"
-                                    th:value="${kkAsuhOpt.id}" th:text="${kkAsuhOpt.name}"></option>
+                                    th:value="${kkAsuhOpt.id}" th:text="${kkAsuhOpt.name} + '  (' + ${kkAsuhOpt.email} + ')'"></option>
                         </select>
                     </div>
 
@@ -80,7 +80,7 @@
                                         class="form-select">
                                     <div th:each="siswaEx, iterationStatus2: ${listSiswa}">
                                         <option th:value="${siswaEx.id}"
-                                                th:text="${siswaEx.name}"></option>
+                                                th:text="${siswaEx.name} + '  (' + ${siswaEx.email} + ')'"></option>
                                     </div>
 
                                 </select>

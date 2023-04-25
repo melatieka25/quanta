@@ -4,7 +4,7 @@ import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
 import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.kelas.service.KelasService;
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
-import com.projectpop.quanta.mapel.service.MataPelajaranService;
+import com.projectpop.quanta.mapel.service.MapelService;
 import com.projectpop.quanta.orangtua.model.OrtuModel;
 import com.projectpop.quanta.orangtua.service.OrtuService;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
@@ -41,7 +41,7 @@ public class JadwalKelasController {
     private JadwalKelasService jadwalKelasService;
 
     @Autowired
-    private MataPelajaranService mataPelajaranService;
+    private MapelService mapelService;
 
     @Autowired
     private KelasService kelasService;
@@ -123,7 +123,7 @@ public class JadwalKelasController {
     String kelasDiajar, String mapel, String pengajar,Model model, RedirectAttributes redirectAttrs) {
         // set atttribute
         jadwalKelas.setKelas(kelasService.getKelasById(Integer.parseInt(kelasDiajar)));
-        jadwalKelas.setMapelJadwal(mataPelajaranService.getMapelById(Integer.parseInt(mapel)));
+        jadwalKelas.setMapelJadwal(mapelService.getMapelById(Integer.parseInt(mapel)));
         jadwalKelas.setPengajarKelas(pengajarService.getPengajarById(Integer.parseInt(pengajar)));
 
         // parsing waktu mulai dan selesai
@@ -213,7 +213,7 @@ public class JadwalKelasController {
     String kelasDiajar, String mapel, String pengajar, Model model, RedirectAttributes redirectAttrs) {
          // set atttribute
          jadwalKelas.setKelas(kelasService.getKelasById(Integer.parseInt(kelasDiajar)));
-         jadwalKelas.setMapelJadwal(mataPelajaranService.getMapelById(Integer.parseInt(mapel)));
+         jadwalKelas.setMapelJadwal(mapelService.getMapelById(Integer.parseInt(mapel)));
          jadwalKelas.setPengajarKelas(pengajarService.getPengajarById(Integer.parseInt(pengajar)));
  
          // parsing waktu mulai dan selesai
@@ -317,7 +317,7 @@ public class JadwalKelasController {
            // list dropdown
            List<KelasModel> listKelas = kelasService.getListKelas();
            List<PengajarModel> listPengajar = pengajarService.getListPengajarActive();
-           List<MataPelajaranModel> listMapel = mataPelajaranService.getListMapel();
+           List<MataPelajaranModel> listMapel = mapelService.getAllMapel();
            List<String> listRuangKelas = new ArrayList<>();
            listRuangKelas.add("ferarri");
            listRuangKelas.add("Subaru");

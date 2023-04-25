@@ -16,6 +16,14 @@
         body {
             font-family: 'DM Sans' ;
         }
+
+        .alert {
+            position:fixed;
+            top: 7rem;
+            left: 5%;
+            width: 90%;
+            z-index:9999;
+        }
     </style>
 </head>
 <body>
@@ -50,6 +58,14 @@ line-height: 140%;">Data Mata Pelajaran</h5>
                         </div>
                         <div class="col">
                             <p th:text="${mapel.abbr}"></p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 col-lg-4">
+                            <p style="font-weight: bold;">Jenjang Sekolah</p>
+                        </div>
+                        <div class="col">
+                            <p th:text="${jenjangMapel}"></p>
                         </div>
                     </div>
                 </div>

@@ -9,8 +9,10 @@ public interface MapelService {
     List<MataPelajaranModel> getAllMapel();
     List<MataPelajaranModel> getMapelSMP();
     List<MataPelajaranModel> getMapelSMA();
-    MataPelajaranModel getMapelbyId(Integer id);
+    MataPelajaranModel getMapelById(Integer id);
     MataPelajaranModel addMapel(MataPelajaranModel mapel);
     void deleteMapel(MataPelajaranModel mapel);
+    String getJenjangMapel(MataPelajaranModel mapel);
+    void setJenjangMapel(MataPelajaranModel mapel, String jenjangMapel);
 
 }

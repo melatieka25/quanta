@@ -1,13 +1,12 @@
 package com.projectpop.quanta.jadwalkelas.restcontroller;
 
+import com.projectpop.quanta.mapel.service.MapelService;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.kelas.service.KelasService;
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
-import com.projectpop.quanta.mapel.service.MataPelajaranService;
-
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.service.PengajarService;
 import com.projectpop.quanta.pengajarmapel.service.PengajarMapelService;
@@ -33,7 +32,7 @@ public class JadwalKelasRestController {
     private PengajarMapelService pengajarMapelService;
 
     @Autowired
-    private MataPelajaranService mataPelajaranService;
+    private MapelService mapelService;
 
     @Autowired
     private PengajarService pengajarService;
@@ -46,7 +45,7 @@ public class JadwalKelasRestController {
 
     @GetMapping("/get-pengajar/mapel/{id}")
     private List<PengajarModel> getListPengajarByMapel(@PathVariable("id") Integer id) {
-        MataPelajaranModel mapel = mataPelajaranService.getMapelById(id);
+        MataPelajaranModel mapel = mapelService.getMapelById(id);
         List<PengajarMapelModel> listPMapel = pengajarMapelService.getListPengajarByMapel(mapel);
         
         // get value of pengajar
