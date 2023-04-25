@@ -126,6 +126,12 @@ public class KelasController {
             kelas.setListSiswaKelas(listSiswaKelasUpdated);
         }
 
+        if (kelas.getJenjang().getDisplayValue().contains("SMP")){
+            kelas.setIsSMP(true);
+        } else {
+            kelas.setIsSMA(true);
+        }
+
 
         kelasService.addKelas(kelas);
         redirectAttrs.addFlashAttribute("success", "Kelas berhasil ditambahkan");
@@ -238,6 +244,12 @@ public class KelasController {
         kelasExs.setJenjang(kelas.getJenjang());
         kelasExs.setKakakAsuh(kelas.getKakakAsuh());
         kelasExs.setTahunAjar(kelas.getTahunAjar());
+
+        if (kelas.getJenjang().getDisplayValue().contains("SMP")){
+            kelasExs.setIsSMP(true);
+        } else {
+            kelasExs.setIsSMA(true);
+        }
 
         Set<Integer> listIdSiswaLama = new HashSet<Integer>();
         Set<Integer> listIdSiswaBaru = new HashSet<Integer>();
