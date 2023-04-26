@@ -20,6 +20,7 @@ public interface JadwalKelasService {
     void deleteJadwalKelas(JadwalKelasModel jadwalKelas);
     List<JadwalKelasModel> getListJadwalKelasByIdPengajar(Integer idPengajar);
     List<JadwalKelasModel> getListJadwalKelasByKelas(KelasModel kelas);
+    String convertMonthNumberToName(String date);
     List<JadwalKelasModel> getListJadwalByUser(UserModel user);
     List<JadwalKelasModel> getListJadwalKelasByTahunAjarAndMonth(TahunAjarModel tahunAjar, Integer month);
     List<JadwalKelasModel> getListJadwalKelasByKelasAndTanggal(LocalDate tanggal, KelasModel kelas);

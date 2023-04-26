@@ -1,7 +1,22 @@
 package com.projectpop.quanta.siswa.controller;
 
+import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
+import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
+import com.projectpop.quanta.kelas.model.KelasModel;
+import com.projectpop.quanta.kelas.service.KelasService;
+import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
+import com.projectpop.quanta.pengajar.model.PengajarModel;
+import com.projectpop.quanta.pengajar.service.PengajarService;
+import com.projectpop.quanta.pesan.model.PesanModel;
+import com.projectpop.quanta.pesan.service.PesanService;
+import com.projectpop.quanta.presensi.model.PresensiModel;
+import com.projectpop.quanta.presensi.model.PresensiStatus;
+import com.projectpop.quanta.siswajadwalkelas.model.SiswaJadwalModel;
+import com.projectpop.quanta.siswakonsultasi.model.SiswaKonsultasiModel;
+import com.projectpop.quanta.tahunajar.service.TahunAjarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,10 +42,16 @@ import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.user.service.UserService;
 import com.projectpop.quanta.user.auth.PasswordManager;
 
+import java.security.Principal;
+import java.text.DateFormatSymbols;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,8 +70,25 @@ public class SiswaController {
     @Autowired
     private OrtuService ortuService;
 
+    @Autowired
+    private TahunAjarService tahunAjarService;
+
+    @Autowired
+    private KelasService kelasService;
+
+    @Autowired
+    private PengajarService pengajarService;
+
+    @Autowired
+    private JadwalKelasService jadwalKelasService;
+
+    @Autowired
+    private PesanService pesanService;
+
     @GetMapping("/create-siswa")
-    public String addSiswaFormPage(Model model) {
+    public String addSiswaFormPage(Model model, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         model.addAttribute("listWali", ortuService.getListOrtu());
         SiswaModel siswa = new SiswaModel();
         OrtuModel ortu = new OrtuModel();
@@ -119,7 +157,9 @@ public class SiswaController {
     }
 
     @GetMapping
-    public String listSiswa(Model model) {
+    public String listSiswa(Model model, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         List<SiswaModel> listSiswa = siswaService.getListSiswa();
         for (SiswaModel siswa: listSiswa){
             siswa.setKelasBimbel(siswaService.getKelasBimbel(siswa));
@@ -130,9 +170,11 @@ public class SiswaController {
 
 
     @GetMapping("/detail/{id}")
-    public String detailSiswa(@PathVariable int id, Model model, RedirectAttributes redirectAttrs) {
+    public String detailSiswa(@PathVariable int id, Model model, RedirectAttributes redirectAttrs, Principal principal) {
         SiswaModel siswa = siswaService.getSiswaById(id);
         if (siswa != null){
+            var userModel = userService.getUserByEmail(principal.getName());
+            pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
              String timePattern = "EEE, dd-MMM-yyyy";
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(timePattern);
             String dateOfBirth = siswa.getDob().format(dateTimeFormatter);
@@ -147,11 +189,13 @@ public class SiswaController {
     }
 
     @GetMapping("{id}/inactive")
-    public String inactivateSiswaFormPage(@PathVariable int id, Model model, RedirectAttributes redirectAttrs){
+    public String inactivateSiswaFormPage(@PathVariable int id, Model model, RedirectAttributes redirectAttrs, Principal principal){
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
 
         SiswaModel siswa = siswaService.getSiswaById(id);
-        
-        
+
+
         if (siswa != null){
             model.addAttribute("siswa", siswa);
             siswa.setKelasBimbel(siswaService.getKelasBimbel(siswa));
@@ -178,12 +222,14 @@ public class SiswaController {
     }
 
     @GetMapping("{id}/active")
-    public String activateSiswaFormPage(@PathVariable int id, Model model, RedirectAttributes redirectAttrs){
-
+    public String activateSiswaFormPage(@PathVariable int id, Model model, RedirectAttributes redirectAttrs, Principal principal){
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         SiswaModel siswa = siswaService.getSiswaById(id);
-        
-        
+
+
         if (siswa != null){
+
             model.addAttribute("siswa", siswa);
             SiswaModel activatedSiswa = siswaService.activeSiswa(siswa);
                 redirectAttrs.addFlashAttribute("message", "Siswa dengan nama " + activatedSiswa.getNameEmail() + " berhasil diaktifkan kembali.");
@@ -196,7 +242,9 @@ public class SiswaController {
     }
 
     @GetMapping("{id}/update")
-    public String updateSiswaFormPage(@PathVariable int id, Model model, RedirectAttributes redirectAttrs){
+    public String updateSiswaFormPage(@PathVariable int id, Model model, RedirectAttributes redirectAttrs, Principal principal){
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
 
         SiswaModel siswa = siswaService.getSiswaById(id);
         if (siswa != null){
@@ -226,7 +274,198 @@ public class SiswaController {
         redirectAttrs.addFlashAttribute("message", "Siswa dengan nama " + updatedSiswa.getNameEmail() + " telah berhasil diubah datanya!");
         return "redirect:/siswa/detail/" + updatedSiswa.getId();
     }
+    @GetMapping("/all-rapor-siswa")
+    public String getAllRaporSiswa(Model model, Principal principal){
+//        ADMIN
+        KelasModel kelasModel;
+        Map<SiswaModel,String> mapSiswaModel = new HashMap<>();
+        String tahunAjaranNow = tahunAjarService.getTahunAjaranNow();
+        List<String> listNamaKelas = new ArrayList<>();
+        List<SiswaModel> listAllSiswaActive = siswaService.getListSiswaActive();
+        List<KelasModel> listKelasModel = kelasService.getListKelas();
+        listNamaKelas.add("Semua");
+        for (KelasModel kelas : listKelasModel){
+            listNamaKelas.add(kelas.getName());
+        }
+        for(SiswaModel siswaModel : listAllSiswaActive){
+            kelasModel = siswaService.getKelasBimbel(siswaModel);
+            if(kelasModel != null){
+                mapSiswaModel.put(siswaModel,kelasModel.getName());
+            }
+            else{
+                mapSiswaModel.put(siswaModel,"-");
+            }
+        }
+//        KAKAK ASUH
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
+        Map<SiswaModel,String> mapSiswaAsuhanModel = new HashMap<>();
+        List<String>listNamaKelasAsuhan=new ArrayList<>();
+        List<String>listNamaKelasAsuhanFix=new ArrayList<>();
+//        var userModel = userService.getUserByEmail(principal.getName());
+        PengajarModel pengajarModel = pengajarService.getPengajarById(userModel.getId());
+        if (null != pengajarModel){
+            listNamaKelasAsuhanFix.add("Semua");
+            List<KelasModel> listKelasAsuhan = pengajarModel.getListKelasAsuh();
+            for(KelasModel kelasModel1 : listKelasAsuhan){
+                listNamaKelasAsuhan.add(kelasModel1.getName());
+            }
+            for(SiswaModel siswaModel : listAllSiswaActive){
+                kelasModel = siswaService.getKelasBimbel(siswaModel);
+                if(kelasModel != null){
+                    if (listNamaKelasAsuhan.contains(kelasModel.getName())){
+                        mapSiswaAsuhanModel.put(siswaModel,kelasModel.getName());
+                        if (!listNamaKelasAsuhanFix.contains(kelasModel.getName())){
+                            listNamaKelasAsuhanFix.add(kelasModel.getName());
+                        }
+                    }
+                }
+            }
+            model.addAttribute("mapSiswaAsuhanModel", mapSiswaAsuhanModel);
+            model.addAttribute("listNamaKelasAsuhan", listNamaKelasAsuhanFix);
+//            model.addAttribute("isKakakAsuh", pengajarModel.getIsKakakAsuh());
+        }
+        model.addAttribute("tahunAjaranNow", tahunAjaranNow);
+        model.addAttribute("mapSiswaModel", mapSiswaModel);
+        model.addAttribute("listNamaKelas", listNamaKelas);
+        model.addAttribute("listKelasModel", listKelasModel);
+        return "rapor-siswa/landing-page";
+    }
 
+    @GetMapping(value = "/rapor-siswa/{idSiswa}")
+    public String viewRaporSiswa(@PathVariable("idSiswa") Integer idSiswa, Model model, Principal principal){
+        String tahunAjaranNow = tahunAjarService.getTahunAjaranNow();
+        SiswaModel siswaModel = siswaService.getSiswaById(idSiswa);
+        KelasModel kelasnyaSiswa = siswaService.getKelasBimbel(siswaModel);
+        List<PresensiModel> listPresensiSiswa = siswaModel.getListPresensiSiswa();
+        Map<PresensiModel,String[]> presensiSiswaDanJamMap = new HashMap<>();
+        for(PresensiModel presensiModel : listPresensiSiswa){
+            String waktu = localDateTimeToDateWithSlash(presensiModel.getJadwal().getStartDateClass());
+            String jamStart = localDateTimeToTimeWithSlashNoSeconds(presensiModel.getJadwal().getStartDateClass());
+            String jamEnd = localDateTimeToTimeWithSlashNoSeconds(presensiModel.getJadwal().getEndDateClass());
+            String tanggalFix = jadwalKelasService.convertMonthNumberToName(waktu);
+            presensiSiswaDanJamMap.put(presensiModel,new String[]{tanggalFix,jamStart, jamEnd});
+        }
+        List<SiswaKonsultasiModel> listKonsultasiSiswa = siswaModel.getListKonsultasiSiswa();
+        Integer countDurationKonsul = 0;
+        for (SiswaKonsultasiModel siswaKonsultasiModel : listKonsultasiSiswa){
+            countDurationKonsul += siswaKonsultasiModel.getKonsultasi().getDuration();
+        }
+        float persentaseKehadiranKelas = 0;
+        float countHadir = 0;
+        if (listPresensiSiswa.size() != 0){
+            for(PresensiModel presensiModel : listPresensiSiswa){
+                if (presensiModel.getStatus().getDisplayValue().equals(PresensiStatus.HADIR.getDisplayValue())){
+                    countHadir+=1;
+                }
+            }
+            persentaseKehadiranKelas = (countHadir/listPresensiSiswa.size())*100;
+        }
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
+        OrtuModel ortuModel = ortuService.getOrtuById(userModel.getId());
+        if (ortuModel != null){
+            List<SiswaModel> listAnak = ortuModel.getListAnak();
+            model.addAttribute("listAnak", listAnak);
+        }
+        Map<PesanModel,String[]> mapPesan = new HashMap<>();
+        LinkedHashMap<PesanModel,String[]> linkedHashMapPesan = new LinkedHashMap<PesanModel,String[]>();
+        List<PesanModel> listPesan = pesanService.getPesanBySiswa(siswaModel);
+        List<PesanModel> listPesanSorted = sortPesanByTime(listPesan);
+        for (PesanModel pesanModel : listPesanSorted){
+            String tahunSkrg = siswaService.getKelasBimbel(pesanModel.getSiswaPesan()).getTahunAjar().getName();
+            String tahunPesan = DateTimeFormatter.ofPattern("yyyy").format(pesanModel.getDateCreated());
+            if (tahunSkrg.contains(tahunPesan)){
+                if (pesanModel.getUser().getRole().toString().equals("PENGAJAR")){
+                    linkedHashMapPesan.put(pesanModel,new String[]{"Kakak Asuh", localDateTimeToDateWithSlash(pesanModel.getDateCreated()), localDateTimeToTimeWithSlash(pesanModel.getDateCreated())});
+                    mapPesan.put(pesanModel,new String[]{"Kakak Asuh", localDateTimeToDateWithSlash(pesanModel.getDateCreated()), localDateTimeToTimeWithSlash(pesanModel.getDateCreated())});
+                }
+                else if(pesanModel.getUser().getRole().toString().equals("ORTU")){
+                    linkedHashMapPesan.put(pesanModel,new String[]{"Orang Tua Siswa", localDateTimeToDateWithSlash(pesanModel.getDateCreated()), localDateTimeToTimeWithSlash(pesanModel.getDateCreated())});
+                    mapPesan.put(pesanModel, new String[]{"Orang Tua Siswa", localDateTimeToDateWithSlash(pesanModel.getDateCreated()), localDateTimeToTimeWithSlash(pesanModel.getDateCreated())});
+                }
+            }
+        }
+        model.addAttribute("sizeMapPesan", linkedHashMapPesan.size());
+        model.addAttribute("mapPesan", linkedHashMapPesan);
+        String[] listNamaBulan = new String[]{"Semua","Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"};
+        model.addAttribute("listNamaBulan", listNamaBulan);
+        model.addAttribute("kelasnyaSiswa", kelasnyaSiswa);
+        model.addAttribute("tahunAjaranNow", tahunAjaranNow);
+        model.addAttribute("siswaModel", siswaModel);
+        model.addAttribute("presensiSiswaDanJamMap", presensiSiswaDanJamMap);
+        model.addAttribute("countDurationKonsul", countDurationKonsul);
+        model.addAttribute("persentaseKehadiranKelas", decfor.format(persentaseKehadiranKelas));
+        model.addAttribute("anak", siswaModel);
+        return "rapor-siswa/detail-rapor-siswa";
+    }
+    @GetMapping("/rapor-saya")
+    public String viewRaporSaya(Model model, Principal principal){
+        String tahunAjaranNow = tahunAjarService.getTahunAjaranNow();
+        UserModel user = userService.getUserByEmail(principal.getName());
+        if(user.getRole().toString().equals("SISWA")){
+            SiswaModel siswaModel = siswaService.findSiswaByEmail(principal.getName());
+            KelasModel kelasnyaSiswa = siswaService.getKelasBimbel(siswaModel);
+            List<PresensiModel> listPresensiSiswa = siswaModel.getListPresensiSiswa();
+            Map<PresensiModel,String[]> presensiSiswaDanJamMap = new HashMap<>();
+            for(PresensiModel presensiModel : listPresensiSiswa){
+                String waktu = localDateTimeToDateWithSlash(presensiModel.getJadwal().getStartDateClass());
+                String jamStart = localDateTimeToTimeWithSlashNoSeconds(presensiModel.getJadwal().getStartDateClass());
+                String jamEnd = localDateTimeToTimeWithSlashNoSeconds(presensiModel.getJadwal().getEndDateClass());
+                String tanggalFix = jadwalKelasService.convertMonthNumberToName(waktu);
+                presensiSiswaDanJamMap.put(presensiModel,new String[]{tanggalFix,jamStart, jamEnd});
+            }
+            List<SiswaKonsultasiModel> listKonsultasiSiswa = siswaModel.getListKonsultasiSiswa();
+            Integer countDurationKonsul = 0;
+            for (SiswaKonsultasiModel siswaKonsultasiModel : listKonsultasiSiswa){
+                countDurationKonsul += siswaKonsultasiModel.getKonsultasi().getDuration();
+            }
+            float persentaseKehadiranKelas = 0;
+            float countHadir = 0;
+            if (listPresensiSiswa.size() != 0){
+                for(PresensiModel presensiModel : listPresensiSiswa){
+                    if (presensiModel.getStatus().getDisplayValue().equals(PresensiStatus.HADIR.getDisplayValue())){
+                        countHadir+=1;
+                    }
+                }
+                persentaseKehadiranKelas = (countHadir/listPresensiSiswa.size())*100;
+            }
+            String[] listNamaBulan = new String[]{"Semua","Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"};
+            model.addAttribute("listNamaBulan", listNamaBulan);
+            model.addAttribute("kelasnyaSiswa", kelasnyaSiswa);
+            model.addAttribute("tahunAjaranNow", tahunAjaranNow);
+            model.addAttribute("siswaModel", siswaModel);
+            model.addAttribute("presensiSiswaDanJamMap", presensiSiswaDanJamMap);
+            model.addAttribute("countDurationKonsul", countDurationKonsul);
+            model.addAttribute("persentaseKehadiranKelas", decfor.format(persentaseKehadiranKelas));
+            model.addAttribute("anak", siswaModel);
+            return "rapor-siswa/detail-rapor-siswa";
+        }
+        return "";
+    }
+    public static String localDateTimeToDateWithSlash(LocalDateTime localDateTime) {
+            return DateTimeFormatter.ofPattern("dd/MM/yyyy").format(localDateTime);
+    }
+    public static String localDateTimeToTimeWithSlash(LocalDateTime localDateTime) {
+        return DateTimeFormatter.ofPattern("HH:mm:ss").format(localDateTime);
+    }
+    public static String localDateTimeToTimeWithSlashNoSeconds(LocalDateTime localDateTime) {
+        return DateTimeFormatter.ofPattern("HH:mm").format(localDateTime);
+    }
+    private static final DecimalFormat decfor = new DecimalFormat("0");
+    public List<PesanModel> sortPesanByTime (List<PesanModel> pesanModelList){
+        PesanModel temp;
+        for (int i = 0; i<pesanModelList.size(); i++){
+            for (int j = i+1; j<pesanModelList.size(); j++){
+                if(pesanModelList.get(i).getDateCreated().isBefore(pesanModelList.get(j).getDateCreated())){
+                    temp = pesanModelList.get(i);
+                    pesanModelList.set(i,pesanModelList.get(j));
+                    pesanModelList.set(j,temp);
+                }
+            }
+        }
+        return pesanModelList;
+    }
     @GetMapping("/import-csv")
     public String addSiswaImportCsvPage() {
         return "manajemen-user/form-import-siswa";

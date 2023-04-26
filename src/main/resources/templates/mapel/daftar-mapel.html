@@ -40,7 +40,7 @@
     </style>
 </head>
 <body>
-<nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
+<nav th:replace="fragments/fragment :: navbar (${'Mapel'},${isKakakAsuh})"></nav>
 <div class="alert alert-danger alert-dismissible" role="alert" th:if="${error}" th:text="${error}">
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>

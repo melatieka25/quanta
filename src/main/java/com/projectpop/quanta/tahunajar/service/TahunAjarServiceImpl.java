@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,5 +33,20 @@ public class TahunAjarServiceImpl implements TahunAjarService{
     @Override
     public List<TahunAjarModel> getAllTahunAjar() {
         return tahunAjarDb.findAll();
+    }
+
+    @Override
+    public String getTahunAjaranNow() {
+        String tahunAjaranNow;
+        int currentYear = LocalDate.now().getYear();
+        int yearBefore = LocalDate.now().minusYears(1).getYear();
+        int yearAfter = LocalDate.now().plusYears(1).getYear();
+        if (9<=LocalDate.now().getMonthValue() || LocalDate.now().getMonthValue()==1){
+            tahunAjaranNow = currentYear + "/" + yearAfter;
+        }
+        else{
+            tahunAjaranNow = yearBefore + "/" +currentYear;
+        }
+        return tahunAjaranNow;
     }
 }

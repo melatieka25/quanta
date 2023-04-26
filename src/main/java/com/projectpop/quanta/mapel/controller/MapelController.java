@@ -3,7 +3,6 @@ package com.projectpop.quanta.mapel.controller;
 
 import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
-import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
 import com.projectpop.quanta.konsultasi.service.KonsultasiService;
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
 import com.projectpop.quanta.mapel.service.MapelService;
@@ -11,7 +10,7 @@ import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.service.PengajarService;
 import com.projectpop.quanta.pengajarmapel.model.PengajarMapelModel;
 import com.projectpop.quanta.pengajarmapel.service.PengajarMapelService;
-import org.hibernate.exception.ConstraintViolationException;
+import com.projectpop.quanta.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -19,7 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.persistence.PersistenceException;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -44,12 +43,18 @@ public class MapelController {
     @Autowired
     private JadwalKelasService jadwalKelasService;
 
+    @Qualifier("userServiceImpl")
+    @Autowired
+    private UserService userService;
+    
     @Qualifier("konsultasiServiceImpl")
     @Autowired
     private KonsultasiService konsultasiService;
 
     @GetMapping("")
-    public String viewAllMapel(Model model){
+    public String viewAllMapel(Model model, Principal principal){
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         List<MataPelajaranModel> listMapel = mapelService.getAllMapel();
 
         model.addAttribute("listMapel", listMapel);
@@ -57,7 +62,9 @@ public class MapelController {
     }
 
     @GetMapping("/detail/{mapel_id}")
-    public String viewDetailMapel(Model model, @PathVariable String mapel_id){
+    public String viewDetailMapel(Model model, @PathVariable String mapel_id, Principal principal){
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         MataPelajaranModel mapel = mapelService.getMapelById(Integer.valueOf(mapel_id));
         String jenjangMapel = mapelService.getJenjangMapel(mapel);
 
@@ -71,7 +78,9 @@ public class MapelController {
     }
 
     @GetMapping("/add")
-    public String addMapelFormPage(Model model) {
+    public String addMapelFormPage(Model model, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         List<PengajarModel> listpengajar = pengajarService.getListPengajarActive();
 
         MataPelajaranModel mapel = new MataPelajaranModel();
@@ -170,7 +179,9 @@ public class MapelController {
     }
 
     @GetMapping("/edit/{id}")
-    public String updateMapelForm(@PathVariable String id, Model model) {
+    public String updateMapelForm(@PathVariable String id, Model model, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         List<PengajarModel> listpengajar = pengajarService.getListPengajarActive();
 
 
@@ -306,7 +317,9 @@ public class MapelController {
     }
 
     @GetMapping("/delete/{id}")
-    public String DeleteMapelForm (@PathVariable String id, Model model, RedirectAttributes redirectAttrs) {
+    public String DeleteMapelForm (@PathVariable String id, Model model, RedirectAttributes redirectAttrs, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         MataPelajaranModel mapelDeleted = mapelService.getMapelById(Integer.valueOf(id));
         String namaMapel = mapelDeleted.getName();
 

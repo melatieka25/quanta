@@ -1,7 +1,6 @@
 package com.projectpop.quanta.user.model;
 
-import com.projectpop.quanta.orangtua.model.OrtuModel;
-import com.projectpop.quanta.orangtua.service.OrtuService;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.projectpop.quanta.pesan.model.PesanModel;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
@@ -9,15 +8,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Setter
 @Getter

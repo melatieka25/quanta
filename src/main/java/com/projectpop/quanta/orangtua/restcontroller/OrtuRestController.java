@@ -1,13 +1,13 @@
 package com.projectpop.quanta.orangtua.restcontroller;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import com.projectpop.quanta.orangtua.model.OrtuModel;
 import com.projectpop.quanta.orangtua.service.OrtuService;
 import com.projectpop.quanta.siswa.model.SiswaModel;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 

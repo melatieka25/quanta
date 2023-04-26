@@ -1,5 +1,6 @@
 package com.projectpop.quanta.siswa.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.orangtua.model.OrtuModel;
 import com.projectpop.quanta.pesan.model.PesanModel;
