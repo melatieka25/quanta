@@ -14,6 +14,31 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap" rel="stylesheet">
         <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
+        <style>
+            body {
+                font-family: 'DM Sans';
+            }
+
+            td, th{
+                padding: 8px 12px !important;
+                border-bottom: hidden;
+            }
+            .dataTables_filter{
+                margin-bottom: 8px;
+            }
+
+            span .paginate_button{
+                padding: 1px !important;
+            }
+
+            .alert {
+                position:fixed;
+                top: 7rem;
+                left: 5%;
+                width: 90%;
+                z-index:9999;
+            }
+        </style>
     </head>
     <head th:fragment="js">
         <script
@@ -26,7 +51,7 @@
     </head>
 </head>
 <body>
-<nav th:fragment="navbar (onevar)" class="navbar navbar-light navbar-expand"
+<nav th:fragment="navbar (onevar,${isKakakAsuh})" class="navbar navbar-light navbar-expand"
      style="background-color: #eDF2F7; border-radius: 0 0 20px 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
      font-size:14px;font-family: 'DM Sans', sans-serif; font-style: normal; font-weight: 700; line-height: 140%; color: #2d3748;">
     <a class="navbar-brand img-fluid w-20 mx-4" href="/" sec:authorize="hasAnyRole('PENGAJAR', 'SISWA', 'ADMIN')">
@@ -48,7 +73,7 @@
     <div class="navbar-collapse collapse order-3 dual-collapse2">
         <ul class="navbar-nav mr-auto navbar-left w-100">
             <li class="nav-item dropdown">
-                <a sec:authorize="hasRole('ADMIN')" class="nav-link dropdown-toggle" th:classappend="${onevar == 'user'} ? active : ''" href="/" id="navbarDarkDropdownMenuLink manajemenPengguna" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a sec:authorize="hasRole('ADMIN')" class="nav-link dropdown-toggle" th:classappend="${onevar == 'manajemenPengguna'} ? active : ''" href="/" id="navbarDarkDropdownMenuLink manajemenPengguna" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Manajemen Pengguna
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink manajemenPengguna">
@@ -65,13 +90,13 @@
                 </a>
             </li>
             <li class="nav-item dropdown">
-                <a sec:authorize="hasRole('PENGAJAR')" class="nav-link dropdown-toggle" th:classappend="${onevar == 'user'} ? active : ''" href="/" id="navbarDarkDropdownMenuLink operasional" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a sec:authorize="hasRole('PENGAJAR')" class="nav-link dropdown-toggle" th:classappend="${onevar == 'operasional'} ? active : ''" href="/" id="navbarDarkDropdownMenuLink operasional" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Operasional
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink operasional">
                     <li><a class="dropdown-item" th:href="@{/presensi}">Presensi</a></li>
                     <li><a class="dropdown-item" th:href="@{/konsultasi}">Konsultasi</a> </li>
-                    <li><a class="dropdown-item invisible" hidden th:href="@{/}">Rapor Adik Asuh</a> </li>
+                    <li th:if="${isKakakAsuh}"><a class="dropdown-item" th:href="@{/siswa/all-rapor-siswa}">Rapor Adik Asuh</a> </li>
                 </ul>
             </li>
             <li class="nav-item">
@@ -80,25 +105,16 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a sec:authorize="hasRole('SISWA')" role="button" class="nav-link invisible" hidden th:href="@{/}">
+                <a sec:authorize="hasRole('SISWA')" role="button" class="nav-link" th:classappend="${onevar == 'raporSaya'} ? active : ''" id="rapor-saya" href="/siswa/rapor-saya">
                     Rapor Saya
                 </a>
             </li>
             <li class="nav-item">
                 <a sec:authorize="hasRole('ORTU')" class="nav-link" th:classappend="${onevar == 'raporAnak'} ? active : ''" th:href="@{/}" 
-                id="navbarDarkDropdownMenuLink raporAnak" role="button">
+                id="rapor-anak" role="button">
                     Rapor Anak
                 </a>
             </li>
-            <!-- <li class="nav-item dropdown">
-                <a sec:authorize="hasRole('ORTU')" hidden class="nav-link dropdown-toggle invisible" th:classappend="${onevar == 'user'} ? active : ''" href="/" id="navbarDarkDropdownMenuLink raporAnak" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Rapor Anak
-                </a>
-                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink raporAnak">
-                    <li><a class="dropdown-item invisible" hidden th:href="@{/}">Melati Eka Putri</a></li>
-                    <li><a class="dropdown-item invisible" hidden th:href="@{/}">Amelia Putri</a> </li>
-                </ul>
-            </li> -->
             <li class="nav-item dropdown">
                 <a sec:authorize="hasRole('ADMIN')" class="nav-link dropdown-toggle" th:classappend="${onevar == 'user'} ? active : ''" href="/" id="navbarDarkDropdownMenuLink manajemenOperasional" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Manajemen Operasional
@@ -107,7 +123,7 @@
                     <li><a class="dropdown-item" th:href="@{/mapel}">Mata Pelajaran</a></li>
                     <li><a class="dropdown-item" th:href="@{/kelas}">Kelas</a></li>
                     <li><a class="dropdown-item" th:href="@{/jadwal-kelas}">Jadwal</a></li>
-                    <li><a class="dropdown-item invisible" hidden th:href="@{/}">Rapor</a></li>
+                    <li><a class="dropdown-item" th:href="@{/siswa/all-rapor-siswa}">Rapor</a></li>
                     <li><a class="dropdown-item" th:href="@{/presensi}">Presensi</a></li>
                     <li><a class="dropdown-item" th:href="@{/konsultasi}">Konsultasi</a></li>
                 </ul>
@@ -125,7 +141,7 @@
         <div sec:authorize="hasRole('ORTU')">
             <ul class="navbar-nav ml-auto navbar-right" style="padding-right: 150px;">
                 <li class="nav-item dropdown col-auto" style="margin-right: 24px">
-                    <a href="/" class="dropdown" id="navbarDropdownMenuLink listAnak" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #2d3748; flex-direction: column;" 
+                    <a href="/" class="dropdown" id="navbarDropdownMenuLink listAnak" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #2d3748; flex-direction: column;"
                     th:text="'Pilih Anak: ' + ${anak.name}">
                     </a>
                      <script th:inline="javascript"> 
@@ -143,7 +159,7 @@
                                 var url = '/anak/' + val.id;
                                 $("#list-anak").append("<a class='dropdown-item' href=" + url + ">"+ val.name + "</a>")
                             });
-                             
+
                         });
     
                         });
@@ -165,7 +181,7 @@
                             $("#list-rapor-anak").html("");
                                                 
                             jQuery.each(data, function(key, val){
-                                var url = '/siswa/rapor-siswa' + val.id;
+                                var url = '/siswa/rapor-siswa/' + val.id;
                                 $("#list-rapor-anak").append("<a class='dropdown-item' href=" + url + ">"+ val.name + "</a>")
                             });
                              
@@ -182,8 +198,10 @@
     
                         var jadwalURL = "/jadwal-kelas/anak/" + lastPart
                         $("#jadwal-ortu").attr('href', jadwalURL);
-    
-                   
+
+                        var raporAnakURL = "/siswa/rapor-siswa/" + lastPart
+                        $("#rapor-anak").attr('href', raporAnakURL);
+
                     </script>
                     <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink listAnak">
                         <div th:if="${onevar == 'beranda'}">

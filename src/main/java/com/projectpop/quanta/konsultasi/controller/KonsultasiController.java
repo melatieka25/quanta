@@ -64,8 +64,11 @@ public class KonsultasiController {
     @Autowired
     private EmailService emailService;
 
+
     @GetMapping("/konsultasi")
     public String viewJadwalKonsultasi(Model model, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         konsultasiService.reloadStatus();
         UserModel user = userService.getUserByEmail(principal.getName());
 
@@ -143,9 +146,9 @@ public class KonsultasiController {
     }
 
     @GetMapping("/konsultasi/view/{idKonsultasi}" )
-    public String viewDetailKonsultasiPage(@PathVariable Integer idKonsultasi, Principal principal, Model model) {
-        UserModel user = userService.getUserByEmail(principal.getName());
-
+    public String viewDetailKonsultasiPage(@PathVariable Integer idKonsultasi, Model model, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         KonsultasiModel konsultasi = konsultasiService.getKonsultasi(idKonsultasi);
         List<SiswaKonsultasiModel> listSiswaKonsultasi = siswaKonsultasiService.getListSiswaByKonsultasi(konsultasi);
 
@@ -154,7 +157,7 @@ public class KonsultasiController {
             siswaKonsultasi.getSiswaKonsul().setKelasBimbel(kelas);
         }
 
-        if(user.getRole().toString().equals("PENGAJAR")){
+        if(userModel.getRole().toString().equals("PENGAJAR")){
             boolean isToValidate = false;
             boolean isToClose = false;
 
@@ -170,20 +173,20 @@ public class KonsultasiController {
             model.addAttribute("isToClose", isToClose);
         }
 
-        if(user.getRole().toString().equals("SISWA")){
+        if(userModel.getRole().toString().equals("SISWA")){
             boolean isJoinable = false;
             boolean isCancelable = false;
             boolean isExtendable = false;
 
             if (konsultasi.getStatus().equals(PENDING)){
-                if (null!=siswaKonsultasiService.getBySiswaAndKonsultasi((SiswaModel) user, konsultasi.getId())){
+                if (null!=siswaKonsultasiService.getBySiswaAndKonsultasi((SiswaModel) userModel, konsultasi.getId())){
                     isCancelable = true;
                 } else {
                     isJoinable = true;
                 }
             }
             else if (konsultasi.getStatus().equals(DITERIMA)) {
-                if (null!=siswaKonsultasiService.getBySiswaAndKonsultasi((SiswaModel) user, konsultasi.getId())){
+                if (null!=siswaKonsultasiService.getBySiswaAndKonsultasi((SiswaModel) userModel, konsultasi.getId())){
                     if (konsultasi.getStartTime().isBefore(LocalDateTime.now())
                             && konsultasi.getEndTime().isAfter(LocalDateTime.now())){
                         isExtendable = true;
@@ -204,7 +207,7 @@ public class KonsultasiController {
             model.addAttribute("isJoinable", isJoinable);
         }
 
-        model.addAttribute("role", user.getRole().toString());
+        model.addAttribute("role", userModel.getRole().toString());
         model.addAttribute("konsultasi", konsultasi);
         model.addAttribute("listSiswaKonsultasi", listSiswaKonsultasi);
 
@@ -216,7 +219,9 @@ public class KonsultasiController {
     public String cancelKonsultasiPage(Authentication authentication,
                                        @PathVariable Integer idKonsultasi,
                                        Model model,
-                                       RedirectAttributes redirectAttrs) {
+                                       RedirectAttributes redirectAttrs, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         SiswaModel siswa = siswaService.findSiswaByEmail(authentication.getName());
         SiswaKonsultasiModel siswaKonsultasi = siswaKonsultasiService.getBySiswaAndKonsultasi(siswa, idKonsultasi);
         KonsultasiModel konsultasiCancel = siswaKonsultasi.getKonsultasi();
@@ -242,7 +247,9 @@ public class KonsultasiController {
 
 
     @GetMapping("/konsultasi/add")
-    public String addKonsultasiFormPage(Model model) {
+    public String addKonsultasiFormPage(Model model, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         KonsultasiModel konsultasi = new KonsultasiModel();
         List<MataPelajaranModel> listMapel = mapelService.getAllMapel();
 
@@ -398,8 +405,6 @@ public class KonsultasiController {
         konsultasiService.updateKonsultasi(konsultasi);
 
         String formattedDate = getFormattedDate(konsultasi.getStartTime().toLocalDate());
-
-
         String emailSubject = "PENGAJAR MENOLAK KONSULTASI!";
         String emailBody = "Pengajar telah menolak permintaan konsultasi yang kamu ikuti, mohon cari jadwal konsultasi lain."
                 + "\n\nDetail konsultasi"
@@ -417,11 +422,16 @@ public class KonsultasiController {
         return "redirect:/konsultasi/view/" + idKonsultasi; // Redirect to success page
     }
 
+    // @GetMapping("/konsultasi/request/view/{idKonsultasi}" )
+    // public String viewDetailRequestPage(@PathVariable Integer idKonsultasi, Authentication authentication, Model model, Principal principal) {
+    //     var userModel = userService.getUserByEmail(principal.getName());
+    //     pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
     @GetMapping("/konsultasi/ikuti/{idKonsultasi}")
-    public String ikutiKonsultasi(Principal principal, @PathVariable Integer idKonsultasi, RedirectAttributes redirectAttributes) {
+    public String ikutiKonsultasi(Principal principal, @PathVariable Integer idKonsultasi, RedirectAttributes redirectAttributes, Model model) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         SiswaModel siswa = siswaService.findSiswaByEmail(principal.getName());
         KonsultasiModel konsultasi = konsultasiService.getKonsultasi(idKonsultasi);
-
         if (konsultasiService.getIsSiswaAvailable(siswa, konsultasi)){
             SiswaKonsultasiModel siswaKonsultasi = new SiswaKonsultasiModel();
             siswaKonsultasi.setKonsultasi(konsultasi);

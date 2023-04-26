@@ -11,7 +11,7 @@
         font-family: 'DM Sans';
     }
 </style>
-<nav th:replace="fragments/fragment :: navbar (${'konsultasi'})"></nav>
+<nav th:replace="fragments/fragment :: navbar (${'Konsultasi'},${isKakakAsuh})"></nav>
 <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
 <div class="alert alert-danger" role="alert" th:text="${errorMessage}" th:if="${errorMessage}"></div>
 <div class="container" style="width:75%; padding-top:20px;">

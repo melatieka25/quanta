@@ -109,6 +109,50 @@ public class JadwalKelasServiceImpl implements JadwalKelasService{
     }
 
     @Override
+    public String convertMonthNumberToName(String date) {
+        String[] tanggal = date.split("/");
+        switch (tanggal[1]){
+            case "01":
+                tanggal[1] = "Januari";
+                break;
+            case "02":
+                tanggal[1] = "Februari";
+                break;
+            case "03":
+                tanggal[1] = "Maret";
+                break;
+            case "04":
+                tanggal[1] = "April";
+                break;
+            case "05":
+                tanggal[1] = "Mei";
+                break;
+            case "06":
+                tanggal[1] = "Juni";
+                break;
+            case "07":
+                tanggal[1] = "Juli";
+                break;
+            case "08":
+                tanggal[1] = "Agustus";
+                break;
+            case "09":
+                tanggal[1] = "September";
+                break;
+            case "10":
+                tanggal[1] = "Oktober";
+                break;
+            case "11":
+                tanggal[1] = "November";
+                break;
+            case "12":
+                tanggal[1] = "Desember";
+                break;
+        }
+        return String.join(" ",tanggal);
+    }
+
+    @Override
     public List<JadwalKelasModel> getJadwalByPengajarAndTanggal(PengajarModel pengajar, LocalDate tanggal) {
         List<JadwalKelasModel> listJadwalKelas = jadwalKelasDb.findAllByPengajarKelas(pengajar);
         List<JadwalKelasModel> listJadwalKelasNew = new ArrayList<JadwalKelasModel>();
@@ -122,7 +166,7 @@ public class JadwalKelasServiceImpl implements JadwalKelasService{
     
     @Override
     public List<JadwalKelasModel> getListJadwalKelasByIdPengajar(Integer idPengajar) {
-        Optional<PengajarModel> pengajarKelas = pengajarDb.findById(idPengajar);
+        Optional<PengajarModel> pengajarKelas = pengajarDb.findPengajarModelById(idPengajar);
         if (pengajarKelas.isPresent()){
             return jadwalKelasDb.findAllByPengajarKelas(pengajarKelas.get());
         }

@@ -1,7 +1,10 @@
 package com.projectpop.quanta.orangtua.contoller;
 
+import java.security.Principal;
 import java.time.format.DateTimeFormatter;
 
+import com.projectpop.quanta.pengajar.service.PengajarService;
+import com.projectpop.quanta.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -23,8 +26,19 @@ public class OrtuController {
     @Autowired
     private OrtuService ortuService;
 
+    @Qualifier("userServiceImpl")
+    @Autowired
+    private UserService userService;
+
+    @Qualifier("pengajarServiceImpl")
+    @Autowired
+    private PengajarService pengajarService;
+
+
     @GetMapping("/detail/{id}/{siswaId}")
-    public String detailOrtu(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs) {
+    public String detailOrtu(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         OrtuModel ortu = ortuService.getOrtuById(id);
         if (ortu != null){
             ortu.setAnakAktif(ortuService.getAnakAktif(ortu));
@@ -42,8 +56,9 @@ public class OrtuController {
     }
 
     @GetMapping("{id}/{siswaId}/inactive")
-    public String inactivateOrtuFormPage(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs){
-
+    public String inactivateOrtuFormPage(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs, Principal principal){
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         OrtuModel ortu = ortuService.getOrtuById(id);
         
         
@@ -66,8 +81,9 @@ public class OrtuController {
     }
 
     @GetMapping("{id}/{siswaId}/active")
-    public String activateOrtuFormPage(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs){
-
+    public String activateOrtuFormPage(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs, Principal principal){
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         OrtuModel ortu = ortuService.getOrtuById(id);
         
         
@@ -84,8 +100,9 @@ public class OrtuController {
     }
 
     @GetMapping("{id}/{siswaId}/update")
-    public String updateOrtuFormPage(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs){
-
+    public String updateOrtuFormPage(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs, Principal principal){
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         OrtuModel ortu = ortuService.getOrtuById(id);
         if (ortu != null){
             model.addAttribute("ortu", ortu);

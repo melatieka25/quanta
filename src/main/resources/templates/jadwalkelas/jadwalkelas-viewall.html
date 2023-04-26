@@ -11,7 +11,7 @@
         font-family: 'DM Sans';
     }
 </style>
-<nav th:replace="fragments/fragment :: navbar ('jadwalKelas')"></nav>
+<nav th:replace="fragments/fragment :: navbar(${'jadwalKelas'},${isKakakAsuh})"></nav>
 
 <div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${deletefailed}" >
     <div class="d-flex align-items-center">

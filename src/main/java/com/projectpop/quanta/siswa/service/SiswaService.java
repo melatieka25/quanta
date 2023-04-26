@@ -18,6 +18,7 @@ public interface SiswaService {
     int getNumberOfKonsultasiAktif(SiswaModel siswa);
     SiswaModel findSiswaByEmail(String email);
     List<SiswaModel> getListSiswaExsAndNoClass(List<SiswaModel> listSiswa, KelasModel kelas);
+    List<SiswaModel> getListSiswaActive();
     SiswaModel getSiswaByEmail(String email);
     SiswaModel convertSiswaCsv(SiswaCsvModel siswaCsv);
 

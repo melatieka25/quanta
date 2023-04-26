@@ -19,7 +19,7 @@
   </style>  
 </head>
 <body>
-  <nav th:replace="fragments/fragment :: navbar ('jadwalKelas')"></nav>
+  <nav th:replace="fragments/fragment :: navbar (${'jadwalKelas'},${isKakakAsuh})"></nav>
   <br>
   <div class="alert alert-success alert-dismissible d-flex align-items-center" role="alert" th:if="${message}">
     <div class="d-flex align-items-center">
@@ -34,7 +34,6 @@
     </div>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
-
   <a class="btn btn-link" style="color: #31318B" href="/jadwal-kelas"> Kembali ke Daftar Jadwal Kelas</a>
 
   

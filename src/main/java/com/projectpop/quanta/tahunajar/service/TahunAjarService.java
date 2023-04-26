@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface TahunAjarService {
     List<TahunAjarModel> getAllTahunAjar();
+    String getTahunAjaranNow();
     TahunAjarModel getTahunAjarById(String id);
     TahunAjarModel getTahunAjarAktif();
 }

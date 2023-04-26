@@ -48,6 +48,8 @@ public class UserController {
 
     @GetMapping("/profil")
     public String profilPengguna(Principal principal, Model model, RedirectAttributes redirectAttrs) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         UserModel user = userService.getUserByEmail(principal.getName());
         String timePattern = "EEE, dd-MMM-yyyy";
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(timePattern);
@@ -84,7 +86,9 @@ public class UserController {
 
     
     @GetMapping("/update-password")
-    public String updateUserPasswordFormPage(Model model){
+    public String updateUserPasswordFormPage(Model model, Principal principal){
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         UpdatePasswordModel updatePassword = new UpdatePasswordModel();
         model.addAttribute("updatePassword", updatePassword);
         return "akun-saya/form-update-password";
@@ -96,25 +100,15 @@ public class UserController {
         BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
         UserModel user = userService.getUserByEmail(principal.getName());
         if (bcrypt.matches(updatePassword.getPasswordLama(), user.getPassword())) {
-            if (updatePassword.getPasswordBaru().equals(updatePassword.getKonfirmasiPasswordBaru())){
-                if (PasswordManager.validationChecker(updatePassword.getPasswordBaru())){
-                    user.setPassword(bcrypt.encode(updatePassword.getPasswordBaru()));
-                    user.setIsPassUpdated(true);
-                    userService.updateUser(user);
-                    redirectAttrs.addFlashAttribute("message", "Password untuk akunmu berhasil diubah!");
-                    return "redirect:/profil";
-                } else {
-                    redirectAttrs.addFlashAttribute("error", "Password tidak mengandung huruf besar/huruf kecil/angka/simbol atau kurang dari 8 karakter.");
-                    return "redirect:/update-password";
-                }
-            } else {
-                redirectAttrs.addFlashAttribute("error", "Konfirmasi password baru tidak cocok dengan password baru.");
-                return "redirect:/update-password";
-            }
+            user.setPassword(bcrypt.encode(updatePassword.getPasswordBaru()));
+            user.setIsPassUpdated(true);
+            userService.updateUser(user);
+            redirectAttrs.addFlashAttribute("message", "Password untuk akunmu berhasil diubah!");
+            return "redirect:/profil";
         } else {
             redirectAttrs.addFlashAttribute("error", "Password lama tidak sesuai.");
             return "redirect:/update-password";
         }
-
     }
+
 }

@@ -38,7 +38,7 @@
             border-radius: 10px;
             box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.3);
             width: 600px;
-            height: 90%%;
+            height: 90%;
             padding: 20px;
             margin: 20px;
             background-color: #fcfcfc;
@@ -109,7 +109,7 @@
     </style>  
 </head>
 <body>
-<nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
+<nav th:replace="fragments/fragment :: navbar (${'manajemenUser'},${isKakakAsuh})"></nav>
 <div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${errorMessage}" >
     <div class="d-flex align-items-center">
         <p th:text="${errorMessage}" style="margin-bottom: 0px; margin-top: 0px;"></p>

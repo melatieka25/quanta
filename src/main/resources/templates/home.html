@@ -89,7 +89,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
-    <nav th:replace="fragments/fragment :: navbar('beranda')"></nav>
+    <nav th:replace="fragments/fragment :: navbar ('beranda',${isKakakAsuh})"></nav>
 
     <div class="w-100 p-3 hero-image">
         <div class="hero-text">
@@ -134,9 +134,10 @@
                                         </tbody>
         
                                     </table>
-                                    <a th:href="@{/presensi/read/} + ${jadwal.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
-                                        Lihat Presensi </a>                            
-        
+                                    <a sec:authorize="hasRole('PENGAJAR')" th:href="@{/presensi/read/} + ${jadwal.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
+                                        Lihat Presensi </a>
+                                    <a sec:authorize="hasRole('SISWA')" th:href="@{/jadwal-kelas/} + ${jadwal.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
+                                        Lihat Presensi </a>
                                 </div>
                             </div>
                         </div>
@@ -177,12 +178,8 @@
                                         </tbody>
             
                                         </table>
-                                        <div sec:authorize="hasRole('PENGAJAR')"> 
+                                        <div sec:authorize="hasAnyRole('PENGAJAR', 'SISWA')">
                                             <a th:href="@{/konsultasi/view/} + ${konsul.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
-                                            Lihat Detail </a>
-                                        </div>
-                                        <div sec:authorize="hasRole('SISWA')"> 
-                                            <a th:href="@{/konsultasi/siswa/view/} + ${konsul.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
                                             Lihat Detail </a>
                                         </div>
                                     </div>

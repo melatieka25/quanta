@@ -12,7 +12,7 @@
     </style>
 </head>
 <body>
-<nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
+<nav th:replace="fragments/fragment :: navbar (${'Konsultasi'},${isKakakAsuh})"></nav>
 <div class="container">
     <h2 style="font-weight: bold; text-align:center; padding:20px">Konsultasi</h2>
     <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
