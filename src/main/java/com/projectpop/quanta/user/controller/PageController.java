@@ -5,6 +5,13 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
+import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
+import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
+import com.projectpop.quanta.konsultasi.service.KonsultasiService;
+import com.projectpop.quanta.orangtua.model.OrtuModel;
+import com.projectpop.quanta.orangtua.service.OrtuService;
+import com.projectpop.quanta.pengajar.service.PengajarService;
+import com.projectpop.quanta.siswa.model.SiswaModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -38,17 +45,26 @@ public class PageController {
     private UserService userService;
 
     @Autowired
+    private PengajarService pengajarService;
+
+    @Autowired
+    private OrtuService ortuService;
+
+    @Autowired
     private JadwalKelasService jadwalKelasService;
 
     @Autowired
     private KonsultasiService konsultasiService;
 
-    @Autowired
-    private OrtuService ortuService;
-
-    
     @RequestMapping("/")
     public String home(Principal principal, Model model) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
+        OrtuModel ortuModel = ortuService.getOrtuById(userModel.getId());
+        if (ortuModel != null){
+            List<SiswaModel> listAnak = ortuModel.getListAnak();
+            model.addAttribute("listAnak", listAnak);
+        }
         UserModel user = userService.getUserByEmail(principal.getName());
         model.addAttribute("username", user.getName());
 

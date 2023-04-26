@@ -11,16 +11,18 @@ import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.service.PengajarService;
 import com.projectpop.quanta.pengajarmapel.model.PengajarMapelModel;
 import com.projectpop.quanta.pengajarmapel.service.PengajarMapelService;
+import com.projectpop.quanta.user.service.UserService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import com.projectpop.quanta.siswa.model.SiswaModel;
 import com.projectpop.quanta.siswa.service.SiswaService;
 import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.user.model.UserRole;
-import com.projectpop.quanta.user.service.UserService;
 
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
 
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -52,6 +54,7 @@ public class JadwalKelasController {
     @Autowired
     private PengajarMapelService pengajarMapelService;
 
+    @Qualifier("userServiceImpl")
     @Autowired
     private UserService userService;
 
@@ -65,6 +68,7 @@ public class JadwalKelasController {
     @GetMapping("")
     public String viewAllJadwalKelas(Principal principal, Model model) {
         UserModel user = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(user,model);
 
         // ORTU
         if (user.getRole() == UserRole.ORTU) {
@@ -95,7 +99,9 @@ public class JadwalKelasController {
 
     // VIEW ALL
     @GetMapping("/{id}")
-    public String viewDetailJadwalKelas(@PathVariable("id") Integer id, Model model) {
+    public String viewDetailJadwalKelas(@PathVariable("id") Integer id, Model model, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         JadwalKelasModel jadwal = jadwalKelasService.getJadwalKelasById(id);
         LocalDateTime now = LocalDateTime.now();
         boolean canUpdate = true;
@@ -111,7 +117,9 @@ public class JadwalKelasController {
 
     // CREATE FORM
     @GetMapping("/add")
-    public String addJadwalKelasFormPage(Model model) {
+    public String addJadwalKelasFormPage(Model model, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         JadwalKelasModel jadwalKelas = new JadwalKelasModel();
         getAllDropdownList(jadwalKelas, model);
         return "jadwalkelas/jadwalkelas-add-form";
@@ -177,7 +185,9 @@ public class JadwalKelasController {
 
     // FORM UPDATE
     @GetMapping("/update/{id}")
-    public String updateJadwalKelasFormPage(@PathVariable("id") Integer id, Model model) {
+    public String updateJadwalKelasFormPage(@PathVariable("id") Integer id, Model model, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         JadwalKelasModel jadwalKelas = jadwalKelasService.getJadwalKelasById(id);
         getAllDropdownList(jadwalKelas, model);
 
@@ -209,7 +219,7 @@ public class JadwalKelasController {
 
     // SUBMIT FORM
     @PostMapping(value="/update", params={"update"})
-    public String updateJadwalKelasSubmit(@ModelAttribute JadwalKelasModel jadwalKelas, String tanggal, String jam_mulai, String jam_selesai, 
+    public String updateJadwalKelasSubmit(@ModelAttribute JadwalKelasModel jadwalKelas, String tanggal, String jam_mulai, String jam_selesai,
     String kelasDiajar, String mapel, String pengajar, Model model, RedirectAttributes redirectAttrs) {
          // set atttribute
          jadwalKelas.setKelas(kelasService.getKelasById(Integer.parseInt(kelasDiajar)));
@@ -336,7 +346,9 @@ public class JadwalKelasController {
 
 
     @GetMapping("/delete/{id}")
-    public String deleteJadwalKelas(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttrs) {
+    public String deleteJadwalKelas(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttrs, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         JadwalKelasModel jadwalKelas = jadwalKelasService.getJadwalKelasById(id);
         LocalDateTime now = LocalDateTime.now();
         boolean isOngoing = false;

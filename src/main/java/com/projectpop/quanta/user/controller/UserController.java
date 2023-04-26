@@ -48,6 +48,8 @@ public class UserController {
 
     @GetMapping("/profil")
     public String profilPengguna(Principal principal, Model model, RedirectAttributes redirectAttrs) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         UserModel user = userService.getUserByEmail(principal.getName());
         String timePattern = "EEE, dd-MMM-yyyy";
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(timePattern);
@@ -84,7 +86,9 @@ public class UserController {
 
     
     @GetMapping("/update-password")
-    public String updateUserPasswordFormPage(Model model){
+    public String updateUserPasswordFormPage(Model model, Principal principal){
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         UpdatePasswordModel updatePassword = new UpdatePasswordModel();
         model.addAttribute("updatePassword", updatePassword);
         return "akun-saya/form-update-password";

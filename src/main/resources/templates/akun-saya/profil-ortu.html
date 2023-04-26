@@ -22,13 +22,13 @@
   </style>  
 </head>
 <body>
-  <nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
-    <div class="alert alert-success alert-dismissible d-flex align-items-center" role="alert" th:if="${message}" >
-      <div class="d-flex align-items-center">
-          <p th:text="${message}" style="margin-bottom: 0px; margin-top: 0px;"></p>
-      </div>
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  <nav th:replace="fragments/fragment :: navbar (${'informasiProfile'},${isKakakAsuh})"></nav>
+  <div class="alert alert-success alert-dismissible d-flex align-items-center" role="alert" th:if="${message}" >
+    <div class="d-flex align-items-center">
+        <p th:text="${message}" style="margin-bottom: 0px; margin-top: 0px;"></p>
     </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
   <div class="container">
     <h2 style="font-weight: bold; text-align:center; padding:20px">Profil Saya</h2>
     <div class="container" style="width:100%;">

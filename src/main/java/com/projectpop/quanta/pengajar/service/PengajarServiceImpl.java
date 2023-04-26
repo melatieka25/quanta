@@ -1,5 +1,6 @@
 package com.projectpop.quanta.pengajar.service;
 
+import com.projectpop.quanta.user.model.UserModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
 import com.projectpop.quanta.mapel.repository.MataPelajaranDb;
 import com.projectpop.quanta.pengajarmapel.model.PengajarMapelModel;
+import org.springframework.ui.Model;
 import com.projectpop.quanta.user.model.Gender;
 import com.projectpop.quanta.user.model.Religion;
 import com.projectpop.quanta.user.model.UserRole;
@@ -28,8 +30,6 @@ import javax.transaction.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 
@@ -104,10 +104,12 @@ public class PengajarServiceImpl implements PengajarService {
 
     @Override
     public PengajarModel getPengajarById(Integer id) {
-        Optional<PengajarModel> pengajar = pengajarDb.findById(id);
+        Optional<PengajarModel> pengajar = pengajarDb.findPengajarModelById(id);
         if(pengajar.isPresent()) {
             return pengajar.get();
-        } else return null;
+        } else{
+            return null;
+        }
     }
 
     @Override
@@ -169,6 +171,23 @@ public class PengajarServiceImpl implements PengajarService {
         return kakakAsuhList.orElse(null);
     }
 
+    @Override
+    public void checkIsPengajarDanKakakAsuh(UserModel userModel, Model model) {
+        PengajarModel pengajarModel = getPengajarById(userModel.getId());
+        if (null != pengajarModel){
+            model.addAttribute("isKakakAsuh", pengajarModel.getIsKakakAsuh());
+        }
+    }
+    @Override
+    public List<KelasModel> getListKelasAsuh(PengajarModel pengajar){
+        List<KelasModel> kelasAsuhAktif = new ArrayList<>();
+        for (KelasModel kelas: pengajar.getListKelasAsuh()) {
+            if(kelas.getTahunAjar().getIsAktif()){
+                kelasAsuhAktif.add(kelas);
+            }
+        }
+        return kelasAsuhAktif;
+    }
 
     @Override
     public PengajarModel convertPengajarCsv(PengajarCsvModel pengajarCsv) {

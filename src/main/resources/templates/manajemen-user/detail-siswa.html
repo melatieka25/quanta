@@ -22,7 +22,7 @@
   </style>  
 </head>
 <body>
-  <nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
+<nav th:replace="fragments/fragment :: navbar (${'manajemenUser'},${isKakakAsuh})"></nav>
   <div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${errorMessage}" >
     <div class="d-flex align-items-center">
         <p th:text="${errorMessage}" style="margin-bottom: 0px; margin-top: 0px;"></p>

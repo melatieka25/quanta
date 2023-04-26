@@ -25,6 +25,7 @@ import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.user.service.UserService;
 import com.projectpop.quanta.user.auth.PasswordManager;
 
+import java.security.Principal;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileReader;
@@ -44,11 +45,15 @@ public class PengajarController {
     @Autowired
     private PengajarService pengajarService;
 
+    @Qualifier("userServiceImpl")
     @Autowired
     private UserService userService;
 
+
     @GetMapping("/create-pengajar")
-    public String addPengajarFormPage(Model model) {
+    public String addPengajarFormPage(Model model, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         model.addAttribute("pengajar", new PengajarModel());
         return "manajemen-user/form-create-pengajar";
     }
@@ -76,7 +81,9 @@ public class PengajarController {
     }
 
     @GetMapping
-    public String listPengajar(Model model) {
+    public String listPengajar(Model model, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         List<PengajarModel> listPengajar = pengajarService.getListPengajar();
         for (PengajarModel pengajar: listPengajar){
             pengajar.setListMapel(pengajarService.getPengajarMapel(pengajar));
@@ -86,7 +93,9 @@ public class PengajarController {
     }
 
     @GetMapping("/detail/{id}")
-    public String detailPengajar(@PathVariable int id, Model model, RedirectAttributes redirectAttrs) {
+    public String detailPengajar(@PathVariable int id, Model model, RedirectAttributes redirectAttrs, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         PengajarModel pengajar = pengajarService.getPengajarById(id);
         if (pengajar != null){
             String timePattern = "EEE, dd-MMM-yyyy";
@@ -106,8 +115,9 @@ public class PengajarController {
     }
 
     @GetMapping("{id}/inactive")
-    public String inactivatePengajarFormPage(@PathVariable int id, Model model, RedirectAttributes redirectAttrs){
-
+    public String inactivatePengajarFormPage(@PathVariable int id, Model model, RedirectAttributes redirectAttrs, Principal principal){
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         PengajarModel pengajar = pengajarService.getPengajarById(id);
         
         
@@ -140,8 +150,9 @@ public class PengajarController {
     }
 
     @GetMapping("{id}/active")
-    public String activatePengajarFormPage(@PathVariable int id, Model model, RedirectAttributes redirectAttrs){
-
+    public String activatePengajarFormPage(@PathVariable int id, Model model, RedirectAttributes redirectAttrs, Principal principal){
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         PengajarModel pengajar = pengajarService.getPengajarById(id);
         
         
@@ -158,8 +169,9 @@ public class PengajarController {
     }
 
     @GetMapping("{id}/update")
-    public String updatePengajarFormPage(@PathVariable int id, Model model, RedirectAttributes redirectAttrs){
-
+    public String updatePengajarFormPage(@PathVariable int id, Model model, RedirectAttributes redirectAttrs, Principal principal){
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         PengajarModel pengajar = pengajarService.getPengajarById(id);
         if (pengajar != null){
             model.addAttribute("pengajar", pengajar);
