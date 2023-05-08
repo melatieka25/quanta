@@ -7,7 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.projectpop.quanta.orangtua.model.OrtuModel;
 import com.projectpop.quanta.orangtua.repository.OrtuDb;
+import com.projectpop.quanta.siswa.model.SiswaCsvModel;
 import com.projectpop.quanta.siswa.model.SiswaModel;
+import com.projectpop.quanta.user.model.Gender;
+import com.projectpop.quanta.user.model.Religion;
+import com.projectpop.quanta.user.model.UserRole;
 
 import static com.projectpop.quanta.user.auth.PasswordManager.encrypt;
 import javax.transaction.Transactional;
@@ -75,6 +79,45 @@ public class OrtuServiceImpl implements OrtuService {
     @Override
     public OrtuModel updateOrtu(OrtuModel ortu) {
         ortuDb.save(ortu);
+        return ortu;
+    }
+
+    @Override
+    public OrtuModel getOrtuByEmail(String email) {
+        Optional<OrtuModel> ortu = ortuDb.findByEmail(email);
+        if(ortu.isPresent()) {
+            return ortu.get();
+        } else return null;
+    }
+
+   @Override
+    public SiswaModel getDefaultAnakTerpilih(OrtuModel ortu) {
+        for (SiswaModel anak : ortu.getListAnak()) {
+            if (anak.getIsActive()) {
+                return anak;
+            }
+        }
+        return null;
+    }
+    
+    @Override
+    public OrtuModel convertOrtuCsv(SiswaCsvModel siswaCsv) {
+        OrtuModel ortu = new OrtuModel();
+        ortu.setName(siswaCsv.getFullNameOrtu());
+        ortu.setAddress(siswaCsv.getAddressOrtu());
+        ortu.setNickname(siswaCsv.getNicknameOrtu());
+        ortu.setPhone_num(siswaCsv.getPhone_numOrtu());
+        ortu.setGender(Gender.valueOf(siswaCsv.getGenderOrtu()));
+        ortu.setEmail(siswaCsv.getEmailOrtu());
+        ortu.setRole(UserRole.valueOf("ORTU"));
+        ortu.setIsPassUpdated(false);
+        ortu.setPob(siswaCsv.getPobOrtu());
+        ortu.setDob(siswaCsv.getDobOrtu());
+        ortu.setReligion(Religion.valueOf(siswaCsv.getReligionOrtu()));
+        ortu.setJob(siswaCsv.getJobOrtu());
+        ortu.setKantor(siswaCsv.getKantorOrtu());
+        ortu.setIsActive(true);
+
         return ortu;
     }
     

@@ -20,7 +20,17 @@ public class MapelServiceImpl implements MapelService{
     }
 
     @Override
-    public MataPelajaranModel getMapelbyId(Integer id) {
+    public List<MataPelajaranModel> getMapelSMP() {
+        return mataPelajaranDb.findByIsSMPIsTrue().orElse(null);
+    }
+
+    @Override
+    public List<MataPelajaranModel> getMapelSMA() {
+        return mataPelajaranDb.findByIsSMAIsTrue().orElse(null);
+    }
+
+    @Override
+    public MataPelajaranModel getMapelById(Integer id) {
         return mataPelajaranDb.findById(id).orElse(null);
     }
 
@@ -32,6 +42,31 @@ public class MapelServiceImpl implements MapelService{
     @Override
     public void deleteMapel(MataPelajaranModel mapel) {
         mataPelajaranDb.delete(mapel);
+    }
+
+    @Override
+    public String getJenjangMapel(MataPelajaranModel mapel){
+        String jenjangMapel= "";
+        if (null != mapel.getIsSMA() && null != mapel.getIsSMP()){
+            jenjangMapel = "smpsma";
+        } else if (null != mapel.getIsSMP()){
+            jenjangMapel = "smp";
+        } else {
+            jenjangMapel = "sma";
+        }
+        return jenjangMapel;
+    }
+
+    @Override
+    public void setJenjangMapel(MataPelajaranModel mapel, String jenjangMapel){
+        if (jenjangMapel.equals("smp")){
+            mapel.setIsSMP(true);
+        } else  if (jenjangMapel.equals("sma")){
+            mapel.setIsSMA(true);
+        } else if (jenjangMapel.equals("smpsma")){
+            mapel.setIsSMP(true);
+            mapel.setIsSMA(true);
+        }
     }
 
 }

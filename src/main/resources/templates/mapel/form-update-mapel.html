@@ -19,7 +19,7 @@
     </style>
 </head>
 <body>
-<nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
+<nav th:replace="fragments/fragment :: navbar (${'Mapel'},${isKakakAsuh})"></nav>
 <div class="alert alert-danger alert-dismissible" role="alert" th:if="${error}" th:text="${error}">
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
@@ -41,6 +41,15 @@
                         <input required class="form-control" type="text" th:field="*{abbr}"/>
                     </div>
 
+                    <div class="mb-3">
+                        Jenjang Sekolah <br>
+                        <select required class="form-control" type="text" name="jenjangMapel">
+                            <option value="smp" th:selected="${#strings.equals(jenjangMapel, 'smp')}">SMP</option>
+                            <option value="sma" th:selected="${#strings.equals(jenjangMapel, 'sma')}">SMA</option>
+                            <option value="smpsma" th:selected="${#strings.equals(jenjangMapel, 'smpsma')}">SMP & SMA</option>
+                        </select>
+                    </div>
+
 
                     <table class="table">
                         <thead>
@@ -57,7 +66,7 @@
                                         class="form-select">
                                     <div th:each="pengajarEx, iterationStatus2: ${listpengajar}">
                                         <option th:value="${pengajarEx.id}"
-                                                th:text="${pengajarEx.name}"></option>
+                                                th:text="${pengajarEx.name} + '  (' + ${pengajarEx.email} + ')'"></option>
                                     </div>
 
                                 </select>

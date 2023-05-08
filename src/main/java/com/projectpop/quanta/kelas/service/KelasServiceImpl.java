@@ -1,5 +1,6 @@
 package com.projectpop.quanta.kelas.service;
 
+import com.projectpop.quanta.mapel.model.MataPelajaranModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +44,19 @@ public class KelasServiceImpl implements KelasService{
         } else if (day == 2|| day == 4 || day==6){
             listKelas = kelasDb.findByDays(JadwalAvail.SelasaKamisSabtu);
         }
-        return listKelas;
+        List<KelasModel> res = getListKelasAktif(listKelas);
+        return res;
+    }
+
+    @Override
+    public List<KelasModel> getListKelasAktif(List<KelasModel> listKelas) {
+        List<KelasModel> res = new ArrayList<>();
+        for (KelasModel kelas : listKelas) {
+            if (kelas.getTahunAjar().getIsAktif()) {
+                res.add(kelas);
+            }
+        }
+        return res;
     }
 
     @Override
@@ -56,5 +69,15 @@ public class KelasServiceImpl implements KelasService{
     public List<KelasModel> getKelasByName(String name) {
         List<KelasModel> kelas = kelasDb.findByName(name);
         return kelas;
+    }
+
+    @Override
+    public List<KelasModel> getKelasSMP() {
+        return kelasDb.findByIsSMPIsTrue().orElse(null);
+    }
+
+    @Override
+    public List<KelasModel> getKelasSMA() {
+        return kelasDb.findByIsSMAIsTrue().orElse(null);
     }
 }

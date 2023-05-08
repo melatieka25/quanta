@@ -12,6 +12,7 @@ import com.projectpop.quanta.siswakelas.model.SiswaKelasModel;
 import com.projectpop.quanta.siswakelas.service.SiswaKelasService;
 import com.projectpop.quanta.tahunajar.model.TahunAjarModel;
 import com.projectpop.quanta.tahunajar.service.TahunAjarService;
+import com.projectpop.quanta.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -51,8 +53,15 @@ public class KelasController {
     @Autowired
     private JadwalKelasService jadwalKelasService;
 
+    @Qualifier("userServiceImpl")
+    @Autowired
+    private UserService userService;
+
+
     @GetMapping("")
-    public String viewAllKelas(Model model){
+    public String viewAllKelas(Model model, Principal principal){
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         List<KelasModel> listKelas = kelasService.getListKelas();
 
         model.addAttribute("ListKelas", listKelas);
@@ -60,7 +69,9 @@ public class KelasController {
     }
 
     @GetMapping("/detail/{kelas_id}")
-    public String viewDetailKelas(Model model, @PathVariable String kelas_id){
+    public String viewDetailKelas(Model model, @PathVariable String kelas_id, Principal principal){
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         KelasModel kelas = kelasService.getKelasById(Integer.valueOf(kelas_id));
         System.out.println(kelas.getListSiswaKelas());
         model.addAttribute("kelas", kelas);
@@ -68,7 +79,9 @@ public class KelasController {
     }
 
     @GetMapping("/add")
-    public String addKelasFormPage(Model model) {
+    public String addKelasFormPage(Model model, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         List<SiswaModel> listSiswa = siswaService.getListSiswa();
         List<TahunAjarModel> listTahunAjar = tahunAjarService.getAllTahunAjar();
         List<PengajarModel> listKakakAsuh = pengajarService.getListKakakAsuh();
@@ -124,6 +137,12 @@ public class KelasController {
             }
 
             kelas.setListSiswaKelas(listSiswaKelasUpdated);
+        }
+
+        if (kelas.getJenjang().getDisplayValue().contains("SMP")){
+            kelas.setIsSMP(true);
+        } else {
+            kelas.setIsSMA(true);
         }
 
 
@@ -190,7 +209,9 @@ public class KelasController {
     }
 
     @GetMapping("/edit/{id}")
-    public String updateKelasForm(@PathVariable String id, Model model) {
+    public String updateKelasForm(@PathVariable String id, Model model, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         List<SiswaModel> listSiswa = siswaService.getListSiswa();
         List<TahunAjarModel> listTahunAjar = tahunAjarService.getAllTahunAjar();
         List<PengajarModel> listKakakAsuh = pengajarService.getListKakakAsuh();
@@ -238,6 +259,12 @@ public class KelasController {
         kelasExs.setJenjang(kelas.getJenjang());
         kelasExs.setKakakAsuh(kelas.getKakakAsuh());
         kelasExs.setTahunAjar(kelas.getTahunAjar());
+
+        if (kelas.getJenjang().getDisplayValue().contains("SMP")){
+            kelasExs.setIsSMP(true);
+        } else {
+            kelasExs.setIsSMA(true);
+        }
 
         Set<Integer> listIdSiswaLama = new HashSet<Integer>();
         Set<Integer> listIdSiswaBaru = new HashSet<Integer>();
@@ -291,7 +318,9 @@ public class KelasController {
     }
 
     @GetMapping("/delete/{id}")
-    public String DeleteKelasForm (@PathVariable String id, Model model, RedirectAttributes redirectAttrs) {
+    public String DeleteKelasForm (@PathVariable String id, Model model, RedirectAttributes redirectAttrs, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         KelasModel courseDeleted = kelasService.getKelasById(Integer.valueOf(id));
 
         List<JadwalKelasModel> listJadwalKelas = jadwalKelasService.getListJadwalKelasByKelas(courseDeleted);

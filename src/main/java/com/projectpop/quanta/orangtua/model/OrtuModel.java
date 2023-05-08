@@ -29,7 +29,6 @@ public class OrtuModel extends UserModel {
     @OneToMany(mappedBy = "ortu")
     private List<SiswaModel> listAnak;
 
-    private transient String passwordPertama;
     private transient String anakAktif;
 
 }

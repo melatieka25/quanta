@@ -1,7 +1,10 @@
 package com.projectpop.quanta.orangtua.contoller;
 
+import java.security.Principal;
 import java.time.format.DateTimeFormatter;
 
+import com.projectpop.quanta.pengajar.service.PengajarService;
+import com.projectpop.quanta.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -23,22 +26,39 @@ public class OrtuController {
     @Autowired
     private OrtuService ortuService;
 
+    @Qualifier("userServiceImpl")
+    @Autowired
+    private UserService userService;
+
+    @Qualifier("pengajarServiceImpl")
+    @Autowired
+    private PengajarService pengajarService;
+
+
     @GetMapping("/detail/{id}/{siswaId}")
-    public String detailOrtu(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs) {
+    public String detailOrtu(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         OrtuModel ortu = ortuService.getOrtuById(id);
-        ortu.setAnakAktif(ortuService.getAnakAktif(ortu));
-        String timePattern = "EEE, dd-MMM-yyyy";
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(timePattern);
-        String dateOfBirth = ortu.getDob().format(dateTimeFormatter);
-        model.addAttribute("ortu", ortu);
-        model.addAttribute("dateOfBirth", dateOfBirth);
-        model.addAttribute("siswaId", siswaId);
-        return "manajemen-user/detail-ortu";
+        if (ortu != null){
+            ortu.setAnakAktif(ortuService.getAnakAktif(ortu));
+            String timePattern = "EEE, dd-MMM-yyyy";
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(timePattern);
+            String dateOfBirth = ortu.getDob().format(dateTimeFormatter);
+            model.addAttribute("ortu", ortu);
+            model.addAttribute("dateOfBirth", dateOfBirth);
+            model.addAttribute("siswaId", siswaId);
+            return "manajemen-user/detail-ortu";
+        } else {
+            redirectAttrs.addFlashAttribute("errorMessage", "Wali dengan id " + id + " tidak ditemukan. Gagal melihat detail wali");
+            return "redirect:/ortu";
+        }
     }
 
     @GetMapping("{id}/{siswaId}/inactive")
-    public String inactivateOrtuFormPage(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs){
-
+    public String inactivateOrtuFormPage(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs, Principal principal){
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         OrtuModel ortu = ortuService.getOrtuById(id);
         
         
@@ -48,9 +68,9 @@ public class OrtuController {
 
             if (ortu.getAnakAktif().equals("-")){
                 OrtuModel inactivatedOrtu = ortuService.inactiveOrtu(ortu);
-                redirectAttrs.addFlashAttribute("message", "Wali dengan nama " + inactivatedOrtu.getName() + " berhasil di-nonaktifkan.");
+                redirectAttrs.addFlashAttribute("message", "Wali dengan nama " + inactivatedOrtu.getNameEmail() + " berhasil di-nonaktifkan.");
             } else {
-                redirectAttrs.addFlashAttribute("errorMessage", "Ortu dengan nama " + ortu.getName() + " masih memiliki anak dengan status aktif. Gagal menonaktifkan ortu.");
+                redirectAttrs.addFlashAttribute("errorMessage", "Wali dengan nama " + ortu.getNameEmail() + " masih memiliki anak dengan status aktif. Gagal menonaktifkan ortu.");
             }
         } else {
             redirectAttrs.addFlashAttribute("errorMessage", "Wali dengan id " + id + " tidak ditemukan. Gagal menonaktifkan wali.");
@@ -61,15 +81,16 @@ public class OrtuController {
     }
 
     @GetMapping("{id}/{siswaId}/active")
-    public String activateOrtuFormPage(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs){
-
+    public String activateOrtuFormPage(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs, Principal principal){
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         OrtuModel ortu = ortuService.getOrtuById(id);
         
         
         if (ortu != null){
             model.addAttribute("ortu", ortu);
             OrtuModel activatedOrtu = ortuService.activeOrtu(ortu);
-                redirectAttrs.addFlashAttribute("message", "Wali dengan nama " + activatedOrtu.getName() + " berhasil diaktifkan kembali.");
+                redirectAttrs.addFlashAttribute("message", "Wali dengan nama " + activatedOrtu.getNameEmail() + " berhasil diaktifkan kembali.");
         } else {
             redirectAttrs.addFlashAttribute("errorMessage", "Wali dengan id " + id + " tidak ditemukan. Gagal mengaktifkan wali.");
             return "redirect:/ortu";
@@ -79,8 +100,9 @@ public class OrtuController {
     }
 
     @GetMapping("{id}/{siswaId}/update")
-    public String updateOrtuFormPage(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs){
-
+    public String updateOrtuFormPage(@PathVariable int id, @PathVariable int siswaId, Model model, RedirectAttributes redirectAttrs, Principal principal){
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         OrtuModel ortu = ortuService.getOrtuById(id);
         if (ortu != null){
             model.addAttribute("ortu", ortu);
@@ -107,7 +129,7 @@ public class OrtuController {
         oldOrtu.setGender(ortu.getGender());
         oldOrtu.setReligion(ortu.getReligion());
         OrtuModel updatedOrtu = ortuService.updateOrtu(oldOrtu);
-        redirectAttrs.addFlashAttribute("message", "Wali dengan email " + updatedOrtu.getEmail() + " telah berhasil diubah datanya!");
+        redirectAttrs.addFlashAttribute("message", "Wali dengan nama " + updatedOrtu.getNameEmail()+ " telah berhasil diubah datanya!");
         return "redirect:/ortu/detail/" + updatedOrtu.getId() + "/" + siswaId;
     }
     

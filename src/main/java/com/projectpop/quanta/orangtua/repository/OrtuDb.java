@@ -11,5 +11,6 @@ import java.util.Optional;
 public interface OrtuDb extends JpaRepository<OrtuModel, Long> {
     Optional<OrtuModel> findByEmail(String email);
 
+
     Optional<OrtuModel> findById(int id);
 }

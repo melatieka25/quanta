@@ -1,5 +1,6 @@
 package com.projectpop.quanta.siswa.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.orangtua.model.OrtuModel;
 import com.projectpop.quanta.pesan.model.PesanModel;
@@ -15,6 +16,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Setter
 @Getter
@@ -23,7 +25,6 @@ import java.util.List;
 @Table(name = "siswa")
 @PrimaryKeyJoinColumn(name = "user_id")
 public class SiswaModel extends UserModel {
-
     @NotNull
     @Column(nullable = false)
     @Enumerated(value=EnumType.STRING)
@@ -33,26 +34,31 @@ public class SiswaModel extends UserModel {
     @Column(nullable = false)
     private String sekolah;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "siswaKonsul", cascade = CascadeType.ALL)
     private List<SiswaKonsultasiModel> listKonsultasiSiswa;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "siswa", cascade = CascadeType.ALL)
     private List<PresensiModel> listPresensiSiswa;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "siswa", cascade = CascadeType.ALL)
     private List<SiswaJadwalModel> listJadwalSiswa;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "siswa", cascade = CascadeType.ALL)
     private List<SiswaKelasModel> listKelasSiswa;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "siswaPesan", cascade = CascadeType.ALL)
     private List<PesanModel> listPesanSiswa;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name= "ortu_id")
     private OrtuModel ortu;
 
     private transient KelasModel kelasBimbel;
-    private transient String passwordPertama;
     private transient int ortuId;
 }
