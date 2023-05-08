@@ -41,14 +41,13 @@ public class PasswordManager {
         return pwdGenerator.generate(length);
     }
 
-    public static String generateCommonTextPassword() {
-        String pwString = generateRandomSpecialCharacters(2).concat(generateRandomNumbers(2))
-          .concat(generateRandomAlphabet(2, true))
-          .concat(generateRandomAlphabet(2, false));
+    public static String generateCommonTextPassword(String birthDateMonth) {
+        String pwString = generateRandomSpecialCharacters(2).concat(birthDateMonth)
+          .concat(generateRandomAlphabet(1, true))
+          .concat(generateRandomAlphabet(1, false));
         List<Character> pwChars = pwString.chars()
           .mapToObj(data -> (char) data)
           .collect(Collectors.toList());
-        Collections.shuffle(pwChars);
         String password = pwChars.stream()
           .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
           .toString();

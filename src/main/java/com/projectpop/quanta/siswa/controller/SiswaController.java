@@ -1,22 +1,19 @@
 package com.projectpop.quanta.siswa.controller;
 
-import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
+import com.projectpop.quanta.email.service.EmailService;
 import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
 import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.kelas.service.KelasService;
-import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.service.PengajarService;
 import com.projectpop.quanta.pesan.model.PesanModel;
 import com.projectpop.quanta.pesan.service.PesanService;
 import com.projectpop.quanta.presensi.model.PresensiModel;
 import com.projectpop.quanta.presensi.model.PresensiStatus;
-import com.projectpop.quanta.siswajadwalkelas.model.SiswaJadwalModel;
 import com.projectpop.quanta.siswakonsultasi.model.SiswaKonsultasiModel;
 import com.projectpop.quanta.tahunajar.service.TahunAjarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,9 +40,7 @@ import com.projectpop.quanta.user.service.UserService;
 import com.projectpop.quanta.user.auth.PasswordManager;
 
 import java.security.Principal;
-import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -85,6 +80,9 @@ public class SiswaController {
     @Autowired
     private PesanService pesanService;
 
+    @Autowired
+    private EmailService emailService;
+
     @GetMapping("/create-siswa")
     public String addSiswaFormPage(Model model, Principal principal) {
         var userModel = userService.getUserByEmail(principal.getName());
@@ -102,7 +100,10 @@ public class SiswaController {
     public String addSiswaSubmitPage(@ModelAttribute SiswaModel siswa, @RequestParam("statusWali") String statusWali, Model model, RedirectAttributes redirectAttrs) {
         siswa.setRole(UserRole.SISWA);
         UserModel sameEmail = userService.getUserByEmail(siswa.getEmail());
-        String password = PasswordManager.generateCommonTextPassword();
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("ddMM");
+        String formattedDate = siswa.getDob().format(dateFormatter);
+        String password = PasswordManager.generateCommonTextPassword(formattedDate);
         siswa.setPassword(password);
 
         if (sameEmail == null){
@@ -114,6 +115,10 @@ public class SiswaController {
                 OrtuModel ortuSiswa = ortuService.getOrtuById(siswa.getOrtuId());
                 siswa.setOrtu(ortuSiswa);
                 siswaService.addSiswa(siswa);
+                String emailPenerima = siswa.getEmail();
+                String emailSubject = "Selamat! Akun QUANTA (Quantum Assistant) Anda Telah Berhasil Dibuat";
+                String emailBody = emailService.getCredentialEmailBody(siswa);
+                emailService.sendEmail(emailPenerima, emailSubject, emailBody);
                 if (ortuSiswa.getListAnak() == null){
                     ortuSiswa.setListAnak(new ArrayList<SiswaModel>());
                 }
@@ -123,7 +128,9 @@ public class SiswaController {
                 OrtuModel ortu = siswa.getOrtu();
                 ortu.setRole(UserRole.ORTU);
                 UserModel sameEmailOrtu = userService.getUserByEmail(ortu.getEmail());
-                String passwordOrtu = PasswordManager.generateCommonTextPassword();
+                
+                String formattedDateOrtu = ortu.getDob().format(dateFormatter);
+                String passwordOrtu = PasswordManager.generateCommonTextPassword(formattedDateOrtu);
                 ortu.setPassword(passwordOrtu);
 
                 if (sameEmailOrtu == null){
@@ -131,6 +138,10 @@ public class SiswaController {
                     ortu.setIsActive(true);
                     ortu.setIsPassUpdated(false);
                     ortuService.addOrtu(ortu);
+                    String emailPenerima = ortu.getEmail();
+                    String emailSubject = "Selamat! Akun QUANTA (Quantum Assistant) Anda Telah Berhasil Dibuat";
+                    String emailBody = emailService.getCredentialEmailBody(ortu);
+                    emailService.sendEmail(emailPenerima, emailSubject, emailBody);
 
                     ArrayList<SiswaModel> listAnak = new ArrayList<SiswaModel>();
                     listAnak.add(siswa);
@@ -144,6 +155,10 @@ public class SiswaController {
                 }
 
                 siswaService.addSiswa(siswa);
+                String emailPenerima = siswa.getEmail();
+                String emailSubject = "Selamat! Akun QUANTA (Quantum Assistant) Anda Telah Berhasil Dibuat";
+                String emailBody = emailService.getCredentialEmailBody(siswa);
+                emailService.sendEmail(emailPenerima, emailSubject, emailBody);
                 
                 redirectAttrs.addFlashAttribute("message", "Siswa dengan nama " + siswa.getNameEmail() + " dan password " + siswa.getPasswordPertama() + " serta wali dengan nama " + ortu.getNameEmail() + " dan password " + ortu.getPasswordPertama() + " telah berhasil ditambahkan!");
                 return "redirect:/siswa/detail/" + siswa.getId();
@@ -500,19 +515,30 @@ public class SiswaController {
                 for (int i =0; i < listSiswaCsv.size(); i++){
                     if (siswaService.getSiswaByEmail(listSiswaCsv.get(i).getEmail()) == null){
                         SiswaModel siswa = siswaService.convertSiswaCsv(listSiswaCsv.get(i));
-                        String password = PasswordManager.generateCommonTextPassword();
+                        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("ddMM");
+                        String formattedDate = siswa.getDob().format(dateFormatter);
+                        String password = PasswordManager.generateCommonTextPassword(formattedDate);
                         siswa.setPassword(password);
                         siswa.setPasswordPertama(password);
                         siswaService.addSiswa(siswa);
+                        String emailPenerima = siswa.getEmail();
+                        String emailSubject = "Selamat! Akun QUANTA (Quantum Assistant) Anda Telah Berhasil Dibuat";
+                        String emailBody = emailService.getCredentialEmailBody(siswa);
+                        emailService.sendEmail(emailPenerima, emailSubject, emailBody);
                         listSiswa.add(siswa);
                         counterSiswa++;
                         OrtuModel ortu = ortuService.getOrtuByEmail(listSiswaCsv.get(i).getEmailOrtu());
                         if (ortu == null) {
                             ortu = ortuService.convertOrtuCsv(listSiswaCsv.get(i));
-                            String passwordOrtu = PasswordManager.generateCommonTextPassword();
+                            String formattedDateOrtu = ortu.getDob().format(dateFormatter);
+                            String passwordOrtu = PasswordManager.generateCommonTextPassword(formattedDateOrtu);
                             ortu.setPassword(passwordOrtu);
                             ortu.setPasswordPertama(passwordOrtu);
                             ortuService.addOrtu(ortu);
+                            String emailOrtu = ortu.getEmail();
+                            String emailSubjectOrtu = "Selamat! Akun QUANTA (Quantum Assistant) Anda Telah Berhasil Dibuat";
+                            String emailBodyOrtu = emailService.getCredentialEmailBody(ortu);
+                            emailService.sendEmail(emailOrtu, emailSubjectOrtu, emailBodyOrtu);
                             siswa.setOrtu(ortu);
                             siswaService.updateSiswa(siswa);
                             listOrtu.add(ortu);
@@ -590,19 +616,31 @@ public class SiswaController {
                     for (int i =0; i < listSiswaCsv.size(); i++){
                         if (siswaService.getSiswaByEmail(listSiswaCsv.get(i).getEmail()) == null){
                             SiswaModel siswa = siswaService.convertSiswaCsv(listSiswaCsv.get(i));
-                            String password = PasswordManager.generateCommonTextPassword();
+                            
+                            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("ddMM");
+                            String formattedDate = siswa.getDob().format(dateFormatter);
+                            String password = PasswordManager.generateCommonTextPassword(formattedDate);
                             siswa.setPassword(password);
                             siswa.setPasswordPertama(password);
                             siswaService.addSiswa(siswa);
+                            String emailPenerima = siswa.getEmail();
+                            String emailSubject = "Selamat! Akun QUANTA (Quantum Assistant) Anda Telah Berhasil Dibuat";
+                            String emailBody = emailService.getCredentialEmailBody(siswa);
+                            emailService.sendEmail(emailPenerima, emailSubject, emailBody);
                             listSiswa.add(siswa);
                             counterSiswa++;
                             OrtuModel ortu = ortuService.getOrtuByEmail(listSiswaCsv.get(i).getEmailOrtu());
                             if (ortu == null) {
                                 ortu = ortuService.convertOrtuCsv(listSiswaCsv.get(i));
-                                String passwordOrtu = PasswordManager.generateCommonTextPassword();
+                                String formattedDateOrtu = ortu.getDob().format(dateFormatter);
+                                String passwordOrtu = PasswordManager.generateCommonTextPassword(formattedDateOrtu);
                                 ortu.setPassword(passwordOrtu);
                                 ortu.setPasswordPertama(passwordOrtu);
                                 ortuService.addOrtu(ortu);
+                                String emailOrtu = ortu.getEmail();
+                                String emailSubjectOrtu = "Selamat! Akun QUANTA (Quantum Assistant) Anda Telah Berhasil Dibuat";
+                                String emailBodyOrtu = emailService.getCredentialEmailBody(ortu);
+                                emailService.sendEmail(emailOrtu, emailSubjectOrtu, emailBodyOrtu);
                                 siswa.setOrtu(ortu);
                                 siswaService.updateSiswa(siswa);
                                 listOrtu.add(ortu);
