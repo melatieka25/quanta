@@ -3,6 +3,8 @@ package com.projectpop.quanta.presensi.controller;
 import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
 import com.projectpop.quanta.kelas.model.KelasModel;
+import com.projectpop.quanta.pengajar.model.PengajarModel;
+import com.projectpop.quanta.pengajar.service.PengajarService;
 import com.projectpop.quanta.pengajar.service.PengajarServiceImpl;
 import com.projectpop.quanta.presensi.model.PresensiModel;
 import com.projectpop.quanta.presensi.model.PresensiStatus;
@@ -19,6 +21,7 @@ import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.Banner;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -53,10 +56,17 @@ public class PresensiController {
     private UserServiceImpl userService;
 
     @Qualifier("tahunAjarServiceImpl")
+    @Autowired
     private TahunAjarServiceImpl tahunAjarService;
+
+    @Qualifier("pengajarServiceImpl")
+    @Autowired
+    private PengajarService pengajarService;
 
     @GetMapping("")
     public String viewAllJadwalPengajarHariIni(Model model, Principal principal) throws ParseException {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         String tahunAjaran;
         int currentYear = LocalDate.now().getYear();
         int yearBefore = LocalDate.now().minusYears(1).getYear();
@@ -69,15 +79,23 @@ public class PresensiController {
         }
         Map<JadwalKelasModel,String> jadwalKelasHariIniMap = new HashMap<>();
         Map<JadwalKelasModel,String[]> allJadwalKelasMap = new HashMap<>();
+        Map<JadwalKelasModel,String[]> allJadwalKelasForAdminMap = new HashMap<>();
         List<JadwalKelasModel> listAllJadwalKelas = jadwalKelasService.getListJadwalKelas();
         List<JadwalKelasModel> listJadwalKelasHariIni = new ArrayList<>();
-
-        var userModel = userService.getUserByEmail(principal.getName());
+        List<JadwalKelasModel> listJadwalKelasHariIniSeluruhPengajar = new ArrayList<>();
         List<JadwalKelasModel> listJadwalKelas = jadwalKelasService.getListJadwalKelasByIdPengajar(userModel.getId());
+//        ini buat misahin jadwal kelas GURU hari ini dan bukan hari ini
         for (JadwalKelasModel jadwal : listJadwalKelas){
             String startDate = localDateTimeToDateWithSlash(jadwal.getStartDateClass());
             if (startDate.equals(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))){
                 listJadwalKelasHariIni.add(jadwal);
+            }
+        }
+//        ini buat misahin jadwal kelas SELURUH GURU untuk ADMIN hari ini dan bukan hari ini
+        for(JadwalKelasModel jadwal : listAllJadwalKelas){
+            String startDate = localDateTimeToDateWithSlash(jadwal.getStartDateClass());
+            if (startDate.equals(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))){
+                listJadwalKelasHariIniSeluruhPengajar.add(jadwal);
             }
         }
         for(int i = 0; i < listAllJadwalKelas.size(); i++){
@@ -87,6 +105,18 @@ public class PresensiController {
                 }
                 else{
                     listAllJadwalKelas.get(i).setIsiPresensi(false);
+                }
+            }
+        }
+        if (userModel.getRole().toString().equals("ADMIN")){
+            for(int i = 0; i < listAllJadwalKelas.size(); i++){
+                for(int j = 0; j <listJadwalKelasHariIniSeluruhPengajar.size(); j++){
+                    if(listAllJadwalKelas.get(i).equals(listJadwalKelasHariIniSeluruhPengajar.get(j))) {
+                        listAllJadwalKelas.get(i).setIsiPresensi(true);
+                    }
+                    else{
+                        listAllJadwalKelas.get(i).setIsiPresensi(false);
+                    }
                 }
             }
         }
@@ -111,16 +141,17 @@ public class PresensiController {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             //convert String to LocalDate
             LocalDate localDate = LocalDate.parse(startDate, formatter);
+            allJadwalKelasForAdminMap.put(jadwal, new String[]{time, startDate});
             if (localDate.isBefore(LocalDate.now())){
                 allJadwalKelasMap.put(jadwal, new String[]{time, startDate});
             }
         }
+        model.addAttribute("allJadwalKelasForAdminMap", allJadwalKelasForAdminMap);
         model.addAttribute("tahunAjaran", tahunAjaran);
         model.addAttribute("hari", StringUtils.capitalize(LocalDate.now().getDayOfWeek().name().toLowerCase()));
         model.addAttribute("tanggal", LocalDate.now().getDayOfMonth());
         model.addAttribute("bulan", StringUtils.capitalize(LocalDate.now().getMonth().name().toLowerCase()));
         model.addAttribute("tahun", LocalDate.now().getYear());
-//        model.addAttribute("tanggal", localDateTimeToDateWithDash(LocalDateTime.now()));
         model.addAttribute("jadwalKelasHariIniMap", jadwalKelasHariIniMap);
         model.addAttribute("allJadwalKelasMap", allJadwalKelasMap);
         return "presensi/landing-page";
@@ -132,7 +163,9 @@ public class PresensiController {
         return DateTimeFormatter.ofPattern("hh:mm:ss").format(localDateTime);
     }
     @GetMapping(value = "/read/{idJadwalKelas}")
-    public String viewDetailPresensi(@PathVariable("idJadwalKelas") Integer idJadwalKelas, Model model){
+    public String viewDetailPresensi(@PathVariable("idJadwalKelas") Integer idJadwalKelas, Model model, Principal principal){
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         JadwalKelasModel jadwalKelasModel = jadwalKelasService.getJadwalKelasById(idJadwalKelas);
         TahunAjarModel tahunAjaran = jadwalKelasModel.getKelas().getTahunAjar();
         model.addAttribute("jadwalKelasModel", jadwalKelasModel);
@@ -148,8 +181,9 @@ public class PresensiController {
         return "presensi/read-presensi-kelas";
     }
     @GetMapping("/{idJadwalKelas}")
-    public String updatePresensiKelasFormPage(@PathVariable String idJadwalKelas, Model model, RedirectAttributes redirectAttributes){
-        String tahunAjaran;
+    public String updatePresensiKelasFormPage(@PathVariable String idJadwalKelas, Model model, RedirectAttributes redirectAttributes, Principal principal){
+        var userModelCek = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModelCek,model);
         JadwalKelasModel jadwalKelasModel = jadwalKelasService.getJadwalKelasById(Integer.parseInt(idJadwalKelas));
         List<PresensiModel> presensiModelList = jadwalKelasModel.getListPresensi();
         var userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -162,22 +196,12 @@ public class PresensiController {
             redirectAttributes.addFlashAttribute("error", "Anda hanya dapat mengubah presensi kelas yang anda ajarkan hari ini");
             return "redirect:/presensi/read/"+jadwalKelasModel.getId();
         }
-        int currentYear = LocalDate.now().getYear();
-        int yearBefore = LocalDate.now().minusYears(1).getYear();
-        int yearAfter = LocalDate.now().plusYears(1).getYear();
-        if (9<=LocalDate.now().getMonthValue() || LocalDate.now().getMonthValue()==1){
-            tahunAjaran = currentYear + "/" + yearAfter;
-        }
-        else{
-            tahunAjaran = yearBefore + "/" +currentYear;
-        }
         model.addAttribute("listPresensiStatus", PresensiStatus.values());
         model.addAttribute("hari", StringUtils.capitalize(jadwalKelasModel.getStartDateClass().getDayOfWeek().name().toLowerCase()));
         model.addAttribute("tanggal", jadwalKelasModel.getStartDateClass().getDayOfMonth());
         model.addAttribute("bulan", StringUtils.capitalize(jadwalKelasModel.getStartDateClass().getMonth().name().toLowerCase()));
         model.addAttribute("tahun", jadwalKelasModel.getStartDateClass().getYear());
         model.addAttribute("tahunAjaran", jadwalKelasModel.getKelas().getTahunAjar().getName());
-//        model.addAttribute("tahunAjaran", tahunAjaran);
         model.addAttribute("kelas", jadwalKelasModel.getKelas());
         model.addAttribute("presensiModelList", presensiModelList);
         model.addAttribute("presensiFilled", false);

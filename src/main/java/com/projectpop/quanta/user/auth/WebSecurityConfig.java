@@ -15,13 +15,16 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
+    @Autowired
+    private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
                 .antMatchers("/css/**").permitAll()
                 .antMatchers("/js/**").permitAll()
-                .antMatchers("/konsultasi/admin/**").hasRole("ADMIN")
+                .antMatchers("/konsultasi/admin/**", "/statistik", "/statistik/**", "/mapel", "/mapel/**", "/kelas", "/kelas/**").hasRole("ADMIN")
                 .antMatchers("/konsultasi/siswa/**").hasRole("SISWA")
                 .antMatchers("/konsultasi/pengajar/**").hasRole("PENGAJAR")
                 .antMatchers("/konsultasi/**").hasAnyRole("ADMIN", "SISWA", "PENGAJAR")
@@ -29,9 +32,11 @@ public class WebSecurityConfig {
                 .antMatchers("/presensi").hasAnyRole("PENGAJAR", "ADMIN")
                 .antMatchers("/api/**").permitAll()
                 .antMatchers("/jadwal-kelas/add/**", "/jadwal-kelas/delete/**", "/jadwal-kelas/update/**").hasRole("ADMIN")
-                .antMatchers("/jadwal-kelas").hasRole("ADMIN")
                 .antMatchers("/pengajar").hasRole("ADMIN")
                 .antMatchers("/pengajar/**").hasRole("ADMIN")
+                .antMatchers("/siswa/all-rapor-siswa").hasAnyRole("ADMIN", "PENGAJAR")
+                .antMatchers("/siswa/rapor-saya").hasRole("SISWA")
+                .antMatchers("/siswa/rapor-siswa/**").hasAnyRole("ADMIN", "PENGAJAR","ORTU")
                 .antMatchers("/siswa").hasRole("ADMIN")
                 .antMatchers("/siswa/**").hasRole("ADMIN")
                 .antMatchers("/ortu").hasRole("ADMIN")
@@ -40,6 +45,7 @@ public class WebSecurityConfig {
                 .and()
                 .formLogin()
                 .loginPage("/login")
+                .successHandler(customAuthenticationSuccessHandler)
 				.usernameParameter("email")
 				.permitAll()
                 .and()

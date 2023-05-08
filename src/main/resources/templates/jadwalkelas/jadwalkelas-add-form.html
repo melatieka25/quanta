@@ -11,14 +11,27 @@
 body {
     font-family: 'DM Sans';
 }
+.alert {
+        position:fixed;
+        top: 7rem;
+        left: 5%;
+        width: 90%;
+        z-index:9999;
+    }
 </style>
-<nav th:replace="fragments/fragment :: navbar('')"></nav>
+<nav th:replace="fragments/fragment :: navbar(${'jadwalKelas'},${isKakakAsuh})"></nav>
+<div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${message}" >
+    <div class="d-flex align-items-center">
+        <p th:text="${message}" style="margin-bottom: 0px; margin-top: 0px;"></p>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 <a class="btn btn-link" style="color: #31318B" href="/jadwal-kelas"> Kembali ke Daftar Jadwal Kelas</a>
 <div class="container" style="width:75%; padding-top:20px;">
     <div style="margin: auto; width: 80%; text-align: center; padding-top: 20px">
         <h2 style="font-weight: bolder;">Tambah Jadwal Kelas</h2>
-        <br>
-        <div class="alert alert-danger" role="alert" th:text="${message}" th:if="${message}"></div>
+        <!-- <br>
+        <div class="alert alert-danger" role="alert" th:text="${message}" th:if="${message}"></div> -->
     </div>
     
     <div class="card mt-3" style="background-color:#F7FAFC">
@@ -167,6 +180,13 @@ body {
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+        
+        window.setTimeout(function() {
+          $(".alert").fadeTo(500, 0).slideUp(1000, function(){
+              $(this).remove();
+          });
+        }, 4000);
+
         $("#mapel-dropdown").change(function(){
             // get id of selected team 
             var mapel_id=$(this).find(':selected').val();
@@ -186,35 +206,12 @@ body {
                 
                 // put new dropdown values to pengajar dropdown
                 jQuery.each(data, function(key, val){
-                    $("#pengajar-dropdown").append("<option value='" + val.id + "'>" + val.name + "</option>")
+                    $("#pengajar-dropdown").append("<option value='" + val.id + "'>" + val.name +  " (" + val.email + ")" + "</option>")
                 });
                 
             });
             
         });
-
-        // $("#pengajar-dropdown").change(function(){
-        //     // get id of selected team 
-        //     var pengajar_id=$(this).find(':selected').val();
-
-        //     // set json url
-        //     var json_url="/api/v1/jadwal-kelas/get-mapel/pengajar/" + pengajar_id;
-            
-        //     // get json data
-        //     jQuery.getJSON(json_url, function(data){
-        //         $("#mapel-dropdown").html("");
-        //         // $("#mapel-dropdown").append("<option hidden disabled selected value>Pilih mata pelajaran...</option>");
-
-
-                
-        //         // put new dropdown values to pengajar dropdown
-        //         jQuery.each(data, function(key, val){
-        //             $("#mapel-dropdown").append("<option value='" + val.id + "'>" + val.name + "</option>")
-        //         });
-                
-        //     });
-            
-        // });
 
 
         var today = new Date().toISOString().split('T')[0];

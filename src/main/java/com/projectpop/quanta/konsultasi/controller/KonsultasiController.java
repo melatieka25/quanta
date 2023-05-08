@@ -1,35 +1,27 @@
 package com.projectpop.quanta.konsultasi.controller;
 
 import com.projectpop.quanta.email.service.EmailService;
-import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
 import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
 import com.projectpop.quanta.konsultasi.service.KonsultasiService;
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
-import com.projectpop.quanta.mapel.service.MataPelajaranService;
+import com.projectpop.quanta.mapel.service.MapelService;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.service.PengajarService;
-import com.projectpop.quanta.pengajarmapel.service.PengajarMapelService;
 import com.projectpop.quanta.siswa.model.Jenjang;
 import com.projectpop.quanta.siswa.model.SiswaModel;
 import com.projectpop.quanta.siswa.service.SiswaService;
-import com.projectpop.quanta.siswajadwalkelas.service.SiswaJadwalService;
 import com.projectpop.quanta.siswakonsultasi.model.SiswaKonsultasiModel;
 import com.projectpop.quanta.siswakonsultasi.service.SiswaKonsultasiService;
 import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 
 import static com.projectpop.quanta.konsultasi.model.StatusKonsul.*;
 
@@ -38,11 +30,12 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Controller
-//@RequestMapping("/konsultasi")
 public class KonsultasiController {
     @Qualifier("konsultasiServiceImpl")
     @Autowired
@@ -60,21 +53,9 @@ public class KonsultasiController {
     @Autowired
     private PengajarService pengajarService;
 
-    @Qualifier("mataPelajaranServiceImpl")
+    @Qualifier("mapelServiceImpl")
     @Autowired
-    private MataPelajaranService mataPelajaranService;
-
-    @Qualifier("pengajarMapelServiceImpl")
-    @Autowired
-    private PengajarMapelService pengajarMapelService;
-
-    @Qualifier("siswaJadwalServiceImpl")
-    @Autowired
-    private SiswaJadwalService siswaJadwalService;
-
-    @Qualifier("jadwalKelasServiceImpl")
-    @Autowired
-    private JadwalKelasService jadwalKelasService;
+    private MapelService mapelService;
 
     @Qualifier("userServiceImpl")
     @Autowired
@@ -83,23 +64,34 @@ public class KonsultasiController {
     @Autowired
     private EmailService emailService;
 
+
     @GetMapping("/konsultasi")
     public String viewJadwalKonsultasi(Model model, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
+        konsultasiService.reloadStatus();
+        konsultasiService.reloadRequestKonsultasi();
         UserModel user = userService.getUserByEmail(principal.getName());
+        String[] listStatus = new String[]{"Semua", "Hari Ini", "Pending", "Diterima", "Ditolak", "Kadaluarsa", "Ditutup"};
+        model.addAttribute("listStatus", listStatus);
 
         if(user.getRole().toString().equals("ADMIN")){
             List<KonsultasiModel> listKonsultasi = konsultasiService.getListKonsultasi();
+
             model.addAttribute("listKonsultasi", listKonsultasi);
             return "konsultasi/admin-viewall";
         }
 
         else if(user.getRole().toString().equals("PENGAJAR")){
-            PengajarModel pengajar = pengajarService.findPengajarByEmail(principal.getName());
-            List<KonsultasiModel> myListKonsultasi = konsultasiService.getListMyKonsultasiPengajar(pengajar);
-            List<KonsultasiModel> myListRequestKonsultasi = konsultasiService.getListMyRequestKonsultasi(pengajar);
+            PengajarModel pengajar = pengajarService.getPengajarByEmail(principal.getName());
+            List<KonsultasiModel> myListKonsultasi = konsultasiService.getListKonsultasiByPengajar(pengajar);
+            List<KonsultasiModel> myListKonsultasiToday = konsultasiService.getListKonsultasiPengajarHariIni(pengajar);
+            List<KonsultasiModel> listRequestKonsultasi = konsultasiService.getRequestKonsultasi(pengajar);
 
             model.addAttribute("myListKonsultasi", myListKonsultasi);
-            model.addAttribute("myListRequestKonsultasi", myListRequestKonsultasi);
+            model.addAttribute("myListKonsultasiToday", myListKonsultasiToday);
+            model.addAttribute("listRequestKonsultasi", listRequestKonsultasi);
+
             return "konsultasi/landing-page-pengajar";
 
         }
@@ -107,19 +99,24 @@ public class KonsultasiController {
         else if(user.getRole().toString().equals("SISWA")){
             SiswaModel siswa = siswaService.findSiswaByEmail(principal.getName());
             Jenjang jenjang = siswa.getJenjang();
-            List<SiswaKonsultasiModel> listMySiswaKonsultasi = siswaKonsultasiService.getListKonsultasiBySiswa(siswa);
-            List<KonsultasiModel> listKonsultasiJenjang = konsultasiService.getListKonsultasiByJenjang(jenjang);
+            List<SiswaKonsultasiModel> myListKonsultasi = siswaKonsultasiService.getListKonsultasiBySiswa(siswa);
+            List<SiswaKonsultasiModel> myListKonsultasiToday = siswaKonsultasiService.getListKonsultasiSiswaHariIni(siswa);
+            List<KonsultasiModel> listRekomendasiKonsultasi = konsultasiService.getRekomendasiKonsultasi(siswa, jenjang);
 
             model.addAttribute("siswa", siswa);
-            model.addAttribute("listMySiswaKonsultasi", listMySiswaKonsultasi);
-            model.addAttribute("listKonsultasiJenjang", listKonsultasiJenjang);
+            model.addAttribute("myListKonsultasi", myListKonsultasi);
+            model.addAttribute("myListKonsultasiToday", myListKonsultasiToday);
+            model.addAttribute("listRekomendasiKonsultasi", listRekomendasiKonsultasi);
+
             return "konsultasi/landing-page-siswa";
         }
         return "error";
     }
 
     @GetMapping("/konsultasi/view/{idKonsultasi}" )
-    public String viewDetailKonsultasiPage(@PathVariable Integer idKonsultasi, Model model) {
+    public String viewDetailKonsultasiPage(@PathVariable Integer idKonsultasi, Model model, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         KonsultasiModel konsultasi = konsultasiService.getKonsultasi(idKonsultasi);
         List<SiswaKonsultasiModel> listSiswaKonsultasi = siswaKonsultasiService.getListSiswaByKonsultasi(konsultasi);
 
@@ -128,28 +125,46 @@ public class KonsultasiController {
             siswaKonsultasi.getSiswaKonsul().setKelasBimbel(kelas);
         }
 
+        if(userModel.getRole().toString().equals("PENGAJAR")){
+            boolean isToValidate = false;
+            boolean isToClose = false;
+
+            if (konsultasi.getStatus().equals(PENDING)){
+                isToValidate = true;
+            } else if (konsultasiService.isToClose(konsultasi)) {
+                isToClose = true;
+            }
+
+            model.addAttribute("isToValidate", isToValidate);
+            model.addAttribute("isToClose", isToClose);
+        }
+
+        if(userModel.getRole().toString().equals("SISWA")){
+            boolean isJoinable = false;
+            boolean isCancelable = false;
+            boolean isExtendable = false;
+
+            if (konsultasi.getStatus().equals(PENDING)){
+                isCancelable = true;
+            }
+            else if (konsultasiService.isExtendAble(konsultasi)){
+                isExtendable = true;
+            }
+            else if (siswaKonsultasiService.isRekomended((SiswaModel) userModel, konsultasi)){
+                isJoinable = true;
+            }
+
+
+            model.addAttribute("isCancelable", isCancelable);
+            model.addAttribute("isExtendable", isExtendable);
+            model.addAttribute("isJoinable", isJoinable);
+        }
+
+        model.addAttribute("role", userModel.getRole().toString());
         model.addAttribute("konsultasi", konsultasi);
         model.addAttribute("listSiswaKonsultasi", listSiswaKonsultasi);
 
         return "konsultasi/view-detail";
-    }
-
-    @GetMapping("/konsultasi/siswa/view/{idKonsultasi}" )
-    public String viewDetailKonsultasiPageSiswa(@PathVariable Integer idKonsultasi, Authentication authentication, Model model) {
-        KonsultasiModel konsultasi = konsultasiService.getKonsultasi(idKonsultasi);
-        SiswaModel siswa = siswaService.findSiswaByEmail(authentication.getName());
-        List<SiswaKonsultasiModel> listSiswaKonsultasi = siswaKonsultasiService.getListSiswaByKonsultasi(konsultasi);
-
-        for (SiswaKonsultasiModel siswaKonsultasi: listSiswaKonsultasi) {
-            KelasModel kelas = siswaService.getKelasBimbel(siswaKonsultasi.getSiswaKonsul());
-            siswaKonsultasi.getSiswaKonsul().setKelasBimbel(kelas);
-        }
-
-        model.addAttribute("konsultasi", konsultasi);
-        model.addAttribute("siswa", siswa);
-        model.addAttribute("listSiswaKonsultasi", listSiswaKonsultasi);
-
-        return "konsultasi/siswa-view-detail";
     }
 
 
@@ -157,7 +172,9 @@ public class KonsultasiController {
     public String cancelKonsultasiPage(Authentication authentication,
                                        @PathVariable Integer idKonsultasi,
                                        Model model,
-                                       RedirectAttributes redirectAttrs) {
+                                       RedirectAttributes redirectAttrs, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         SiswaModel siswa = siswaService.findSiswaByEmail(authentication.getName());
         SiswaKonsultasiModel siswaKonsultasi = siswaKonsultasiService.getBySiswaAndKonsultasi(siswa, idKonsultasi);
         KonsultasiModel konsultasiCancel = siswaKonsultasi.getKonsultasi();
@@ -182,21 +199,17 @@ public class KonsultasiController {
     }
 
 
-//    create konsultasi
     @GetMapping("/konsultasi/add")
-    public String addKonsultasiFormPage(Model model) {
+    public String addKonsultasiFormPage(Model model, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         KonsultasiModel konsultasi = new KonsultasiModel();
-        getAllDropdownList(konsultasi, model);
+        List<MataPelajaranModel> listMapel = mapelService.getAllMapel();
+
+        model.addAttribute("listMapel", listMapel);
         return "konsultasi/form-add";
     }
 
-    private List<LocalTime> getListWaktuAwalKonsultasi(){
-        List<LocalTime> listWaktuMulaiKonsul = new ArrayList<>();
-        for (int i = 10; i < 20; i++) {
-            listWaktuMulaiKonsul.add(LocalTime.of(i,00));
-        }
-        return listWaktuMulaiKonsul;
-    }
 
     @PostMapping(value = "/konsultasi/add", params = {"save"})
     public String addKonsultasiSubmit(@ModelAttribute KonsultasiModel konsultasi,
@@ -212,7 +225,7 @@ public class KonsultasiController {
 
         SiswaModel siswa = siswaService.findSiswaByEmail(authentication.getName());
 
-        konsultasi.setMapelKonsul(mataPelajaranService.getMapelById(Integer.parseInt(mataPelajaran)));
+        konsultasi.setMapelKonsul(mapelService.getMapelById(Integer.parseInt(mataPelajaran)));
         konsultasi.setPengajarKonsul(pengajarService.getPengajarById(Integer.parseInt(pengajarMapel)));
         konsultasi.setTopic(topik);
         konsultasi.setDuration(1);
@@ -258,14 +271,27 @@ public class KonsultasiController {
         model.addAttribute("siswa", siswa);
         model.addAttribute("listSiswaKonsultasi", allListSiswaKonsultasi);
 
+        String formattedDate = getFormattedDate(konsultasi.getStartTime().toLocalDate());
+
         String emailPenerima = konsultasi.getPengajarKonsul().getEmail();
-//        String emailPenerima = "ameliaputrifadillah@gmail.com";
         String emailSubject = "ANDA MENDAPATKAN PERMINTAAN KONSULTASI BARU!";
-        String emailBody = "Mohon segera konfirmasi sebelum tanggal " + konsultasi.getStartTime().toLocalDate() + " pukul " + konsultasi.getStartTime().minusHours(1).toLocalTime()
+        String emailBody = "Mohon segera konfirmasi sebelum  " + formattedDate + " pukul " + konsultasi.getStartTime().minusHours(2).toLocalTime()
                 + "\n\nDetail konsultasi"
+                + "\n- Tanggal: " + formattedDate
                 + "\n- Waktu konsultasi: " + konsultasi.getStartTime().toLocalTime() + " - " + konsultasi.getEndTime().toLocalTime()
-                + "\n- Tanggal: " + konsultasi.getStartTime().toLocalDate()
                 + "\n- Jenjang: " + konsultasi.getJenjangKelas().getDisplayValue()
+                + "\n- Mata Pelajaran: " + konsultasi.getMapelKonsul().getName()
+                + "\n- Topik: " + konsultasi.getTopic();
+
+        emailService.sendEmail(emailPenerima, emailSubject, emailBody);
+
+        emailPenerima = authentication.getName();
+        emailSubject = "PERMINTAAN KONSULTASI BERHASIL DIBUAT";
+        emailBody = "Jika pengajar belum mengkonfimasi sebelum " + formattedDate + " pukul " + konsultasi.getStartTime().minusHours(2).toLocalTime()
+                + ", maka konsultasi akan otomatis kadaluarsa"
+                + "\n\nDetail konsultasi"
+                + "\n- Tanggal: " + formattedDate
+                + "\n- Waktu konsultasi: " + konsultasi.getStartTime().toLocalTime() + " - " + konsultasi.getEndTime().toLocalTime()
                 + "\n- Mata Pelajaran: " + konsultasi.getMapelKonsul().getName()
                 + "\n- Topik: " + konsultasi.getTopic();
 
@@ -275,38 +301,161 @@ public class KonsultasiController {
         return "redirect:/konsultasi";
     }
 
-
-
-
-    public void getAllDropdownList(KonsultasiModel konsultasi, Model model) {
-        List<PengajarModel> listPengajar = pengajarService.getListPengajarActive();
-        List<MataPelajaranModel> listMapel = mataPelajaranService.getListMapel();
-        List<LocalTime> listWaktuMulaiKonsul = getListWaktuAwalKonsultasi();
-
-        // pass data
-        model.addAttribute("konsultasi", konsultasi);
-        model.addAttribute("listMapel", listMapel);
-        model.addAttribute("listPengajar", listPengajar);
-        model.addAttribute("listWaktuMulaiKonsul", listWaktuMulaiKonsul);
-    }
-
-//    end create konsultasi
-
-
-    @GetMapping("/konsultasi/request/view/{idKonsultasi}" )
-    public String viewDetailRequestPage(@PathVariable Integer idKonsultasi, Authentication authentication, Model model) {
+    @PostMapping(value = "/konsultasi/terima/{idKonsultasi}", params = {"save"})
+    public String submitFormTerimaKonsultasi(Principal principal,  @PathVariable Integer idKonsultasi, String place, RedirectAttributes redirectAttributes) {
         KonsultasiModel konsultasi = konsultasiService.getKonsultasi(idKonsultasi);
-        List<SiswaKonsultasiModel> listSiswaKonsultasi = siswaKonsultasiService.getListSiswaByKonsultasi(konsultasi);
+        PengajarModel pengajar = pengajarService.getPengajarByEmail(principal.getName());
 
-        for (SiswaKonsultasiModel siswaKonsultasi: listSiswaKonsultasi) {
-            KelasModel kelas = siswaService.getKelasBimbel(siswaKonsultasi.getSiswaKonsul());
-            siswaKonsultasi.getSiswaKonsul().setKelasBimbel(kelas);
+        String formattedDate = getFormattedDate(konsultasi.getStartTime().toLocalDate());
+
+        if (konsultasiService.getIsPengajarAvailable(pengajar, konsultasi)){
+            konsultasi.setStatus(DITERIMA);
+            konsultasi.setPlace(place);
+            konsultasiService.updateKonsultasi(konsultasi);
+            konsultasiService.reloadRequestKonsultasi();
+
+
+            ArrayList<String> emailPenerima = new ArrayList<>();
+            String emailSubject = "PENGAJAR TELAH MENERIMA KONSULTASI!";
+            String emailBody = "Pembatalan konsultasi sudah tidak dapat dilakukan, mohon ikuti konsultasi sesuai jadwal!"
+                    + "\n\nDetail konsultasi"
+                    + "\n- Tanggal: " + formattedDate
+                    + "\n- Waktu konsultasi: " + konsultasi.getStartTime().toLocalTime() + " - " + konsultasi.getEndTime().toLocalTime()
+                    + "\n- Tempat: " + konsultasi.getPlace()
+                    + "\n- Mata Pelajaran: " + konsultasi.getMapelKonsul().getName()
+                    + "\n- Topik: " + konsultasi.getTopic();
+
+            List<SiswaKonsultasiModel> listSiswaKonsul = siswaKonsultasiService.getListSiswaByKonsultasi(konsultasi);
+            for (SiswaKonsultasiModel siwaKonsul: listSiswaKonsul) {
+                emailPenerima.add(siwaKonsul.getSiswaKonsul().getEmail());
+            }
+            emailService.sendEmail(emailPenerima, emailSubject, emailBody);
+
+
+            redirectAttributes.addFlashAttribute("message", "Konsultasi berhasil diterima");
+            return "redirect:/konsultasi/view/" + idKonsultasi; // Redirect to success page
         }
 
-        model.addAttribute("konsultasi", konsultasi);
-        model.addAttribute("listSiswaKonsultasi", listSiswaKonsultasi);
+        ArrayList<String> emailPenerima = new ArrayList<>();
+        String emailSubject = "PENGAJAR MENOLAK KONSULTASI!";
+        String emailBody = "Pengajar telah menolak permintaan konsultasi yang kamu ikuti, mohon cari jadwal konsultasi lain."
+                + "\n\nDetail konsultasi"
+                + "\n- Tanggal: " + formattedDate
+                + "\n- Waktu konsultasi: " + konsultasi.getStartTime().toLocalTime() + " - " + konsultasi.getEndTime().toLocalTime()
+                + "\n- Mata Pelajaran: " + konsultasi.getMapelKonsul().getName()
+                + "\n- Topik: " + konsultasi.getTopic();
 
-        return "konsultasi/request-view-detail";
+        List<SiswaKonsultasiModel> listSiswaKonsul = siswaKonsultasiService.getListSiswaByKonsultasi(konsultasi);
+        for (SiswaKonsultasiModel siwaKonsul: listSiswaKonsul) {
+            emailPenerima.add(siwaKonsul.getSiswaKonsul().getEmail());
+        }
+        emailService.sendEmail(emailPenerima, emailSubject, emailBody);
+
+        konsultasi.setStatus(DITOLAK);
+        konsultasiService.updateKonsultasi(konsultasi);
+        redirectAttributes.addFlashAttribute("errorMessage", "Konsultasi gagal diterima karena bertabrakan dengan jadwal anda\nKonsultasi ini akan otomatis ditolak!");
+        return "redirect:/konsultasi/view/" + idKonsultasi; // Redirect to failed page
+
+    }
+
+    @GetMapping("/konsultasi/tolak/{idKonsultasi}")
+    public String tolakKonsultasi(@PathVariable Integer idKonsultasi, RedirectAttributes redirectAttributes) {
+        KonsultasiModel konsultasi = konsultasiService.getKonsultasi(idKonsultasi);
+        konsultasi.setStatus(DITOLAK);
+        konsultasiService.updateKonsultasi(konsultasi);
+
+        ArrayList<String> emailPenerima = new ArrayList<>();
+        String formattedDate = getFormattedDate(konsultasi.getStartTime().toLocalDate());
+        String emailSubject = "PENGAJAR MENOLAK KONSULTASI!";
+        String emailBody = "Pengajar telah menolak permintaan konsultasi yang kamu ikuti, mohon cari jadwal konsultasi lain."
+                + "\n\nDetail konsultasi"
+                + "\n- Tanggal: " + formattedDate
+                + "\n- Waktu konsultasi: " + konsultasi.getStartTime().toLocalTime() + " - " + konsultasi.getEndTime().toLocalTime()
+                + "\n- Mata Pelajaran: " + konsultasi.getMapelKonsul().getName()
+                + "\n- Topik: " + konsultasi.getTopic();
+
+        List<SiswaKonsultasiModel> listSiswaKonsul = siswaKonsultasiService.getListSiswaByKonsultasi(konsultasi);
+        for (SiswaKonsultasiModel siwaKonsul: listSiswaKonsul) {
+            emailPenerima.add(siwaKonsul.getSiswaKonsul().getEmail());
+        }
+        emailService.sendEmail(emailPenerima, emailSubject, emailBody);
+
+        redirectAttributes.addFlashAttribute("message", "Konsultasi berhasil ditolak");
+        return "redirect:/konsultasi/view/" + idKonsultasi; // Redirect to success page
+    }
+
+    // @GetMapping("/konsultasi/request/view/{idKonsultasi}" )
+    // public String viewDetailRequestPage(@PathVariable Integer idKonsultasi, Authentication authentication, Model model, Principal principal) {
+    //     var userModel = userService.getUserByEmail(principal.getName());
+    //     pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
+    @GetMapping("/konsultasi/ikuti/{idKonsultasi}")
+    public String ikutiKonsultasi(Principal principal, @PathVariable Integer idKonsultasi, RedirectAttributes redirectAttributes, Model model) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
+        SiswaModel siswa = siswaService.findSiswaByEmail(principal.getName());
+        KonsultasiModel konsultasi = konsultasiService.getKonsultasi(idKonsultasi);
+        if (konsultasiService.getIsSiswaAvailable(siswa, konsultasi)){
+            SiswaKonsultasiModel siswaKonsultasi = new SiswaKonsultasiModel();
+            siswaKonsultasi.setKonsultasi(konsultasi);
+            siswaKonsultasi.setSiswaKonsul(siswa);
+            siswaKonsultasiService.createSiswaKonsultasi(siswaKonsultasi);
+
+            String emailPenerima = principal.getName();
+            String emailSubject = "KONSULTASI BERHASIL DIIKUTI!";
+            String emailBody = "";
+
+            String formattedDate = getFormattedDate(konsultasi.getStartTime().toLocalDate());
+
+            if (konsultasi.getStatus().equals(PENDING)){
+                emailBody = "Jika pengajar belum mengkonfimasi sebelum " + formattedDate + " pukul " + konsultasi.getStartTime().minusHours(2).toLocalTime()
+                        + " maka konsultasi akan otomatis kadaluarsa";
+            } else if (konsultasi.getStatus().equals(DITERIMA)){
+                emailBody = "Anda tidak dapat membatalkan konsultasi ini karena pengajar sudah menerima permintaan konsultasi.";
+            }
+
+            emailBody += ("\n\nDetail konsultasi"
+                    + "\n- Tanggal: " + formattedDate
+                    + "\n- Waktu konsultasi: " + konsultasi.getStartTime().toLocalTime() + " - " + konsultasi.getEndTime().toLocalTime()
+                    + "\n- Jenjang: " + konsultasi.getJenjangKelas().getDisplayValue()
+                    + "\n- Mata Pelajaran: " + konsultasi.getMapelKonsul().getName()
+                    + "\n- Topik: " + konsultasi.getTopic());
+
+            emailService.sendEmail(emailPenerima, emailSubject, emailBody);
+
+            redirectAttributes.addFlashAttribute("message", "Konsultasi berhasil diikuti");
+            return "redirect:/konsultasi/view/" + idKonsultasi; // Redirect to success page
+        }
+        redirectAttributes.addFlashAttribute("errorMessage", "konsultasi tidak dapat diikuti diikuti karena bertabrakan dengan jadawal anda");
+        return "redirect:/konsultasi/view/" + idKonsultasi; // Redirect to success page
+    }
+
+
+    @GetMapping("/konsultasi/extend/{idKonsultasi}")
+    public String extendKonsultasi(Principal principal, @PathVariable Integer idKonsultasi, RedirectAttributes redirectAttributes) {
+        SiswaModel siswa = siswaService.findSiswaByEmail(principal.getName());
+        KonsultasiModel konsultasi = konsultasiService.getKonsultasi(idKonsultasi);
+
+        KonsultasiModel konsultasiNew = new KonsultasiModel();
+        konsultasiNew.setStartTime(konsultasi.getEndTime());
+        konsultasiNew.setEndTime(konsultasiNew.getStartTime().plusHours(1));
+        konsultasiNew.setDuration(1);
+
+        if (konsultasiService.isInRangeTimeExtend(konsultasi.getStartTime(), konsultasiNew.getEndTime()) && konsultasiService.getIsSiswaAvailable(siswa, konsultasiNew) && konsultasiService.getIsPengajarAvailable(konsultasi.getPengajarKonsul(), konsultasiNew)){
+            KonsultasiModel konsultasiUpdated = konsultasiService.getKonsultasi(idKonsultasi);
+            konsultasiUpdated.setEndTime(konsultasi.getEndTime().plusHours(1));
+            konsultasiUpdated.setDuration(konsultasi.getDuration()+1);
+            konsultasiService.updateKonsultasi(konsultasiUpdated);
+
+            redirectAttributes.addFlashAttribute("message", "Durasi konsultasi berhasil diperpanjang");
+            return "redirect:/konsultasi/view/" + idKonsultasi; // Redirect to success page
+        }
+        redirectAttributes.addFlashAttribute("errorMessage", "durasi konsultasi tidak dapat diperpanjang karena waktu tidak tersedia");
+        return "redirect:/konsultasi/view/" + idKonsultasi; // Redirect to success page
+    }
+
+    private String getFormattedDate(LocalDate date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy", new Locale("id", "ID"));
+        return date.format(formatter);
     }
 
 }

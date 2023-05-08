@@ -1,17 +1,23 @@
 package com.projectpop.quanta.jadwalkelas.restcontroller;
 
+import com.projectpop.quanta.mapel.service.MapelService;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.kelas.service.KelasService;
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
-import com.projectpop.quanta.mapel.service.MataPelajaranService;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.service.PengajarService;
 import com.projectpop.quanta.pengajarmapel.service.PengajarMapelService;
+
+import com.projectpop.quanta.user.model.UserModel;
+import com.projectpop.quanta.user.model.UserRole;
+import com.projectpop.quanta.user.service.UserService;
 import com.projectpop.quanta.pengajarmapel.model.PengajarMapelModel;
 
 import java.util.List;
+import java.security.Principal;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +32,20 @@ public class JadwalKelasRestController {
     private PengajarMapelService pengajarMapelService;
 
     @Autowired
-    private MataPelajaranService mataPelajaranService;
+    private MapelService mapelService;
 
     @Autowired
     private PengajarService pengajarService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private KelasService kelasService;
 
     @GetMapping("/get-pengajar/mapel/{id}")
     private List<PengajarModel> getListPengajarByMapel(@PathVariable("id") Integer id) {
-        MataPelajaranModel mapel = mataPelajaranService.getMapelById(id);
+        MataPelajaranModel mapel = mapelService.getMapelById(id);
         List<PengajarMapelModel> listPMapel = pengajarMapelService.getListPengajarByMapel(mapel);
         
         // get value of pengajar
@@ -65,6 +74,14 @@ public class JadwalKelasRestController {
     @GetMapping("/get-kelas/hari/{day}")
     private List<KelasModel> getKelasByDay(@PathVariable("day") Integer day) {
         return kelasService.getListKelasByDays(day);
+    }
+
+    @GetMapping("/get-jadwal-kelas")
+    private List<JadwalKelasModel> getJadwalHomepage(Principal principal) {
+        UserModel user = userService.getUserByEmail(principal.getName());
+            
+
+        return null;
     }
 
     

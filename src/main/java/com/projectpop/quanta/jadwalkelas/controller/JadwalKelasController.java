@@ -4,14 +4,25 @@ import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
 import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.kelas.service.KelasService;
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
-import com.projectpop.quanta.mapel.service.MataPelajaranService;
+import com.projectpop.quanta.mapel.service.MapelService;
+import com.projectpop.quanta.orangtua.model.OrtuModel;
+import com.projectpop.quanta.orangtua.service.OrtuService;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.service.PengajarService;
 import com.projectpop.quanta.pengajarmapel.model.PengajarMapelModel;
 import com.projectpop.quanta.pengajarmapel.service.PengajarMapelService;
+import com.projectpop.quanta.user.service.UserService;
+import org.springframework.beans.factory.annotation.Qualifier;
+import com.projectpop.quanta.siswa.model.SiswaModel;
+import com.projectpop.quanta.siswa.service.SiswaService;
+import com.projectpop.quanta.user.model.UserModel;
+import com.projectpop.quanta.user.model.UserRole;
+
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.security.Principal;
 
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -32,7 +43,7 @@ public class JadwalKelasController {
     private JadwalKelasService jadwalKelasService;
 
     @Autowired
-    private MataPelajaranService mataPelajaranService;
+    private MapelService mapelService;
 
     @Autowired
     private KelasService kelasService;
@@ -43,17 +54,54 @@ public class JadwalKelasController {
     @Autowired
     private PengajarMapelService pengajarMapelService;
 
+    @Qualifier("userServiceImpl")
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private OrtuService ortuService;
+
+    @Autowired
+    private SiswaService siswaService;
+
     // VIEW ALL
     @GetMapping("")
-    public String viewAllJadwalKelas(Model model) {
+    public String viewAllJadwalKelas(Principal principal, Model model) {
+        UserModel user = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(user,model);
+
+        // ORTU
+        if (user.getRole() == UserRole.ORTU) {
+            OrtuModel ortu = ortuService.getOrtuById(user.getId());
+           
+            SiswaModel anak = ortuService.getDefaultAnakTerpilih(ortu);
+            model.addAttribute("anak", anak);
+            return "redirect:/jadwal-kelas/anak/" + anak.getId();
+
+        }
+
+        // ADMIN
         List<JadwalKelasModel> listJadwalKelas = jadwalKelasService.getListJadwalKelas();
         model.addAttribute("listJadwal", listJadwalKelas);
         return "jadwalkelas/jadwalkelas-viewall";
     }
 
+    @GetMapping("/anak/{id}")
+    public String viewAllJadwalKelasOrtu(@PathVariable("id") Integer id, Principal principal, Model model) {
+        SiswaModel siswa = siswaService.getSiswaById(id);
+        List<JadwalKelasModel> listJadwalAnak = jadwalKelasService.getListJadwalKelasByKelas(siswaService.getKelasBimbel(siswa));
+        // System.out.println("===== cek nama " + siswa.getName());
+        model.addAttribute("listJadwal", listJadwalAnak);
+        model.addAttribute("anak", siswa);
+
+        return "jadwalkelas/jadwalkelas-viewall";
+    }
+
     // VIEW ALL
     @GetMapping("/{id}")
-    public String viewDetailJadwalKelas(@PathVariable("id") Integer id, Model model) {
+    public String viewDetailJadwalKelas(@PathVariable("id") Integer id, Model model, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         JadwalKelasModel jadwal = jadwalKelasService.getJadwalKelasById(id);
         LocalDateTime now = LocalDateTime.now();
         boolean canUpdate = true;
@@ -61,7 +109,7 @@ public class JadwalKelasController {
             canUpdate = false;
         } else if (now.isEqual(jadwal.getStartDateClass())) {
             canUpdate = false;
-        }
+        } 
         model.addAttribute("jadwal", jadwal);
         model.addAttribute("canUpdate", canUpdate);
         return "jadwalkelas/jadwalkelas-view-detail";
@@ -69,7 +117,9 @@ public class JadwalKelasController {
 
     // CREATE FORM
     @GetMapping("/add")
-    public String addJadwalKelasFormPage(Model model) {
+    public String addJadwalKelasFormPage(Model model, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         JadwalKelasModel jadwalKelas = new JadwalKelasModel();
         getAllDropdownList(jadwalKelas, model);
         return "jadwalkelas/jadwalkelas-add-form";
@@ -81,7 +131,7 @@ public class JadwalKelasController {
     String kelasDiajar, String mapel, String pengajar,Model model, RedirectAttributes redirectAttrs) {
         // set atttribute
         jadwalKelas.setKelas(kelasService.getKelasById(Integer.parseInt(kelasDiajar)));
-        jadwalKelas.setMapelJadwal(mataPelajaranService.getMapelById(Integer.parseInt(mapel)));
+        jadwalKelas.setMapelJadwal(mapelService.getMapelById(Integer.parseInt(mapel)));
         jadwalKelas.setPengajarKelas(pengajarService.getPengajarById(Integer.parseInt(pengajar)));
 
         // parsing waktu mulai dan selesai
@@ -135,7 +185,9 @@ public class JadwalKelasController {
 
     // FORM UPDATE
     @GetMapping("/update/{id}")
-    public String updateJadwalKelasFormPage(@PathVariable("id") Integer id, Model model) {
+    public String updateJadwalKelasFormPage(@PathVariable("id") Integer id, Model model, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         JadwalKelasModel jadwalKelas = jadwalKelasService.getJadwalKelasById(id);
         getAllDropdownList(jadwalKelas, model);
 
@@ -159,16 +211,19 @@ public class JadwalKelasController {
         model.addAttribute("jamSelesai", jamSelesai);
         model.addAttribute("jadwalKelas", jadwalKelas);  
 
+        // reset list presensi and delete presensimodel
+        jadwalKelasService.updateJadwalKelas(jadwalKelas);
+
         return "jadwalkelas/jadwalkelas-update-form";
     }
 
     // SUBMIT FORM
     @PostMapping(value="/update", params={"update"})
-    public String updateJadwalKelasSubmit(@ModelAttribute JadwalKelasModel jadwalKelas, String tanggal, String jam_mulai, String jam_selesai, 
+    public String updateJadwalKelasSubmit(@ModelAttribute JadwalKelasModel jadwalKelas, String tanggal, String jam_mulai, String jam_selesai,
     String kelasDiajar, String mapel, String pengajar, Model model, RedirectAttributes redirectAttrs) {
          // set atttribute
          jadwalKelas.setKelas(kelasService.getKelasById(Integer.parseInt(kelasDiajar)));
-         jadwalKelas.setMapelJadwal(mataPelajaranService.getMapelById(Integer.parseInt(mapel)));
+         jadwalKelas.setMapelJadwal(mapelService.getMapelById(Integer.parseInt(mapel)));
          jadwalKelas.setPengajarKelas(pengajarService.getPengajarById(Integer.parseInt(pengajar)));
  
          // parsing waktu mulai dan selesai
@@ -196,7 +251,7 @@ public class JadwalKelasController {
             return "redirect:/jadwal-kelas/update/" + jadwalKelas.getId();
         }
 
-        jadwalKelasService.updateJadwalKelas(jadwalKelas);
+        jadwalKelasService.addJadwalKelas(jadwalKelas);
         redirectAttrs.addFlashAttribute("message", "Perubahan jadwal berhasil dilakukan!");
         return "redirect:/jadwal-kelas/" + jadwalKelas.getId();
     }
@@ -212,7 +267,7 @@ public class JadwalKelasController {
 
             if (jadwalFromDb.getId() != jadwalKelas.getId()){    
                 //cek kesamaan yang mungkin menyebabkan bentrok
-                System.out.println(jadwalFromDb.getId() + "======" +jadwalKelas.getId());
+                // System.out.println(jadwalFromDb.getId() + "======" +jadwalKelas.getId());
 
                 // cek kesamaan pengajar
                 boolean isPossible = false;
@@ -272,7 +327,7 @@ public class JadwalKelasController {
            // list dropdown
            List<KelasModel> listKelas = kelasService.getListKelas();
            List<PengajarModel> listPengajar = pengajarService.getListPengajarActive();
-           List<MataPelajaranModel> listMapel = mataPelajaranService.getListMapel();
+           List<MataPelajaranModel> listMapel = mapelService.getAllMapel();
            List<String> listRuangKelas = new ArrayList<>();
            listRuangKelas.add("ferarri");
            listRuangKelas.add("Subaru");
@@ -291,19 +346,28 @@ public class JadwalKelasController {
 
 
     @GetMapping("/delete/{id}")
-    public String deleteJadwalKelas(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttrs) {
+    public String deleteJadwalKelas(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttrs, Principal principal) {
+        var userModel = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         JadwalKelasModel jadwalKelas = jadwalKelasService.getJadwalKelasById(id);
         LocalDateTime now = LocalDateTime.now();
         boolean isOngoing = false;
+        boolean hasPassed = false;
         if (now.isAfter(jadwalKelas.getStartDateClass()) && now.isBefore(jadwalKelas.getEndDateClass())) {
             isOngoing = true;
         } else if (now.isEqual(jadwalKelas.getStartDateClass())) {
             isOngoing = true;
+        } else if (now.isAfter(jadwalKelas.getEndDateClass())) {
+            hasPassed = true;
         }
 
         if (isOngoing) {
             redirectAttrs.addFlashAttribute("deletefailed", "Jadwal sedang berlangsung! Penghapusan jadwal gagal dilakukan");
-        } else {
+            return "redirect:/jadwal-kelas/" + id;
+        } else if (hasPassed){
+            redirectAttrs.addFlashAttribute("deletefailed", "Jadwal sudah selesai berlangsung! Penghapusan jadwal gagal dilakukan");
+            return "redirect:/jadwal-kelas/" + id;
+        }else {
             redirectAttrs.addFlashAttribute("message", "Jadwal berhasil dihapus!");
             jadwalKelasService.deleteJadwalKelas(jadwalKelas);
         }

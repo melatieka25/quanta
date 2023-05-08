@@ -1,11 +1,13 @@
 package com.projectpop.quanta.user.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.projectpop.quanta.pesan.model.PesanModel;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -58,6 +60,11 @@ public class UserModel implements Serializable {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Lob
+    @NotNull
+    @Column(name = "password_pertama", nullable = false)
+    private String passwordPertama;
+
     @NotNull
     @Column(nullable = false)
     private Boolean isPassUpdated;
@@ -79,11 +86,17 @@ public class UserModel implements Serializable {
     @Column(nullable = false)
     private Boolean isActive;
 
+    @JsonIgnore
     @NotNull
     @Column(nullable = false)
     @Enumerated(value=EnumType.STRING)
     private Religion religion;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<PesanModel> listPesan;
+
+    public String getNameEmail() {
+        return this.name + " (" + this.email + ") ";
+    }
 }
