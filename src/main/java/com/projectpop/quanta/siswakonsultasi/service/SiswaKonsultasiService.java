@@ -24,4 +24,6 @@ public interface SiswaKonsultasiService {
 
     List<SiswaKonsultasiModel> getListKonsultasiBySiswaAndTanggal(SiswaModel siswa, LocalDate tanggal);
     List<SiswaKonsultasiModel> getListKonsultasiBySiswaAndTanggalPendingAndDiterima(SiswaModel siswa, LocalDate tanggal);
+    boolean isRekomended(SiswaModel siswa, KonsultasiModel konsultasi);
+    List<SiswaKonsultasiModel> getListKonsultasiSiswaHariIni(SiswaModel siswa);
 }

@@ -116,4 +116,29 @@ public class SiswaKonsultasiServiceImpl implements SiswaKonsultasiService{
             }
         } return listSiswaKonsultasiTanggal;
     }
+
+    @Override
+    public boolean isRekomended(SiswaModel siswa, KonsultasiModel konsultasi) {
+        List<SiswaKonsultasiModel> listKonsultasiPedending= getListSiswaByKonsultasi(konsultasi);
+        for (SiswaKonsultasiModel siswaKonsultasi: listKonsultasiPedending) {
+            if (siswaKonsultasi.getSiswaKonsul().equals(siswa)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public List<SiswaKonsultasiModel> getListKonsultasiSiswaHariIni(SiswaModel siswa) {
+        List<SiswaKonsultasiModel> listSiswaKonsultasi =  siswaKonsultasiDb.findAllBySiswaKonsul(siswa);
+        List<SiswaKonsultasiModel> listKonsultasiSiswaHariIni = new ArrayList<>();
+
+        for (SiswaKonsultasiModel siswaKonsultasi: listSiswaKonsultasi) {
+            KonsultasiModel konsultasi = siswaKonsultasi.getKonsultasi();
+            if (konsultasi.getStartTime().toLocalDate().equals(LocalDate.now())
+                    && konsultasi.getStatus().equals(DITERIMA) ){
+                listKonsultasiSiswaHariIni.add(siswaKonsultasi);
+            }
+        } return listKonsultasiSiswaHariIni;
+    }
 }

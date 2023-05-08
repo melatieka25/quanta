@@ -277,7 +277,7 @@ line-height: 140%;">Daftar Siswa Konsultasi</h5>
       <div class="card mt-3">
         <card class="card-body tab-content">
           <div class="tab-pane active" id="data-siswa">
-            <table class="table table-striped align-middle" id="kelas-table">
+            <table class="table table-striped align-middle" id="daftar-siswa-table">
               <thead style="background-color: #31318B; color: #ffffff">
               <tr>
                 <th scope="col">Nama</th>
@@ -286,7 +286,7 @@ line-height: 140%;">Daftar Siswa Konsultasi</h5>
               </thead>
               <tbody>
               <tr th:each="siswaKonsultasi, iterationStatus : ${listSiswaKonsultasi}">
-                <td th:text="${siswaKonsultasi.siswaKonsul.name}"></td>
+                <td th:text="${siswaKonsultasi.siswaKonsul.name + ' (' + siswaKonsultasi.siswaKonsul.email + ') '}"></td>
                 <td th:text="${siswaKonsultasi.siswaKonsul.kelasBimbel.name}"></td>
               </tr>
               </tbody>
@@ -304,7 +304,7 @@ line-height: 140%;">Daftar Siswa Konsultasi</h5>
 <script type="text/javascript">
 
   $(document).ready( () => {
-    $('#topik-table').DataTable();
+    $('#daftar-siswa-table').DataTable();
   });
 
 </script>

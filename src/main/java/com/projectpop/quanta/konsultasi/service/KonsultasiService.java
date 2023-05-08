@@ -50,4 +50,23 @@ public interface KonsultasiService {
     List<LocalTime> getListWaktuAwalKonsultasi(LocalDate tanggal);
 
     boolean isInRangeTimeExtend(LocalDateTime waktuAwalKonsul, LocalDateTime waktuAkirKonsulExtend);
+
+    List<KonsultasiModel> getRekomendasiKonsultasi(SiswaModel siswa, Jenjang jenjang);
+
+    List<KonsultasiModel> getListKonsultasi();
+
+    boolean isExtendAble(KonsultasiModel konsultasi);
+
+    boolean isToClose(KonsultasiModel konsultasi);
+
+    void tolakKonsultasiOtomatis(KonsultasiModel konsultasi);
+
+    List<KonsultasiModel> getRequestKonsultasi(PengajarModel Pengajar);
+
+    void reloadRequestKonsultasi();
+
+    List<KonsultasiModel> getListKonsultasiByPengajar(PengajarModel pengajar);
+
+    List<KonsultasiModel> getListKonsultasiPengajarHariIni(PengajarModel pengajar);
+
 }

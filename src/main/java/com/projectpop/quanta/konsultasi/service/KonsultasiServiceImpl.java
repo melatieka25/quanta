@@ -1,4 +1,8 @@
 package com.projectpop.quanta.konsultasi.service;
+<<<<<<< HEAD
+=======
+import com.projectpop.quanta.email.service.EmailService;
+>>>>>>> 8efa29ef0102d24ed1220fa45a9c0162b2a52e36
 import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
 import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
@@ -25,10 +29,8 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 import static com.projectpop.quanta.konsultasi.model.StatusKonsul.*;
 
@@ -52,6 +54,9 @@ public class KonsultasiServiceImpl implements KonsultasiService{
 
     @Autowired
     OrtuService ortuService;
+
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public List<KonsultasiModel> getListKonsultasiHariIni() {
@@ -396,5 +401,111 @@ public class KonsultasiServiceImpl implements KonsultasiService{
         }
 
         return res;
+    }
+
+    @Override
+    public List<KonsultasiModel> getRekomendasiKonsultasi(SiswaModel siswa, Jenjang jenjang) {
+        List<KonsultasiModel> ret = new ArrayList<>();
+        List<KonsultasiModel> listKonsultasi = getListKonsultasiByJenjangAndStatus(siswa.getJenjang(),PENDING);
+        for (KonsultasiModel konsultasi: listKonsultasi) {
+            if (siswaKonsultasiService.isRekomended(siswa, konsultasi) && getIsSiswaAvailable(siswa, konsultasi)){
+                ret.add(konsultasi);
+            }
+        }
+        return ret;
+    }
+
+    @Override
+    public List<KonsultasiModel> getListKonsultasi() {
+        return konsultasiDb.findAll();
+    }
+
+    @Override
+    public boolean isExtendAble(KonsultasiModel konsultasi) {
+        if (konsultasi.getStartTime().isBefore(LocalDateTime.now())
+                && konsultasi.getEndTime().isAfter(LocalDateTime.now())){
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isToClose(KonsultasiModel konsultasi) {
+        if (konsultasi.getStatus().equals(DITERIMA)
+                && konsultasi.getEndTime().isBefore(LocalDateTime.now())
+                && konsultasi.getStartTime().isBefore(LocalDateTime.now())) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void tolakKonsultasiOtomatis(KonsultasiModel konsultasi) {
+        konsultasi.setStatus(DITOLAK);
+        updateKonsultasi(konsultasi);
+
+        ArrayList<String> emailPenerima = new ArrayList<>();
+        String formattedDate = getFormattedDate(konsultasi.getStartTime().toLocalDate());
+        String emailSubject = "KONSULTASI DITOLAK OTOMATIS";
+        String emailBody = "Permintaan konsultasimu ditolak otomatis karena jadwal pengajar tidak tersedia, mohon cari jadwal konsultasi lain."
+                + "\n\nDetail konsultasi"
+                + "\n- Tanggal: " + formattedDate
+                + "\n- Waktu konsultasi: " + konsultasi.getStartTime().toLocalTime() + " - " + konsultasi.getEndTime().toLocalTime()
+                + "\n- Mata Pelajaran: " + konsultasi.getMapelKonsul().getName()
+                + "\n- Topik: " + konsultasi.getTopic();
+
+        List<SiswaKonsultasiModel> listSiswaKonsul = siswaKonsultasiService.getListSiswaByKonsultasi(konsultasi);
+        for (SiswaKonsultasiModel siwaKonsul: listSiswaKonsul) {
+            emailPenerima.add(siwaKonsul.getSiswaKonsul().getEmail());
+        }
+        emailService.sendEmail(emailPenerima, emailSubject, emailBody);
+
+    }
+
+    @Override
+    public List<KonsultasiModel> getRequestKonsultasi(PengajarModel pengajar) {
+        List<KonsultasiModel> ret = new ArrayList<>();
+        List<KonsultasiModel> listPendingKonsultasi = getListMyKonsultasiPengajarAndStatus(pengajar, PENDING);
+        for (KonsultasiModel konsultasiPending : listPendingKonsultasi) {
+            if (getIsPengajarAvailable(pengajar, konsultasiPending)){
+                ret.add(konsultasiPending);
+            } else {
+                tolakKonsultasiOtomatis(konsultasiPending);
+            }
+        }
+        return ret;
+    }
+
+    private String getFormattedDate(LocalDate date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy", new Locale("id", "ID"));
+        return date.format(formatter);
+    }
+
+    @Override
+    public void reloadRequestKonsultasi() {
+        List<KonsultasiModel> listPendingKonsultasi = getListKonsultasiStatus(PENDING);
+        for (KonsultasiModel konsultasiPending : listPendingKonsultasi) {
+            if (!getIsPengajarAvailable(konsultasiPending.getPengajarKonsul(), konsultasiPending)){
+                tolakKonsultasiOtomatis(konsultasiPending);
+            }
+        }
+    }
+
+    @Override
+    public List<KonsultasiModel> getListKonsultasiByPengajar(PengajarModel pengajar) {
+        return konsultasiDb.findAllByPengajarKonsul(pengajar);
+    }
+
+    @Override
+    public List<KonsultasiModel> getListKonsultasiPengajarHariIni(PengajarModel pengajar) {
+        List<KonsultasiModel> ret = new ArrayList<>();
+        List<KonsultasiModel> ListKonsultasiPengajar = konsultasiDb.findAllByPengajarKonsul(pengajar);
+        for (KonsultasiModel konsultasi:ListKonsultasiPengajar) {
+            if (konsultasi.getStatus().equals(DITERIMA) && konsultasi.getStartTime().toLocalDate().equals(LocalDate.now())){
+                ret.add(konsultasi);
+            }
+        }
+        return ret;
+
     }
 }

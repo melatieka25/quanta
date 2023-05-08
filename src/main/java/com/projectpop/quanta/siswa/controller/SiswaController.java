@@ -14,6 +14,7 @@ import com.projectpop.quanta.siswakonsultasi.model.SiswaKonsultasiModel;
 import com.projectpop.quanta.tahunajar.service.TahunAjarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -638,16 +639,9 @@ public class SiswaController {
                                 ortu.setPasswordPertama(passwordOrtu);
                                 ortuService.addOrtu(ortu);
                                 String emailOrtu = ortu.getEmail();
-                                String emailSubjectOrtu = "Selamat! Akun QUANTA (Quantum Assistant) Anda Telah Berhasil Dibuat";
                                 String emailBodyOrtu = emailService.getCredentialEmailBody(ortu);
-                                emailService.sendEmail(emailOrtu, emailSubjectOrtu, emailBodyOrtu);
+                                emailService.sendEmail(emailOrtu, emailSubject, emailBodyOrtu);
                                 siswa.setOrtu(ortu);
-                                siswaService.updateSiswa(siswa);
-                                listOrtu.add(ortu);
-                                counterOrtu++;
-                            } else {
-                                siswa.setOrtu(ortu);
-                                siswaService.updateSiswa(siswa);
                             }
                         }
                     }
