@@ -11,18 +11,30 @@
     <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
     <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
     <style>
-      body {
-          font-family: 'DM Sans';
-      }
+        body {
+            font-family: 'DM Sans';
+        }
+        td, th{
+            border-bottom: hidden;
+        }
 
-      .alert {
-        position:fixed;
-        top: 7rem;
-        left: 5%;
-        width: 90%;
-        z-index:9999;
-    }
-  </style>  
+
+        .dataTables_filter{
+            margin-bottom: 8px;
+        }
+
+        span .paginate_button{
+            padding: 1px !important;
+        }
+
+        .alert {
+            position:fixed;
+            top: 7rem;
+            left: 5%;
+            width: 90%;
+            z-index:9999;
+        }
+    </style>  
 </head>
 <body>
 <nav th:replace="fragments/fragment :: navbar (${'manajemenUser'},${isKakakAsuh})"></nav>

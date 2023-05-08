@@ -3,8 +3,8 @@ package com.projectpop.quanta.konsultasi.service;
 import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
 import com.projectpop.quanta.konsultasi.model.StatusKonsul;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
-import com.projectpop.quanta.siswa.model.Jenjang;
 import com.projectpop.quanta.user.model.UserModel;
+import com.projectpop.quanta.siswa.model.Jenjang;
 import com.projectpop.quanta.siswa.model.SiswaModel;
 
 import java.time.LocalDate;
