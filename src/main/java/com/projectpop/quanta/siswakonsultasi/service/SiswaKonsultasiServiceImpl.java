@@ -41,15 +41,15 @@ public class SiswaKonsultasiServiceImpl implements SiswaKonsultasiService{
         return siswaKonsultasiDb.getByKonsultasiAndSiswaKonsul(konsultasiDb.getById(idKonsultasi), siswa);
     }
 
-    @Override
-    public List<SiswaKonsultasiModel> getListSiswaByKonsultasi(KonsultasiModel konsultasi) {
-        return siswaKonsultasiDb.findAllByKonsultasi(konsultasi);
-    }
+//    @Override
+//    public List<SiswaKonsultasiModel> getListSiswaByKonsultasi(KonsultasiModel konsultasi) {
+//        return siswaKonsultasiDb.findAllByKonsultasi(konsultasi);
+//    }
 
-    @Override
-    public Integer getJumlahSiswaKonsultasi(KonsultasiModel konsultasi) {
-        return siswaKonsultasiDb.findAllByKonsultasi(konsultasi).size();
-    }
+//    @Override
+//    public Integer getJumlahSiswaKonsultasi(KonsultasiModel konsultasi) {
+//        return siswaKonsultasiDb.findAllByKonsultasi(konsultasi).size();
+//    }
 
     @Override
     public List<SiswaKonsultasiModel> getListKonsultasiBySiswa(SiswaModel siswa) {
@@ -119,7 +119,7 @@ public class SiswaKonsultasiServiceImpl implements SiswaKonsultasiService{
 
     @Override
     public boolean isRekomended(SiswaModel siswa, KonsultasiModel konsultasi) {
-        List<SiswaKonsultasiModel> listKonsultasiPedending= getListSiswaByKonsultasi(konsultasi);
+        List<SiswaKonsultasiModel> listKonsultasiPedending= konsultasi.getListSiswaKonsultasi();
         for (SiswaKonsultasiModel siswaKonsultasi: listKonsultasiPedending) {
             if (siswaKonsultasi.getSiswaKonsul().equals(siswa)){
                 return false;
@@ -140,5 +140,11 @@ public class SiswaKonsultasiServiceImpl implements SiswaKonsultasiService{
                 listKonsultasiSiswaHariIni.add(siswaKonsultasi);
             }
         } return listKonsultasiSiswaHariIni;
+    }
+
+    @Override
+    public SiswaKonsultasiModel updateSiswaKonsultasi(SiswaKonsultasiModel siswaKonsultasi) {
+        siswaKonsultasiDb.save(siswaKonsultasi);
+        return siswaKonsultasi;
     }
 }
