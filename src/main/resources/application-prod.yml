@@ -1,7 +1,7 @@
 spring:
   # konfigurasi untuk koneksi db
   datasource:
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
     # sesuaikan nama database anda dengan di bawah ini
     url: jdbc:mysql://${MYSQLHOST}:${MYSQLPORT}/${MYSQLDATABASE}
@@ -17,6 +17,6 @@ spring:
         format_sql: true
 
     # pembuatan database (create || create-drop || validate || update)
-    hibernate.ddl-auto: create
+    hibernate.ddl-auto: update
 
     show-sql: true
