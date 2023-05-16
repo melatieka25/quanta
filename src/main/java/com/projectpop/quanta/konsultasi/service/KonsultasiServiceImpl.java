@@ -1,8 +1,5 @@
 package com.projectpop.quanta.konsultasi.service;
-<<<<<<< HEAD
-=======
 import com.projectpop.quanta.email.service.EmailService;
->>>>>>> 8efa29ef0102d24ed1220fa45a9c0162b2a52e36
 import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
 import com.projectpop.quanta.konsultasi.model.KonsultasiModel;

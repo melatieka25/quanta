@@ -52,7 +52,7 @@ public class EmailServiceImpl implements EmailService{
                   "Email: " + user.getEmail() + "\n" +
                   "Password: " + passwordWithX + "\n\n" +
                   "Harap perhatikan bahwa password Anda hanya terdiri dari 8 karakter dan \"[XXXX]\" dalam password tersebut merupakan kombinasi dari dua digit tanggal lahir dan dua digit bulan lahir Anda. Misalnya, jika Anda lahir pada tanggal 30 Februari, maka password Anda akan menjadi " + passwordExample + ". Penting untuk diingat bahwa password ini dibuat oleh sistem secara otomatis. Untuk menjaga keamanan akun Anda, kami sangat menyarankan Anda untuk segera mengubahnya setelah berhasil login.\n\n" +
-                  "Untuk login ke akun Anda, silakan kunjungi http://localhost:8080.\n\n" +
+                  "Untuk login ke akun Anda, silakan kunjungi https://quanta.up.railway.app/\n\n" +
                   "Jika Anda mengalami kendala atau memiliki pertanyaan lebih lanjut, jangan ragu untuk menghubungi tim Quantum Research Assistant. Kami akan dengan senang hati membantu Anda.\n\n" +
                   "Terima kasih atas kepercayaan Anda kepada Quantum Research. Kami berkomitmen untuk memberikan bimbingan terbaik dan mendukung kesuksesan Anda dalam perjalanan pendidikan.\n\n" +
                   "Salam hangat,\n" +
