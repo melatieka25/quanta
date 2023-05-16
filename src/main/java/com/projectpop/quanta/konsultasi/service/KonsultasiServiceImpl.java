@@ -408,7 +408,8 @@ public class KonsultasiServiceImpl implements KonsultasiService{
         List<KonsultasiModel> ret = new ArrayList<>();
         List<KonsultasiModel> listKonsultasi = getListKonsultasiByJenjangAndStatus(siswa.getJenjang(),PENDING);
         for (KonsultasiModel konsultasi: listKonsultasi) {
-            if (siswaKonsultasiService.isRekomended(siswa, konsultasi) && getIsSiswaAvailable(siswa, konsultasi)){
+            if (siswaKonsultasiService.isRekomended(siswa, konsultasi)
+                    && getIsSiswaAvailable(siswa, konsultasi) && (konsultasi.getListSiswaKonsultasi().size() < 20)){
                 ret.add(konsultasi);
             }
         }
@@ -442,6 +443,8 @@ public class KonsultasiServiceImpl implements KonsultasiService{
     @Override
     public void tolakKonsultasiOtomatis(KonsultasiModel konsultasi) {
         konsultasi.setStatus(DITOLAK);
+        konsultasi.setRejectionReason("Ditolak otomatis oleh sistem");
+        konsultasi.setRejectedTime(LocalDateTime.now());
         updateKonsultasi(konsultasi);
 
         ArrayList<String> emailPenerima = new ArrayList<>();
@@ -454,7 +457,7 @@ public class KonsultasiServiceImpl implements KonsultasiService{
                 + "\n- Mata Pelajaran: " + konsultasi.getMapelKonsul().getName()
                 + "\n- Topik: " + konsultasi.getTopic();
 
-        List<SiswaKonsultasiModel> listSiswaKonsul = siswaKonsultasiService.getListSiswaByKonsultasi(konsultasi);
+        List<SiswaKonsultasiModel> listSiswaKonsul = konsultasi.getListSiswaKonsultasi();
         for (SiswaKonsultasiModel siwaKonsul: listSiswaKonsul) {
             emailPenerima.add(siwaKonsul.getSiswaKonsul().getEmail());
         }
