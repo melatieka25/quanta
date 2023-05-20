@@ -20,6 +20,21 @@ public class MapelServiceImpl implements MapelService{
     }
 
     @Override
+    public List<String> getAllMapelName() {
+        return mataPelajaranDb.findAllName().orElse(null);
+    }
+
+    @Override
+    public List<String> getMapelSMPName() {
+        return mataPelajaranDb.findAllNameByIsSMPIsTrue().orElse(null);
+    }
+
+    @Override
+    public List<String> getMapelSMAName() {
+        return mataPelajaranDb.findAllNameByIsSMAIsTrue().orElse(null);
+    }
+
+    @Override
     public List<MataPelajaranModel> getMapelSMP() {
         return mataPelajaranDb.findByIsSMPIsTrue().orElse(null);
     }

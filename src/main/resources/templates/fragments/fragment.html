@@ -109,12 +109,14 @@
                 </ul>
             </li>
             <li class="nav-item dropdown">
-                <a sec:authorize="hasRole('ADMIN')" class="nav-link dropdown-toggle" th:classappend="${onevar == 'Presensi'} ? active : ''" href="/" id="navbarDarkDropdownMenuLink Statistika" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Laporan Presensi
+                <a sec:authorize="hasRole('ADMIN')" class="nav-link dropdown-toggle" th:classappend="${onevar == 'user'} ? active : ''" href="/" id="navbarDarkDropdownMenuLink Statistika" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Statistik Operasional
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink Statistika">
                     <li><a class="dropdown-item" th:href="@{/statistik/mapel}">Mata Pelajaran</a></li>
                     <li><a class="dropdown-item" th:href="@{/statistik/kelas}">Kelas</a></li>
+                    <li><a class="dropdown-item" th:href="@{/statistik/konsultasi/mapel}">Mata Pelajaran Konsultasi</a></li>
+                    <li><a class="dropdown-item" th:href="@{/statistik/konsultasi/pengajar}">Pengajar Konsultasi</a></li>
                 </ul>
             </li>
         </ul>

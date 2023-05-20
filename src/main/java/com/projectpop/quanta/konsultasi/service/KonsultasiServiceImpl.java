@@ -12,6 +12,7 @@ import com.projectpop.quanta.siswa.model.SiswaModel;
 import com.projectpop.quanta.siswa.service.SiswaService;
 import com.projectpop.quanta.siswakonsultasi.model.SiswaKonsultasiModel;
 import com.projectpop.quanta.siswakonsultasi.service.SiswaKonsultasiService;
+import com.projectpop.quanta.tahunajar.model.TahunAjarModel;
 import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.orangtua.model.OrtuModel;
@@ -511,5 +512,15 @@ public class KonsultasiServiceImpl implements KonsultasiService{
         }
         return ret;
 
+    }
+
+    @Override
+    public List<KonsultasiModel> getListKonsultasiByTahunAjarAndMonth(TahunAjarModel tahunAjar, Integer month) {
+        return konsultasiDb.findByTahunAjarKonsulAndMonth(tahunAjar, month).orElse(null);
+    }
+
+    @Override
+    public List<KonsultasiModel> getListKonsultasiByTahunAjar(TahunAjarModel tahunAjar) {
+        return null;
     }
 }
