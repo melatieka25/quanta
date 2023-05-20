@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev
+    active: ${ACTIVEPROFILES}
 
   mail:
     host: smtp.gmail.com
