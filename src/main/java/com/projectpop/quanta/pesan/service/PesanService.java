@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface PesanService {
     List<PesanModel> getPesanBySiswa(SiswaModel siswaModel);
+    PesanModel createPesanModel(PesanModel pesanModel);
 }

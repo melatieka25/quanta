@@ -53,6 +53,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+
 @Controller
 @RequestMapping("/siswa")
 public class SiswaController {
@@ -393,15 +395,20 @@ public class SiswaController {
             String tahunPesan = DateTimeFormatter.ofPattern("yyyy").format(pesanModel.getDateCreated());
             if (tahunSkrg.contains(tahunPesan)){
                 if (pesanModel.getUser().getRole().toString().equals("PENGAJAR")){
-                    linkedHashMapPesan.put(pesanModel,new String[]{"Kakak Asuh", localDateTimeToDateWithSlash(pesanModel.getDateCreated()), localDateTimeToTimeWithSlash(pesanModel.getDateCreated())});
-                    mapPesan.put(pesanModel,new String[]{"Kakak Asuh", localDateTimeToDateWithSlash(pesanModel.getDateCreated()), localDateTimeToTimeWithSlash(pesanModel.getDateCreated())});
+                    long duration = DAYS.between(pesanModel.getDateCreated(),LocalDateTime.now());
+                    linkedHashMapPesan.put(pesanModel,new String[]{"Kakak Asuh", localDateTimeToDateWithSlash(pesanModel.getDateCreated()), localDateTimeToTimeWithSlash(pesanModel.getDateCreated()),Long.toString(duration)});
+                    mapPesan.put(pesanModel,new String[]{"Kakak Asuh", localDateTimeToDateWithSlash(pesanModel.getDateCreated()), localDateTimeToTimeWithSlash(pesanModel.getDateCreated()),Long.toString(duration)});
                 }
                 else if(pesanModel.getUser().getRole().toString().equals("ORTU")){
-                    linkedHashMapPesan.put(pesanModel,new String[]{"Orang Tua Siswa", localDateTimeToDateWithSlash(pesanModel.getDateCreated()), localDateTimeToTimeWithSlash(pesanModel.getDateCreated())});
-                    mapPesan.put(pesanModel, new String[]{"Orang Tua Siswa", localDateTimeToDateWithSlash(pesanModel.getDateCreated()), localDateTimeToTimeWithSlash(pesanModel.getDateCreated())});
+                    long duration = DAYS.between(pesanModel.getDateCreated(),LocalDateTime.now());
+                    linkedHashMapPesan.put(pesanModel,new String[]{"Orang Tua Siswa", localDateTimeToDateWithSlash(pesanModel.getDateCreated()), localDateTimeToTimeWithSlash(pesanModel.getDateCreated()),Long.toString(duration)});
+                    mapPesan.put(pesanModel, new String[]{"Orang Tua Siswa", localDateTimeToDateWithSlash(pesanModel.getDateCreated()), localDateTimeToTimeWithSlash(pesanModel.getDateCreated()),Long.toString(duration)});
                 }
             }
         }
+        PesanModel pesanModel1 = new PesanModel();
+        model.addAttribute("pesanModel", pesanModel1);
+        model.addAttribute("idSiswa", idSiswa);
         model.addAttribute("sizeMapPesan", linkedHashMapPesan.size());
         model.addAttribute("mapPesan", linkedHashMapPesan);
         String[] listNamaBulan = new String[]{"Semua","Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"};
@@ -434,7 +441,8 @@ public class SiswaController {
             List<SiswaKonsultasiModel> listKonsultasiSiswa = siswaModel.getListKonsultasiSiswa();
             Integer countDurationKonsul = 0;
             for (SiswaKonsultasiModel siswaKonsultasiModel : listKonsultasiSiswa){
-                countDurationKonsul += siswaKonsultasiModel.getKonsultasi().getDuration();
+//                durasinya tuh dari siswakonsultasi
+                countDurationKonsul += siswaKonsultasiModel.getDurasiHadir();
             }
             float persentaseKehadiranKelas = 0;
             float countHadir = 0;
@@ -458,6 +466,30 @@ public class SiswaController {
             return "rapor-siswa/detail-rapor-siswa";
         }
         return "";
+    }
+    @PostMapping(value = "/add/rapor-siswa/{idSiswa}", params = {"save"})
+    public String addPesan(@PathVariable("idSiswa") Integer idSiswa, Model model, @ModelAttribute PesanModel pesanModel, RedirectAttributes redirectAttributes, Principal principal){
+        UserModel sender = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(sender,model);
+        if (!(sender.getRole().toString().equals("PENGAJAR") || sender.getRole().toString().equals("ORTU"))){
+            redirectAttributes.addFlashAttribute("message","Anda gagal mengirimkan pesan karena anda bukan kakak asuh atau wali siswa");
+            return "redirect:/siswa/rapor-siswa/"+idSiswa;
+        }
+        else if (sender.getRole().toString().equals("PENGAJAR") && (pengajarService.getPengajarById(sender.getId()).getIsKakakAsuh() == Boolean.FALSE)){
+            redirectAttributes.addFlashAttribute("message","Anda gagal mengirimkan pesan karena anda bukan kakak asuh");
+            return "redirect:/siswa/rapor-siswa/"+idSiswa;
+        }
+        else{
+            pesanModel.setSiswaPesan(siswaService.getSiswaById(idSiswa));
+            pesanModel.setUser(sender);
+            pesanModel.setDateCreated(LocalDateTime.now());
+            pesanService.createPesanModel(pesanModel);
+            redirectAttributes.addFlashAttribute("success", "Pesan berhasil ditambahkan");
+        }
+        PesanModel pesanModel1 = new PesanModel();
+        model.addAttribute("pesanModel", pesanModel1);
+        return "redirect:/siswa/rapor-siswa/"+idSiswa;
+
     }
     public static String localDateTimeToDateWithSlash(LocalDateTime localDateTime) {
             return DateTimeFormatter.ofPattern("dd/MM/yyyy").format(localDateTime);
