@@ -18,26 +18,6 @@
             body {
                 font-family: 'DM Sans';
             }
-
-            td, th{
-                padding: 8px 12px !important;
-                border-bottom: hidden;
-            }
-            .dataTables_filter{
-                margin-bottom: 8px;
-            }
-
-            span .paginate_button{
-                padding: 1px !important;
-            }
-
-            .alert {
-                position:fixed;
-                top: 7rem;
-                left: 5%;
-                width: 90%;
-                z-index:9999;
-            }
         </style>
     </head>
     <head th:fragment="js">
@@ -130,11 +110,13 @@
             </li>
             <li class="nav-item dropdown">
                 <a sec:authorize="hasRole('ADMIN')" class="nav-link dropdown-toggle" th:classappend="${onevar == 'user'} ? active : ''" href="/" id="navbarDarkDropdownMenuLink Statistika" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Laporan Presensi
+                    Statistik Operasional
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink Statistika">
                     <li><a class="dropdown-item" th:href="@{/statistik/mapel}">Mata Pelajaran</a></li>
                     <li><a class="dropdown-item" th:href="@{/statistik/kelas}">Kelas</a></li>
+                    <li><a class="dropdown-item" th:href="@{/statistik/konsultasi/mapel}">Mata Pelajaran Konsultasi</a></li>
+                    <li><a class="dropdown-item" th:href="@{/statistik/konsultasi/pengajar}">Pengajar Konsultasi</a></li>
                 </ul>
             </li>
         </ul>
@@ -159,7 +141,6 @@
                                 var url = '/anak/' + val.id;
                                 $("#list-anak").append("<a class='dropdown-item' href=" + url + ">"+ val.name + "</a>")
                             });
-
                         });
     
                         });

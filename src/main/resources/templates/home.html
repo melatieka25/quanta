@@ -14,7 +14,24 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.0/fullcalendar.min.js'></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
+         /* Rules for sizing the icon. */
+    .material-icons.md-18 { font-size: 18px; }
+    .material-icons.md-24 { font-size: 24px; }
+    .material-icons.md-36 { font-size: 36px; }
+    .material-icons.md-48 { font-size: 48px; }
+
+    /* Rules for using icons as black on a light background. */
+    .material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
+    .material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+
+    /* Rules for using icons as white on a dark background. */
+    .material-icons.md-light { color: rgba(255, 255, 255, 1); }
+    .material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+    .btn-link:hover{
+      color: #0A2647 !important;
+    }
         body {
             font-family: 'DM Sans';
             height: 100%;
@@ -67,11 +84,146 @@
             color: white;
         }
 
-        /* #calendar .fc-header-center {
-            text-align: left;
-            font-size: 1em !important;
-        } */
-        
+        :root {
+  --red: #2a2a80;
+  --darkred: #2a2a80;
+  /* --platinum: #e5e5e5; */
+  --black: #2b2d42;
+  --white: #fff;
+  --thumb: #edf2f4;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+/* body {
+  font: 16px / 24px;
+  color: var(--black);
+  background: var(--platinum);
+  margin: 50px 0;
+} */
+
+.container {
+  max-width: 1400px;
+  padding: 0 15px;
+  margin: 0 auto;
+}
+
+h2 {
+  font-size: 32px;
+  margin-bottom: 1em;
+}
+
+.cards {
+  display: flex;
+  padding: 25px 0px;
+  list-style: none;
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 100%;
+  padding: 20px;
+  background: var(--white);
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 15%);
+  scroll-snap-align: start;
+  transition: all 0.2s;
+}
+
+.card:not(:last-child) {
+  margin-right: 10px;
+}
+
+/* .card:hover {
+  color: var(--white);
+  background: var(--red);
+} */
+
+.card .card-title {
+  font-size: 20px;
+}
+
+.card .card-content {
+    font-size: 16px;
+
+    margin: 20px 0;
+    max-width: 100%;
+}
+
+.card .card-link-wrapper {
+  margin-top: auto;
+}
+
+.card .card-link {
+  display: inline-block;
+  text-decoration: none;
+  color: white;
+  background: var(--red);
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+/* .card:hover .card-link {
+  background: var(--darkred);
+} */
+
+.cards::-webkit-scrollbar {
+  height: 12px;
+}
+
+.cards::-webkit-scrollbar-thumb,
+.cards::-webkit-scrollbar-track {
+  border-radius: 92px;
+}
+
+.cards::-webkit-scrollbar-thumb {
+  background: lightgray;
+}
+
+.cards::-webkit-scrollbar-track {
+  background: var(--thumb);
+}
+
+@media (min-width: 500px) {
+  .card {
+    flex-basis: calc(50% - 10px);
+  }
+
+  .card:not(:last-child) {
+    margin-right: 20px;
+  }
+}
+
+@media (min-width: 700px) {
+  .card {
+    flex-basis: calc(calc(100% / 3) - 20px);
+  }
+
+  .card:not(:last-child) {
+    margin-right: 30px;
+  }
+}
+
+@media (min-width: 1100px) {
+  .card {
+    flex-basis: calc(25% - 30px);
+  }
+
+  .card:not(:last-child) {
+    margin-right: 40px;
+  }
+}
+
+
+    
       
     </style>
 </head>
@@ -99,8 +251,7 @@
     </div>
 
     <div class="container" style="padding-top: 40px; width: 75%;">
-        <div sec:authorize="hasAnyRole('PENGAJAR', 'SISWA', 'ORTU')"> 
-            <div class="d-flex justify-content-between">
+        <!-- <div class="d-flex justify-content-between">
                 <div class="p-2">
                   <img class="img-fluid" src="https://i.ibb.co/4mHbqt9/education.png" alt="education">
                 </div>
@@ -134,10 +285,9 @@
                                         </tbody>
         
                                     </table>
-                                    <a sec:authorize="hasRole('PENGAJAR')" th:href="@{/presensi/read/} + ${jadwal.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
-                                        Lihat Presensi </a>
-                                    <a sec:authorize="hasRole('SISWA')" th:href="@{/jadwal-kelas/} + ${jadwal.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
-                                        Lihat Presensi </a>
+                                    <a th:href="@{/presensi/read/} + ${jadwal.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
+                                        Lihat Presensi </a>                            
+        
                                 </div>
                             </div>
                         </div>
@@ -178,8 +328,12 @@
                                         </tbody>
             
                                         </table>
-                                        <div sec:authorize="hasAnyRole('PENGAJAR', 'SISWA')">
+                                        <div sec:authorize="hasRole('PENGAJAR')"> 
                                             <a th:href="@{/konsultasi/view/} + ${konsul.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
+                                            Lihat Detail </a>
+                                        </div>
+                                        <div sec:authorize="hasRole('SISWA')"> 
+                                            <a th:href="@{/konsultasi/siswa/view/} + ${konsul.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
                                             Lihat Detail </a>
                                         </div>
                                     </div>
@@ -190,9 +344,241 @@
                         <p th:text="'Tidak ada konsultasi hari ini'"></p>
                       </div>
                   </div>
+            </div> -->
+        
+        <!-- CARD CAROUSEL REF: https://webdesign.tutsplus.com/tutorials/horizontal-scrolling-card-ui-flexbox-and-css-grid--cms-41922 -->
+        <div class="container" sec:authorize="hasRole('SISWA')">
+            <div th:if="${listKonsultoJoin.size() != 0}">
+            <h2 style="text-align: center;"><strong>Rekomendasi Konsultasi</strong></h2>
+                <ul class="cards">
+                <li class="card" th:each="konsul, iterationStatus : ${listKonsultoJoin}">
+                    <div>
+                        <div class="d-flex justify-content-between">
+
+                            <div class="row">
+                                <div class="col-auto">
+                                <h3 class="card-title" th:text="${konsul.mapelKonsul.name}" style="font-weight: bold;"></h3>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-auto">
+                                    <div th:if="${konsul.status.toString().equals('PENDING')}">
+                                        <span class="rounded-pill badge bg-warning" th:text="${konsul.status.displayValue}"></span>
+                                    </div>
+                                    <div th:if="${konsul.status.toString().equals('DITERIMA')}">
+                                        <span class="rounded-pill badge bg-success" th:text="${konsul.status.displayValue}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="row">
+                                <div class="col-auto mr-auto">
+                                    <span class="material-icons">
+                                        schedule
+                                    </span>
+                                </div>
+                                <div class="col-auto ml-md-auto" th:text="${#temporals.format(konsul.startTime, 'HH:mm')} + ' - ' +${#temporals.format(konsul.endTime, 'HH:mm')}"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-auto mr-auto">
+                                    <span class="material-icons">
+                                        person
+                                        </span>
+                                </div>
+                                <div class="col-auto ml-md-auto" th:text="${konsul.pengajarKonsul.name}"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-auto mr-auto">
+                                    <span class="material-icons">
+                                        book
+                                        </span>
+                                </div>
+                                <div class="col-auto ml-md-auto" th:text="${konsul.topic}"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-link-wrapper">
+                        <a th:href="@{/konsultasi/view/} + ${konsul.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
+                            Lihat Detail </a>
+                    </div>
+                </li>
+                
+                </ul>
             </div>
+            <div th:unless="${listKonsultoJoin.size() != 0}">
+            </div>
+            <br><br>
         </div>
 
+        <div class="container" sec:authorize="hasRole('PENGAJAR')">
+            <div th:if="${listReqKonsul.size() != 0}">
+            <h2 style="text-align: center;"><strong>Request Konsultasi</strong></h2>
+                <ul class="cards">
+                <li class="card" th:each="konsul, iterationStatus : ${listReqKonsul}">
+                    <div>
+                        <div class="d-flex justify-content-between">
+                            <div class="row">
+                                <div class="col-auto">
+                                <h3 class="card-title" th:text="${konsul.mapelKonsul.name}" style="font-weight: bold;"></h3>
+                                </div>
+                            </div>
+                            <div class="row" th:if="${konsul.status.toString().equals('PENDING')}">
+                                <div class="col-auto">
+                                <span class="rounded-pill badge bg-warning" th:text="${konsul.status.displayValue}"></span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="row">
+                                <div class="col-auto mr-auto">
+                                    <span class="material-icons">
+                                        schedule
+                                    </span>
+                                </div>
+                                <div class="col-auto ml-md-auto" th:text="${#temporals.format(konsul.startTime, 'HH:mm')} + ' - ' +${#temporals.format(konsul.endTime, 'HH:mm')}"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-auto mr-auto">
+                                    <span class="material-icons">
+                                        person
+                                        </span>
+                                </div>
+                                <div class="col-auto ml-md-auto" th:text="${konsul.dibuatOleh.name}"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-auto mr-auto">
+                                    <span class="material-icons">
+                                        book
+                                        </span>
+                                </div>
+                                <div class="col-auto ml-md-auto" th:text="${konsul.topic}"></div>
+                            </div>
+                           
+                              
+                        </div>
+                    </div>
+                    <div class="card-link-wrapper" sec:authorize="hasRole('PENGAJAR')">
+                        <a type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white" th:href="@{/konsultasi/view/} + ${konsul.id}">Lihat Detail</a>                    
+                    </div>
+                </li>
+                
+                </ul>
+            </div>
+            <div th:unless="${listReqKonsul.size() != 0}">
+            </div>
+            <br><br>
+        </div>
+        
+        <div sec:authorize="hasAnyRole('PENGAJAR', 'SISWA', 'ORTU')">  
+            <div class="container">
+                <!-- <h2><strong>Agenda Hari Ini</strong></h2> -->
+                <div th:if="${listJadwalHariIni.size() != 0}">
+                    <h2 style="text-align: center;"><strong>Jadwal Hari Ini</strong></h2>
+                    <ul class="cards">
+                    <li class="card" th:each="jadwal, iterationStatus : ${listJadwalHariIni}">
+                        <div>
+                            <h3 class="card-title" th:text="${jadwal.mapelJadwal.name}" style="font-weight: bold;"></h3>
+                            <div class="card-content">
+                                <div class="row">
+                                    <div class="col-auto mr-auto">
+                                        <span class="material-icons">
+                                            schedule
+                                        </span>
+                                    </div>
+                                    <div class="col-auto ml-md-auto" th:text="${#temporals.format(jadwal.startDateClass, 'HH:mm')} + ' - ' +${#temporals.format(jadwal.endDateClass, 'HH:mm')}"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-auto mr-auto">
+                                        <span class="material-icons">
+                                            pin_drop
+                                        </span>
+                                    </div>
+                                    <div class="col-auto ml-md-auto" th:text="${jadwal.ruangKelas}"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-auto mr-auto">
+                                        <span class="material-icons">
+                                            person
+                                        </span>
+                                    </div>
+                                    <div sec:authorize="hasRole('SISWA')" class="col-auto ml-md-auto" th:text="${jadwal.pengajarKelas.name}"></div>
+                                    <div sec:authorize="hasRole('PENGAJAR')" class="col-auto ml-md-auto" th:text="${jadwal.kelas.name}"></div>
+
+                                </div>
+
+
+                                    
+                            </div>
+                        </div>
+                        <div class="card-link-wrapper" sec:authorize="hasRole('PENGAJAR')">
+                            <a th:href="@{/presensi/read/} + ${jadwal.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
+                                Lihat Presensi </a>
+                        </div>
+                    </li>
+                    
+                    </ul>
+                </div>
+                <div th:unless="${listJadwalHariIni.size() != 0}">
+                </div>
+                <br><br>
+
+                <div th:if="${listKonsulHariIni.size() != 0}">
+                    <h4 style="text-align: center;"><strong>Konsultasi Kamu Hari Ini</strong></h4>
+                    <ul class="cards">
+                    <li class="card" th:each="konsul, iterationStatus : ${listKonsulHariIni}">
+                        <div>
+                            <h3 class="card-title" th:text="${konsul.mapelKonsul.name}" style="font-weight: bold;"></h3>
+                            <div class="card-content">
+                                <div class="row">
+                                    <div class="col-auto mr-auto">
+                                        <span class="material-icons">
+                                            schedule
+                                        </span>
+                                    </div>
+                                    <div class="col-auto ml-md-auto" th:text="${#temporals.format(konsul.startTime, 'HH:mm')} + ' - ' +${#temporals.format(konsul.endTime, 'HH:mm')}"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-auto mr-auto">
+                                        <span class="material-icons">
+                                            pin_drop
+                                            </span>
+                                    </div>
+                                    <div class="col-auto ml-md-auto" th:text="${konsul.place}"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-auto mr-auto">
+                                        <span class="material-icons">
+                                            school
+                                            </span>
+                                    </div>
+                                    <div class="col-auto ml-md-auto" th:text="${konsul.jenjangKelas.displayValue}"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-auto mr-auto">
+                                        <span class="material-icons">
+                                            book
+                                            </span>
+                                    </div>
+                                    <div class="col-auto ml-md-auto" th:text="${konsul.topic}"></div>
+                                </div>
+
+                               
+                            </div>
+                        </div>
+                        <div class="card-link-wrapper" sec:authorize="hasRole('PENGAJAR')">
+                            <a th:href="@{/konsultasi/view/} + ${konsul.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
+                                Lihat Detail </a>
+                        </div>
+                    </li>
+                    
+                    </ul>
+                </div>
+                <div th:unless="${listKonsulHariIni.size() != 0}">
+                </div>
+              </div>
+        </div>
         <h3 style="text-align: center; padding-top: 40px;"><strong>Jadwal Quantum Research</strong></h3>
         <div id='calendar'></div>
     </div>
@@ -200,9 +586,6 @@
 </body>
 
 <script type="text/javascript">
-    
-    
-    
 
     $(document).ready( () => {
         
@@ -212,7 +595,23 @@
             });
         }, 5000);
 
-      
+       /*<![CDATA[*/  
+        userEmail = /*[[${#authentication.getPrincipal().username}]]*/ 'default'; 
+                    /*]]>*/
+
+        var theLocation = window.location;
+        var lastPart = (theLocation.href).split('/').slice(-1)[0];
+        var anak = (theLocation.href).split('/').slice(-2)[0];
+
+        var json; 
+
+        if (anak == "anak") {
+            json = lastPart;
+        }else {
+            json = userEmail;
+        }
+
+        var urlEvents = "/api/v1/jadwal-kelas/get-jadwal-kelas/" + json;
 
         var todayDate = moment().startOf("day");
         var TODAY = todayDate.format("YYYY-MM-DD");
@@ -225,7 +624,7 @@
             defaultView: 'agendaWeek',
             header: {
                 left: 'prev,next today',
-                center: 'title',
+                // center: 'title',
                 right: 'month,agendaWeek'
             },
 
@@ -249,16 +648,16 @@
                 
             },
 
+            events: urlEvents,
 
-            // example: todo sprint 3
-            events: 'https://fullcalendar.io/api/demo-feeds/events.json'
+             eventClick: function(calEvent, jsEvent, view) {
+            // Redirect to the event URL in the same tab
+                window.location.href = calEvent.url;
+            }
         })
 
 
     });
-    
-
-    
 
 </script>
 

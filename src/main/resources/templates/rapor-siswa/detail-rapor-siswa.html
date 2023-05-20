@@ -2,27 +2,71 @@
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
   <title>Rapor Siswa</title>
-  <object th:include="fragments/fragment :: css" th:remove="tag"></object>
-  <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+  <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
+
+  <style>
+    /* Rules for sizing the icon. */
+    .material-icons.md-18 { font-size: 18px; }
+    .material-icons.md-24 { font-size: 24px; }
+    .material-icons.md-36 { font-size: 36px; }
+    .material-icons.md-48 { font-size: 48px; }
+
+    /* Rules for using icons as black on a light background. */
+    .material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
+    .material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+
+    /* Rules for using icons as white on a dark background. */
+    .material-icons.md-light { color: rgba(255, 255, 255, 1); }
+    .material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+    .btn-link:hover{
+      color: #0A2647 !important;
+    }
+    body {
+      font-family: 'DM Sans';
+    }
+    td, th{
+      padding: 8px 12px !important;
+      border-bottom: hidden;
+    }
+    .dataTables_filter{
+      margin-bottom: 8px;
+    }
+
+    span .paginate_button{
+      padding: 1px !important;
+    }
+
+    .alert {
+      position:fixed;
+      top: 7rem;
+      left: 5%;
+      width: 90%;
+      z-index:9999;
+    }
+  </style>
 </head>
 <body>
 <nav sec:authorize="hasRole('ORTU')" th:replace="fragments/fragment :: navbar (${'raporAnak'},${isKakakAsuh})"></nav>
 <nav sec:authorize="hasRole('SISWA')" th:replace="fragments/fragment :: navbar (${'raporSaya'},${isKakakAsuh})"></nav>
 <nav sec:authorize="hasAnyRole('ADMIN', 'PENGAJAR')" th:replace="fragments/fragment :: navbar (${'rapor'},${isKakakAsuh})"></nav>
-<div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${error}" >
-  <div class="d-flex align-items-center">
-    <p th:text="${error}" style="margin-bottom: 0px; margin-top: 0px;"></p>
-  </div>
+<div class="alert alert-danger alert-dismissible" role="alert" th:if="${error}" th:text="${error}">
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
-<div class="alert alert-success alert-dismissible d-flex align-items-center" role="alert" th:if="${success}" >
-  <div class="d-flex align-items-center">
-    <p th:text="${success}" style="margin-bottom: 0px; margin-top: 0px;"></p>
-  </div>
+<div class="alert alert-success alert-dismissible" role="alert" th:if="${success}" th:text="${success}">
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 <div class="container" style=" margin-top:40px; width: 80%">
   <div class="justify-content-center">
+    <a sec:authorize="hasAnyRole('ADMIN', 'PENGAJAR')" type="button" class="btn-link" href="/siswa/all-rapor-siswa" style="display: flex; align-items: center; text-decoration: none; color: #31318B; font-weight: normal; width: max-content">
+      <span class="material-icons md-18"> arrow_back_ios </span>
+      Kembali ke Daftar Rapor Siswa
+    </a>
     <div sec:authorize="hasRole('ADMIN')">
       <div style="margin-top: 3rem; margin-bottom: 2rem; text-align: center;">
         <h2 style="font-weight: bold; margin-bottom: 0.75rem;" >Rapor Siswa</h2>
@@ -41,7 +85,7 @@
       <div style="padding-top: 10px; width: 80%; padding: 20px;">
         <h3 style="font-weight: bold; padding-top: 10px; color: #0A2647" >Kehadiran Siswa di Kelas</h3>
       </div>
-      <table style="margin: 20px;" class="table table-striped rapor-table align-middle" id="data-table-big">
+      <table style="margin-top: 100px;" class="table table-striped align-middle" id="data-table-big">
         <thead style="background-color: #31318B; color: #ffffff">
         <tr>
           <th scope="col">No</th>
@@ -52,7 +96,7 @@
           <th scope="col">Mata Pelajaran</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody style="text-align: left">
         <tr th:each="presensiSiswa, iterationStatus : ${presensiSiswaDanJamMap}">
           <th scope="row" th:text="${iterationStatus.index + 1}"></th>
           <td th:text="${presensiSiswa.getKey().jadwal.pengajarKelas.getNameEmail()}"></td>
@@ -82,7 +126,7 @@
       <div style="padding-top: 10px; width: 80%; padding: 20px;">
         <h3 style="font-weight: bold; padding-top: 10px; color: #0A2647" >Kehadiran Siswa di Kelas</h3>
       </div>
-      <table style="margin: 20px;" class="table table-striped rapor-table align-middle" id="data-table-big">
+      <table style="margin-top: 100px;" class="table table-striped align-middle" id="data-table-big">
         <thead style="background-color: #31318B; color: #ffffff">
         <tr>
           <th scope="col">No</th>
@@ -93,7 +137,7 @@
           <th scope="col">Mata Pelajaran</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody style="text-align: left">
         <tr th:each="presensiSiswa, iterationStatus : ${presensiSiswaDanJamMap}">
           <th scope="row" th:text="${iterationStatus.index + 1}"></th>
           <td th:text="${presensiSiswa.getKey().jadwal.pengajarKelas.getNameEmail()}"></td>
@@ -123,7 +167,7 @@
       <div style="padding-top: 10px; width: 80%; padding: 20px;">
         <h3 style="font-weight: bold; padding-top: 10px; color: #0A2647" >Kehadiran Siswa di Kelas</h3>
       </div>
-      <table style="margin: 20px;" class="table table-striped rapor-table align-middle" id="data-table-big">
+      <table style="margin-top: 100px;" class="table table-striped align-middle" id="data-table-big">
         <thead style="background-color: #31318B; color: #ffffff">
         <tr>
           <th scope="col">No</th>
@@ -134,7 +178,7 @@
           <th scope="col">Mata Pelajaran</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody style="text-align: left">
         <tr th:each="presensiSiswa, iterationStatus : ${presensiSiswaDanJamMap}">
           <th scope="row" th:text="${iterationStatus.index + 1}"></th>
           <td th:text="${presensiSiswa.getKey().jadwal.pengajarKelas.getNameEmail()}"></td>
@@ -164,7 +208,7 @@
       <div style="padding-top: 10px; width: 80%; padding: 20px;">
         <h3 style="font-weight: bold; padding-top: 10px; color: #0A2647" >Kehadiran Siswa di Kelas</h3>
       </div>
-      <table style="margin: 20px;" class="table table-striped rapor-table align-middle" id="data-table-big">
+      <table style="margin-top: 100px;" class="table table-striped align-middle" id="data-table-big">
         <thead style="background-color: #31318B; color: #ffffff">
         <tr>
           <th scope="col">No</th>
@@ -175,7 +219,7 @@
           <th scope="col">Mata Pelajaran</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody style="text-align: left">
         <tr th:each="presensiSiswa, iterationStatus : ${presensiSiswaDanJamMap}">
           <th scope="row" th:text="${iterationStatus.index + 1}"></th>
           <td th:text="${presensiSiswa.getKey().jadwal.pengajarKelas.getNameEmail()}"></td>
@@ -188,7 +232,7 @@
       </table>
     </div>
 
-    <table style="margin: 20px; width: 50%; padding: 20px 12px 20px 12px; background-color: #E3EEFD" class="table table-sm" id="data-table-small">
+    <table style="margin-top: 50px; width: 50%; padding: 20px 12px 20px 12px; background-color: #E3EEFD" class="table table-sm" id="data-table-small">
       <tr th:classappend="table-active">
         <th scope="col">Nilai Kehadiran Kelas</th>
         <td th:text="${persentaseKehadiranKelas} + '%'"></td>
@@ -199,79 +243,171 @@
       </tr>
     </table>
     <div sec:authorize="hasRole('PENGAJAR')" th:if="${isKakakAsuh}">
-      <div style="width: 80%; padding: 10px 0 20px 20px">
-        <h3 style="font-weight: bold; padding-top: 10px; color: #0A2647" >Daftar Pesan</h3>
-      </div>
+      <hr style="display: flex;flex-direction: row;" class="hr" />
+      <form style="width: 100%; margin: 20px 0 20px 20px;display: flex;flex-direction: row;" th:action="@{/siswa/add/rapor-siswa/}+ ${idSiswa}" th:object="${pesanModel}" method="POST">
+        <h3 style="font-weight: bold; margin-top:40px; color: #0A2647;width: 100%;" >Daftar Pesan</h3>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-pesanpengajar" style="display:block; width:25%; margin-top:40px; background-color: #31318B; border-color: #31318B" >+ Tambahkan Pesan</button>
+        <div class="modal fade" id="modal-pesanpengajar" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="popupLabel-pengajar"><strong>Tambahkan Pesan</strong></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body mx-3">
+                <div class="md-form">
+                  <i class="fas fa-pencil prefix grey-text"></i>
+                  <textarea required placeholder="Tuliskan Pesan Anda Di Sini..." type="text" id="pesanpengajar" class="md-textarea form-control" rows="4" th:field="*{msg}"></textarea>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                <button name="save" type="submit" class="btn btn-primary"  style="background-color: #31318B; border-color: #31318B" >Kirim</button>
+              </div>
+            </div>
+            <br>
+          </div>
+        </div>
+      </form>
       <div th:if="${sizeMapPesan == 0}" style="width: 80%; padding: 10px 0 20px 20px">
         <p>Belum ada pesan untuk ditampilkan</p>
       </div>
       <div th:unless="${sizeMapPesan == 0}">
-        <div th:each="pesan, iterationStatus : ${mapPesan}" style="width: 80%; padding: 10px 0 20px 20px">
-        <span style="display: flex; align-content: center">
-          <h6 th:text="${pesan.getValue()[0]}+' - '+${pesan.getKey().user.name}" style="font-weight: bold; padding: 0 12px 0 0"></h6>
-          <p th:text="${pesan.getValue()[1]}+' - '+${pesan.getValue()[2]}"></p>
-        </span>
-          <p th:text="${pesan.getKey().msg}"></p>
+        <div th:each="pesan, iterationStatus : ${mapPesan}">
+          <div style="width: 100%; padding: 10px 0 20px 20px">
+            <div class="row">
+              <div class="col">
+                <h6 th:text="${pesan.getValue()[0]}+' - '+${pesan.getKey().user.name}" style="font-weight: bold; padding: 0 12px 0 0"></h6>
+              </div>
+              <div class="col row">
+                <div class="col" style="display: flex; flex-direction: row">
+                  <div style="padding: 0 20px 0 0; font-size: small">
+                    <p th:text="${pesan.getValue()[1]}+' - '+${pesan.getValue()[2]}"></p>
+                  </div>
+                  <div style="font-size: small">
+                    <p th:text="${pesan.getValue()[3]}+' days ago '"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row" style="max-width: 100%; word-break: break-word">
+              <p th:text="${pesan.getKey().msg}"></p>
+            </div>
+          </div>
+          <div class="row" style=" padding: 0 20px 0 20px">
+            <hr style="margin: 20px;display: flex;flex-direction: row;" class="hr" />
+          </div>
         </div>
       </div>
     </div>
     <div sec:authorize="hasRole('ORTU')">
-      <div style="width: 80%; padding: 10px 0 20px 20px">
-        <h3 style="font-weight: bold; padding-top: 10px; color: #0A2647" >Daftar Pesan</h3>
-      </div>
+      <hr style="display: flex;flex-direction: row;" class="hr" />
+      <form style="width: 100%; margin: 20px 0 20px 20px;display: flex;flex-direction: row;" th:action="@{/siswa/add/rapor-siswa/}+ ${idSiswa}" th:object="${pesanModel}" method="POST">
+        <h3 style="font-weight: bold; margin-top:40px; color: #0A2647;width: 100%;" >Daftar Pesan</h3>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-pesanortu" style="display:block; width:25%; margin-top:40px; background-color: #31318B; border-color: #31318B" >+ Tambahkan Pesan</button>
+        <div class="modal fade" id="modal-pesanortu" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="popupLabel-ortu"><strong>Tambahkan Pesan</strong></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body mx-3">
+                <div class="md-form">
+                  <i class="fas fa-pencil prefix grey-text"></i>
+                  <textarea required placeholder="Tuliskan Pesan Anda Di Sini..." type="text" id="pesanortu" class="md-textarea form-control" rows="4" th:field="*{msg}"></textarea>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                <button name="save" type="submit" class="btn btn-primary"  style="background-color: #31318B; border-color: #31318B" >Kirim</button>
+              </div>
+            </div>
+            <br>
+          </div>
+        </div>
+      </form>
       <div th:if="${sizeMapPesan == 0}" style="width: 80%; padding: 10px 0 20px 20px">
         <p>Belum ada pesan untuk ditampilkan</p>
       </div>
       <div th:unless="${sizeMapPesan == 0}">
-        <div th:each="pesan, iterationStatus : ${mapPesan}" style="width: 80%; padding: 10px 0 20px 20px">
-        <span style="display: flex; align-content: center">
-          <h6 th:text="${pesan.getValue()[0]}+' - '+${pesan.getKey().user.name}" style="font-weight: bold; padding: 0 12px 0 0"></h6>
-          <p th:text="${pesan.getValue()[1]}+' - '+${pesan.getValue()[2]}"></p>
-        </span>
-          <p th:text="${pesan.getKey().msg}"></p>
+        <div th:each="pesan, iterationStatus : ${mapPesan}">
+          <div style="width: 100%; padding: 10px 0 20px 20px">
+            <div class="row">
+              <div class="col">
+                <h6 th:text="${pesan.getValue()[0]}+' - '+${pesan.getKey().user.name}" style="font-weight: bold; padding: 0 12px 0 0"></h6>
+              </div>
+              <div class="col row">
+                <div class="col" style="display: flex; flex-direction: row">
+                  <div style="padding: 0 20px 0 0; font-size: small">
+                    <p th:text="${pesan.getValue()[1]}+' - '+${pesan.getValue()[2]}"></p>
+                  </div>
+                  <div style="font-size: small">
+                    <p th:text="${pesan.getValue()[3]}+' days ago '"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row" style="max-width: 100%; word-break: break-word">
+              <p th:text="${pesan.getKey().msg}"></p>
+            </div>
+          </div>
+          <div class="row" style=" padding: 0 20px 0 20px">
+            <hr style="margin: 20px;display: flex;flex-direction: row;" class="hr" />
+          </div>
         </div>
       </div>
     </div>
   </div>
-  <script>
-    $(document).ready(() => {
-      $('#data-table-big').DataTable();
-    });
-    (function(document) {
-      'use strict';
-      var LightTableFilter = (function(Arr) {
-        var _select;
-        function _onSelectEvent(e) {
-          _select = e.target;
-          var tables = document.getElementsByClassName(_select.getAttribute('data-table'));
-          Arr.forEach.call(tables, function(table) {
-            Arr.forEach.call(table.tBodies, function(tbody) {
-              Arr.forEach.call(tbody.rows, _filterSelect);
-            });
-          });
-        }
-        function _filterSelect(row) {
-          var text_select = row.textContent.toLowerCase(), val_select = _select.options[_select.selectedIndex].value.toLowerCase();
-          row.style.display = text_select.indexOf(val_select) === -1 && _select.value !== "Semua" ? 'none' : 'table-row';
-        }
-        return {
-          init: function() {
-            var selects = document.getElementsByClassName('select-table-filter');
-            Arr.forEach.call(selects, function(select) {
-              select.onchange  = _onSelectEvent;
-            });
-          }
-        };
-      })(Array.prototype);
-
-      document.addEventListener('readystatechange', function() {
-        if (document.readyState === 'complete') {
-          LightTableFilter.init();
-        }
-      });
-
-    })(document);
-  </script>
 </div>
 </body>
+<script type="text/javascript">
+  $(document).ready(() => {
+    $('#data-table-big').DataTable();
+    window.setTimeout(function() {
+      $(".alert").fadeTo(300, 0).slideUp(500, function(){
+        $(this).remove();
+      });
+    }, 2000);
+  });
+  (function(document) {
+    'use strict';
+    var LightTableFilter = (function(Arr) {
+      var _select;
+      function _onSelectEvent(e) {
+        _select = e.target;
+        var tables = document.getElementsByClassName(_select.getAttribute('data-table'));
+        Arr.forEach.call(tables, function(table) {
+          Arr.forEach.call(table.tBodies, function(tbody) {
+            Arr.forEach.call(tbody.rows, _filterSelect);
+          });
+        });
+      }
+      function _filterSelect(row) {
+        var text_select = row.textContent.toLowerCase(), val_select = _select.options[_select.selectedIndex].value.toLowerCase();
+        row.style.display = text_select.indexOf(val_select) === -1 && _select.value !== "Semua" ? 'none' : 'table-row';
+      }
+      return {
+        init: function() {
+          var selects = document.getElementsByClassName('select-table-filter');
+          Arr.forEach.call(selects, function(select) {
+            select.onchange  = _onSelectEvent;
+          });
+        }
+      };
+    })(Array.prototype);
+
+    document.addEventListener('readystatechange', function() {
+      if (document.readyState === 'complete') {
+        LightTableFilter.init();
+      }
+    });
+
+  })(document);
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
 </html>

@@ -34,4 +34,9 @@ public class PesanServiceImpl implements PesanService{
            return null;
        }
     }
+
+    @Override
+    public PesanModel createPesanModel(PesanModel pesanModel) {
+        return pesanDb.save(pesanModel);
+    }
 }

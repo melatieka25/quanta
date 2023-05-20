@@ -12,7 +12,25 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css" integrity="sha384-b6lVK+yci+bfDmaY1u0zE8YYJt0TZxLEAFyYSLHId4xoVvsrQu3INevFKo+Xir8e" crossorigin="anonymous">
 
   <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
-  <style>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        /* Rules for sizing the icon. */
+        .material-icons.md-18 { font-size: 18px; }
+        .material-icons.md-24 { font-size: 24px; }
+        .material-icons.md-36 { font-size: 36px; }
+        .material-icons.md-48 { font-size: 48px; }
+
+        /* Rules for using icons as black on a light background. */
+        .material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
+        .material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+
+        /* Rules for using icons as white on a dark background. */
+        .material-icons.md-light { color: rgba(255, 255, 255, 1); }
+        .material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+        .btn-link:hover{
+            color: #0A2647 !important;
+        }
+
     body {
       font-family: 'DM Sans' ;
     }
@@ -27,7 +45,9 @@
   </style>
 </head>
 <body>
-<nav th:replace="fragments/fragment :: navbar (${'Konsultasi'},${isKakakAsuh})"></nav>
+<body>
+<nav sec:authorize="hasRole('SISWA')" th:replace="fragments/fragment :: navbar (${'konsultasi'},${isKakakAsuh})"></nav>
+<nav sec:authorize="hasAnyRole('ADMIN', 'PENGAJAR')" th:replace="fragments/fragment :: navbar (${'konsultasi'},${isKakakAsuh})"></nav>
 <div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${errorMessage}" >
     <div class="d-flex align-items-center">
         <p th:text="${errorMessage}" style="margin-bottom: 0px; margin-top: 0px;"></p>
@@ -39,7 +59,13 @@
         <p th:text="${message}" style="margin-bottom: 0px; margin-top: 0px;"></p>
     </div>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div><div class="container" style="margin-top: 5rem; margin-bottom: 5rem">
+</div>
+
+<div class="container" style=" margin-top:40px">
+    <a type="button" class="btn btn-link" onclick="history.back()" style="display: flex; align-items: center; text-decoration: none; color: #31318B; font-weight: normal">
+        <span class="material-icons md-18"> arrow_back_ios </span>
+        Kembali
+    </a>
   <div class="row">
     <div class="col-lg-4">
       <h5 style="font-family: 'DM Sans';
@@ -51,7 +77,7 @@ line-height: 140%;">Data Konsultasi</h5>
         <div class="card-body">
           <div class="row">
               <div class="col">
-              <p style="font-weight: bold">Nama Pengajar</p>
+              <p style="font-weight: bold">Pengajar</p>
             </div>
             <div class="col">
               <p th:text="${konsultasi.pengajarKonsul.name}"></p>
@@ -75,7 +101,7 @@ line-height: 140%;">Data Konsultasi</h5>
           </div>
           <div class="row">
               <div class="col">
-              <p style="font-weight: bold">Tanggal Konsultasi</p>
+              <p style="font-weight: bold">Tanggal</p>
             </div>
             <div class="col">
               <p th:text="${#temporals.format(konsultasi.startTime, 'dd MMMM yyyy')}"></p>
@@ -92,7 +118,7 @@ line-height: 140%;">Data Konsultasi</h5>
             <span th:if="${null != konsultasi.place}">
                 <div class="row">
                     <div class="col">
-                        <p style="font-weight: bold">Tempat Konsultasi</p>
+                        <p style="font-weight: bold">Tempat</p>
                     </div>
                     <div class="col">
                         <p th:text="${konsultasi.place}"></p>
@@ -107,6 +133,7 @@ line-height: 140%;">Data Konsultasi</h5>
               <p th:text="${listSiswaKonsultasi.size()}"></p>
             </div>
           </div>
+
           <div class="row">
               <div class="col">
               <p style="font-weight: bold">Status</p>
@@ -119,12 +146,26 @@ line-height: 140%;">Data Konsultasi</h5>
               <p th:if="${konsultasi.status.toString().equals('KADALUARSA')}" class="rounded-pill badge bg-secondary" th:text="${konsultasi.status.displayValue}"></p>
             </div>
           </div>
+
+            <div th:if="${(konsultasi.status.toString().equals('DITUTUP')) && (role.equals('SISWA'))}" class="row">
+                <div class="col">
+                    <p style="font-weight: bold">Status Kehadiran</p>
+                </div>
+                <div class="col">
+                    <p th:text="${statusKehadiran}"></p>
+                </div>
+            </div>
         </div>
+
+
+
+
+
       </div>
         <br>
-        <div style="padding-bottom: 6px">
-            <a class="btn btn-primary w-100" style="background-color: #E2EEFD; color: #0A2647; font-weight: bold; outline-color: #82B0D9" href="/konsultasi">Lihat Daftar Konsultasi</a>
-        </div>
+<!--        <div style="padding-bottom: 6px">-->
+<!--            <a class="btn btn-primary w-100" style="background-color: #E2EEFD; color: #0A2647; font-weight: bold; outline-color: #82B0D9" href="/konsultasi">Lihat Daftar Konsultasi</a>-->
+<!--        </div>-->
           <span th:if="${role.equals('SISWA')}">
             <a th:if="${isCancelable == true}" class="btn btn-outline-danger w-100" style="font-weight: bold" data-toggle="modal" data-target="#modal-cancel">Batalkan Ikuti Konsultasi</a>
             <!-- Modal -->
@@ -264,8 +305,84 @@ line-height: 140%;">Data Konsultasi</h5>
                     </div>
                   <!--end modal-->
               </span >
-          <a th:if="${isToClose == true}" class="btn btn-primary w-100" style="background-color: #31318B" href="/konsultasi">Tutup Konsultasi</a>
+          <a th:if="${isToClose == true}" class="btn btn-primary w-100" style="background-color: #31318B" th:href="@{/konsultasi/close/} + ${konsultasi.id}">Tutup Konsultasi</a>
+
           </span>
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <div class="row">
+                    <p style="font-weight: bold">Log Aktivitas Konsultasi</p>
+                </div>
+
+                <div class="row">
+                    <div class="row">
+                        <div class="col-1">
+                            <div th:unless="${konsultasi.status.toString().equals('PENDING')}" class="vl"></div>
+                            <span class="dot"></span>
+                        </div>
+                        <div class="col">
+                            <h7 style="font-weight: bold" th:text="'Dibuat oleh ' + ${konsultasi.dibuatOleh.name}"></h7>
+                            <br>
+                            <h7 style="font-size: 0.8em" th:text="${#temporals.format(konsultasi.CreatedTime, 'dd MMMM yyyy, HH.mm')}"></h7>
+                        </div>
+                    </div>
+
+                    <div th:if="${null != konsultasi.acceptedTime}" class="row">
+                        <div class="col-1">
+                            <div th:unless="${konsultasi.status.toString().equals('DITERIMA')}" class="vl"></div>
+                            <span class="dot"></span>
+                        </div>
+                        <div class="col">
+                            <h7 style="font-weight: bold">Diterima oleh pengajar</h7>
+                            <br>
+                            <h7 style="font-size: 0.8em" th:text="${#temporals.format(konsultasi.acceptedTime, 'dd MMMM yyyy, HH.mm')}"></h7>
+                        </div>
+                    </div>
+
+                    <div th:if="${null != konsultasi.rejectedTime}" class="row">
+                        <div class="col-1">
+                            <div th:unless="${konsultasi.status.toString().equals('DITOLAK')}" class="vl"></div>
+                            <span class="dot"></span>
+                        </div>
+                        <div class="col" >
+                            <h7 style="font-weight: bold" th:text="${konsultasi.rejectionReason}"></h7>
+                            <br>
+                            <h7 style="font-size: 0.8em" th:text="${#temporals.format(konsultasi.rejectedTime, 'dd MMMM yyyy, HH.mm')}"></h7>
+                        </div>
+                    </div>
+
+                    <div th:if="${null != konsultasi.closedTime}" class="row">
+                        <div class="col-1">
+                            <span class="dot"></span>
+                        </div>
+                        <div class="col">
+                            <h7 style="font-weight: bold">Ditutup oleh pengajar</h7>
+                            <br>
+                            <h7 style="font-size: 0.8em" th:text="${#temporals.format(konsultasi.closedTime, 'dd MMMM yyyy, HH.mm')}"></h7>
+                        </div>
+                    </div>
+
+                    <div th:if="${konsultasi.status.toString().equals('EXPIRED')}" class="row">
+                        <div class="col-1">
+                            <span class="dot"></span>
+                        </div>
+                        <div class="col">
+                            <h7 style="font-weight: bold" th:text="${konsultasi.rejectionReason}"></h7>
+                            <br>
+                            <h7 style="font-size: 0.8em" th:text="${#temporals.format(konsultasi.rejectedTime, 'dd MMMM yyyy, HH.mm')}"></h7>
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+
+            </div>
+        </div>
+        <br>
+
 
     </div>
     <div class="col">
@@ -280,14 +397,20 @@ line-height: 140%;">Daftar Siswa Konsultasi</h5>
             <table class="table table-striped align-middle" id="daftar-siswa-table">
               <thead style="background-color: #31318B; color: #ffffff">
               <tr>
+                  <th scope="col">No</th>
                 <th scope="col">Nama</th>
                 <th scope="col">Kelas</th>
+                <th th:if="${!role.equals('SISWA') && konsultasi.status.toString().equals('DITUTUP')}" scope="col">Presensi Konsultasi</th>
+
               </tr>
               </thead>
               <tbody>
               <tr th:each="siswaKonsultasi, iterationStatus : ${listSiswaKonsultasi}">
-                <td th:text="${siswaKonsultasi.siswaKonsul.name + ' (' + siswaKonsultasi.siswaKonsul.email + ') '}"></td>
+                  <td th:text="${iterationStatus.count}"></td>
+                  <td th:text="${siswaKonsultasi.siswaKonsul.name + ' (' + siswaKonsultasi.siswaKonsul.email + ') '}"></td>
                 <td th:text="${siswaKonsultasi.siswaKonsul.kelasBimbel.name}"></td>
+                  <td th:if="${!role.equals('SISWA') && siswaKonsultasi.isPresent == true}" th:text="'Hadir (' + ${siswaKonsultasi.durasiHadir} + ' jam)'"></td>
+                  <td th:if="${!role.equals('SISWA') && siswaKonsultasi.isPresent == false}">Tidak Hadir</td>
               </tr>
               </tbody>
             </table>
@@ -298,14 +421,33 @@ line-height: 140%;">Daftar Siswa Konsultasi</h5>
     </div>
   </div>
 </div>
+<style>
 
+    .vl {
+        border-right: 2px solid #A0AEC0;
+        height: 50px;
+        padding-left: 10px;
+        position: absolute;
+
+    }
+
+    .dot {
+        height: 21px;
+        width: 21px;
+        background-color: #A0AEC0;
+        border-radius: 50%;
+        display: inline-block;
+        position: relative;
+
+    }
+</style>
 
 
 <script type="text/javascript">
 
-  $(document).ready( () => {
-    $('#daftar-siswa-table').DataTable();
-  });
+  // $(document).ready( () => {
+  //   $('#daftar-siswa-table').DataTable();
+  // });
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>

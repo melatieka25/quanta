@@ -17,6 +17,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.HeaderColumnNameTranslateMappingStrategy;
+import com.projectpop.quanta.email.service.EmailService;
 import com.projectpop.quanta.pengajar.model.PengajarCsvModel;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.service.PengajarService;
@@ -27,8 +28,6 @@ import com.projectpop.quanta.user.auth.PasswordManager;
 
 import java.security.Principal;
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.time.LocalDate;
@@ -49,6 +48,8 @@ public class PengajarController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping("/create-pengajar")
     public String addPengajarFormPage(Model model, Principal principal) {
@@ -62,7 +63,9 @@ public class PengajarController {
     public String addPengajarSubmitPage(@ModelAttribute PengajarModel pengajar, Model model, RedirectAttributes redirectAttrs) {
         pengajar.setRole(UserRole.PENGAJAR);
         UserModel sameEmail = userService.getUserByEmail(pengajar.getEmail());
-        String password = PasswordManager.generateCommonTextPassword();
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("ddMM");
+        String formattedDate = pengajar.getDob().format(dateFormatter);
+        String password = PasswordManager.generateCommonTextPassword(formattedDate);
         pengajar.setPassword(password);
 
         if (sameEmail == null){
@@ -72,6 +75,13 @@ public class PengajarController {
             pengajar.setIsKakakAsuh(false);
             pengajar.setStartDate(LocalDate.now());
             pengajarService.addPengajar(pengajar);
+
+            String emailPenerima = pengajar.getEmail();
+            String emailSubject = "Selamat! Akun QUANTA (Quantum Assistant) Anda Telah Berhasil Dibuat";
+            String emailBody = emailService.getCredentialEmailBody(pengajar);
+
+            emailService.sendEmail(emailPenerima, emailSubject, emailBody);
+
             redirectAttrs.addFlashAttribute("message", "Pengajar dengan nama " + pengajar.getNameEmail() + " dan password " + pengajar.getPasswordPertama() + " telah berhasil ditambahkan!");
             return "redirect:/pengajar/detail/" + pengajar.getId();
         } else {
@@ -235,10 +245,16 @@ public class PengajarController {
                 for (int i =0; i < listPengajarCsv.size(); i++){
                     if (pengajarService.getPengajarByEmail(listPengajarCsv.get(i).getEmail()) == null){
                         PengajarModel pengajar = pengajarService.convertPengajarCsv(listPengajarCsv.get(i));
-                        String password = PasswordManager.generateCommonTextPassword();
+                        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("ddMM");
+                        String formattedDate = pengajar.getDob().format(dateFormatter);
+                        String password = PasswordManager.generateCommonTextPassword(formattedDate);
                         pengajar.setPassword(password);
                         pengajar.setPasswordPertama(password);
                         pengajarService.addPengajar(pengajar);
+                        String emailPenerima = pengajar.getEmail();
+                        String emailSubject = "Selamat! Akun QUANTA (Quantum Assistant) Anda Telah Berhasil Dibuat";
+                        String emailBody = emailService.getCredentialEmailBody(pengajar);
+                        emailService.sendEmail(emailPenerima, emailSubject, emailBody);
                         listPengajar.add(pengajar);
                         counter++;
                     }
@@ -300,10 +316,16 @@ public class PengajarController {
                     for (int i =0; i < listPengajarCsv.size(); i++){
                         if (pengajarService.getPengajarByEmail(listPengajarCsv.get(i).getEmail()) == null){
                             PengajarModel pengajar = pengajarService.convertPengajarCsv(listPengajarCsv.get(i));
-                            String password = PasswordManager.generateCommonTextPassword();
+                            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("ddMM");
+                            String formattedDate = pengajar.getDob().format(dateFormatter);
+                            String password = PasswordManager.generateCommonTextPassword(formattedDate);
                             pengajar.setPassword(password);
                             pengajar.setPasswordPertama(password);
                             pengajarService.addPengajar(pengajar);
+                            String emailPenerima = pengajar.getEmail();
+                            String emailSubject = "Selamat! Akun QUANTA (Quantum Assistant) Anda Telah Berhasil Dibuat";
+                            String emailBody = emailService.getCredentialEmailBody(pengajar);
+                            emailService.sendEmail(emailPenerima, emailSubject, emailBody);
                             listPengajar.add(pengajar);
                             counter++;
                         }
@@ -328,5 +350,6 @@ public class PengajarController {
 
         return "manajemen-user/list-pengajar-imported";
     }
+
 
 }

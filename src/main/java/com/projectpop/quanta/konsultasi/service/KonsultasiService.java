@@ -4,6 +4,7 @@ import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
 import com.projectpop.quanta.konsultasi.model.StatusKonsul;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.siswa.model.Jenjang;
+import com.projectpop.quanta.tahunajar.model.TahunAjarModel;
 import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.siswa.model.SiswaModel;
 
@@ -68,5 +69,7 @@ public interface KonsultasiService {
     List<KonsultasiModel> getListKonsultasiByPengajar(PengajarModel pengajar);
 
     List<KonsultasiModel> getListKonsultasiPengajarHariIni(PengajarModel pengajar);
+    List<KonsultasiModel> getListKonsultasiByTahunAjarAndMonth(TahunAjarModel tahunAjar, Integer month);
+    List<KonsultasiModel> getListKonsultasiByTahunAjar(TahunAjarModel tahunAjar);
 
 }

@@ -1,5 +1,6 @@
 package com.projectpop.quanta.user.controller;
 
+import java.io.ObjectInputFilter.Status;
 import java.lang.ProcessBuilder.Redirect;
 import java.security.Principal;
 import java.util.List;
@@ -24,9 +25,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
 import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
+import com.projectpop.quanta.konsultasi.model.StatusKonsul;
 import com.projectpop.quanta.konsultasi.service.KonsultasiService;
 import com.projectpop.quanta.orangtua.model.OrtuModel;
 import com.projectpop.quanta.orangtua.service.OrtuService;
+import com.projectpop.quanta.pengajar.model.PengajarModel;
+import com.projectpop.quanta.pengajar.service.PengajarService;
 import com.projectpop.quanta.siswa.model.SiswaModel;
 import com.projectpop.quanta.siswa.service.SiswaService;
 import com.projectpop.quanta.user.model.UserModel;
@@ -43,6 +47,9 @@ public class PageController {
     @Qualifier("userServiceImpl")
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private SiswaService siswaService;
 
     @Autowired
     private PengajarService pengajarService;
@@ -71,10 +78,23 @@ public class PageController {
         if (user.getRole() == UserRole.SISWA || user.getRole() == UserRole.PENGAJAR) {
             
             List<JadwalKelasModel> listJadwalHariIni = jadwalKelasService.getListJadwalByUser(user);
+            List<JadwalKelasModel> listJadwal = jadwalKelasService.getListJadwalKelas();
             model.addAttribute("listJadwalHariIni", listJadwalHariIni);
+            model.addAttribute("listJadwal", listJadwal);
 
             List<KonsultasiModel> listKonsulHariIni = konsultasiService.getListKonsultasiByUser(user);
             model.addAttribute("listKonsulHariIni", listKonsulHariIni);
+
+            if (user.getRole() == UserRole.SISWA) {
+                SiswaModel siswa = siswaService.getSiswaById(user.getId());
+                // List<KonsultasiModel> listKonsulDiterima = konsultasiService.getListKonsultasiByJenjangAndStatus(siswa.getJenjang(), StatusKonsul.DITERIMA);
+                // List<KonsultasiModel> listKonsulPending = konsultasiService.getListKonsultasiByJenjangAndStatus(siswa.getJenjang(), StatusKonsul.PENDING);
+                // listKonsulDiterima.addAll(listKonsulPending);
+                model.addAttribute("listKonsultoJoin", konsultasiService.getRekomendasiKonsultasi(siswa, siswa.getJenjang()));
+            } else {
+                PengajarModel pengajar = pengajarService.getPengajarById(user.getId());
+                model.addAttribute("listReqKonsul", konsultasiService.getRequestKonsultasi(pengajar));
+            }
         } else if (user.getRole() == UserRole.ORTU) {
             OrtuModel ortu = ortuService.getOrtuById(user.getId());
             SiswaModel anak = ortuService.getDefaultAnakTerpilih(ortu);
@@ -93,7 +113,7 @@ public class PageController {
         UserModel user = userService.getUserById(id);
         model.addAttribute("username", user.getName());
 
-        List<JadwalKelasModel> listJadwalHariIni = jadwalKelasService.getListJadwalByUser(user);
+        List<JadwalKelasModel> listJadwalHariIni = jadwalKelasService.getListJadwalHariIni(user);
         model.addAttribute("listJadwalHariIni", listJadwalHariIni);
         List<KonsultasiModel> listKonsulHariIni = konsultasiService.getListKonsultasiByUser(user);
         model.addAttribute("listKonsulHariIni", listKonsulHariIni);

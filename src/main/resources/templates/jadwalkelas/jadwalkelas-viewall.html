@@ -5,12 +5,39 @@
     <object th:include="fragments/fragment :: css" th:remove="tag"></object>
     <object th:include="fragments/fragment :: js" th:remove="tag"></object>
     <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
+
+
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.0/fullcalendar.min.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.0/fullcalendar.min.js'></script>
+   
+
+    <style>
+        body {
+            font-family: 'DM Sans';
+            height: 100%;
+            margin: 0;
+        }
+
+        #calendar {
+            max-width: 1100px;
+            margin: 40px auto;
+        }
+
+        #calendar .fc-today {
+            background: #EDF2f7;
+        }
+
+        #calendar .fc-widget-header{
+            background-color:#2a2a80;
+            color: white;
+        }
+
+    </style>
+
+</head>
 <body>
-<style>
-    body {
-        font-family: 'DM Sans';
-    }
-</style>
+
 <nav th:replace="fragments/fragment :: navbar(${'jadwalKelas'},${isKakakAsuh})"></nav>
 
 <div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${deletefailed}" >
@@ -28,55 +55,204 @@
 </div>
 
 
-<div class="container" style="width:75%; padding-top:20px;">
-    <div class="justify-content-center">
-        <div style="margin: auto; padding-top: 10px; width: 80%; padding: 20px; text-align: center">
-            <h2 style="font-weight: bold; padding-top: 10px;" >Daftar Jadwal Kelas</h2>
+<div class="container" style="padding-top: 40px; width: 75%;">
+        <div style="margin-top: 3rem; margin-bottom: 2rem; text-align: center">
+            <h2 style="font-weight: bold; margin-bottom: 0.75rem;">Daftar Jadwal Kelas</h2>
             <div sec:authorize="hasRole('ADMIN')">
                 <a class="btn" style="background-color: #31318B; color: white;" th:href="@{/jadwal-kelas/add}">Buat Jadwal</a>
             </div>
             <br>
         </div>
-        <div th:if="${listJadwal.size() != 0}">
-            <table style="margin: 20px;" class ="table table-striped" id="jadwalkelas-table">
-                <thead style="background-color: #31318B; color: #ffffff">
-                <tr>
-                    <th scope="col">No</th>
-                    <th scope="col">Mata Pelajaran</th>
-                    <th scope="col">Pengajar</th>
-                    <th scope="col">Kelas</th>
-                    <th scope="col">Ruang Kelas</th>
-                    <th scope="col">Tanggal Kelas</th>
-                    <th scope="col">Waktu Kelas</th>
-                    <th scope="col"></th>
-                </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="jadwal, iterationStatus : ${listJadwal}">
-                        <th scope="row"></th>
-                        <td th:text="${jadwal.mapelJadwal.name}"></td>
-                        <td th:text="${jadwal.pengajarKelas.name}"></td>
-                        <td th:text="${jadwal.kelas.name}"></td>
-                        <td th:text="${jadwal.ruangKelas}"></td>
-                        <td th:text="${#temporals.format(jadwal.startDateClass, 'dd MMMM yyyy')}"></td>
-                        <td th:text="${#temporals.format(jadwal.startDateClass, 'HH:mm')} + ' - ' +${#temporals.format(jadwal.endDateClass, 'HH:mm')}"></td>
-    
-                        <td>
-                            <div class="justify-content-center" sec:authorize="hasRole('ADMIN')">
-                                <a class="btn btn-outline-primary align-content-center" th:href="@{/jadwal-kelas/} + ${jadwal.id}">Detail</a>               
-                            </div>
-                        </td>                 
-                    </tr>
-                </tbody>
-            </table>
-        </div>
 
-        
-        <br>
-        <div th:unless="${listJadwal.size() != 0}" style="text-align: center;">
-            <p>Tidak ada jadwal kelas!</p>
+        <!-- <div sec:authorize="hasAnyRole('SISWA', 'PENGAJAR', 'ORTU')" class="row justify-content-start px-3">
+            <div class="col-4"  style="padding-left: 0 !important">
+                <label for="tampilan-dropdown" class="form-label">Pilih tampilan</label>
+                <select class="form-select" id="tampilan-dropdown" name="tampilan-dropdown">
+                    <option value="option1">Tabel</option>
+                    <option value="option2">Kalender</option>
+                </select>
+            </div>
+            
+        </div> -->
+
+        <div class="row justify-content-start px-3">
+            <div class="col-4" style="padding-left: 0 !important;">
+                <label for="matapelajaran-dropdown" class="form-label" >Pilih mata pelajaran</label>
+                <select class="form-select" type="search" id="matapelajaran-dropdown" name="matapelajaran-dropdown">
+                    <option value="">Semua</option>
+                    <option th:each="mapel : ${listMapel}"
+                            th:value="${mapel.name}" th:text="${mapel.name}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-4" sec:authorize="hasAnyRole('ADMIN', 'PENGAJAR')">
+                <label for="kelas-dropdown" class="form-label">Pilih kelas</label>
+                <select class="form-select" type="search" id="kelas-dropdown" name="kelas-dropdown">
+                    <option value="">Semua</option>
+                    <option th:each="kelas : ${listKelas}"
+                            th:value="${kelas.name}" th:text="${kelas.name}">
+                    </option>
+                </select>
+            </div>
+    
+            <div class="col-4" sec:authorize="hasAnyRole('ADMIN', 'SISWA', 'ORTU')">
+                <label for="pengajar-dropdown" class="form-label" >Pilih pengajar</label>
+                <select class="form-select" type="search" id="pengajar-dropdown" name="pengajar-dropdown">
+                    <option value="">Semua</option>
+                    <option th:each="pengajar : ${listPengajar}"
+                            th:value="${pengajar.name}" th:text="${pengajar.name}">
+                    </option>
+                </select>
+            </div>
+
+            
         </div>
-    </div>
+        
+
+
+        <!-- <div id="option1" class="group"> -->
+            <div class="card mt-3">
+                <div class="card-header">
+                  <ul class="nav nav-tabs card-header-tabs" data-bs-tabs="tabs">
+                    <li class="nav-item">
+                      <a class="nav-link" data-bs-toggle="tab" href="#data-all">Semua</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="true" data-bs-toggle="tab" href="#data-harian">Hari Ini</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#data-mingguan">Minggu Ini</a>
+                      </li>
+                  </ul>
+                </div>
+                <div class="card-body tab-content">
+                  <div class="tab-pane" id="data-all">
+                    <div th:if="${listJadwal.size() != 0}">
+                        <table class="table table-striped align-middle" id="jadwalkelas-table">
+                            <thead style="background-color: #31318B; color: #ffffff">
+                            <tr>
+                                <th scope="col">No</th>
+                                <th scope="col">Mata Pelajaran</th>
+                                <th scope="col">Pengajar</th>
+                                <th scope="col">Kelas</th>
+                                <th scope="col">Ruang Kelas</th>
+                                <th scope="col">Tanggal Kelas</th>
+                                <th scope="col">Waktu Kelas</th>
+                                <th scope="col" sec:authorize="hasRole('ADMIN')">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="jadwal, iterationStatus : ${listJadwal}">
+                                    <th scope="row"></th>
+                                    <td th:text="${jadwal.mapelJadwal.name}"></td>
+                                    <td th:text="${jadwal.pengajarKelas.name}"></td>
+                                    <td th:text="${jadwal.kelas.name}"></td>
+                                    <td th:text="${jadwal.ruangKelas}"></td>
+                                    <td th:text="${#temporals.format(jadwal.startDateClass, 'dd MMMM yyyy')}"></td>
+                                    <td th:text="${#temporals.format(jadwal.startDateClass, 'HH:mm')} + ' - ' +${#temporals.format(jadwal.endDateClass, 'HH:mm')}"></td>
+                
+                                    <td sec:authorize="hasRole('ADMIN')">
+                                        <a class="btn btn-outline-primary align-content-center" th:href="@{/jadwal-kelas/} + ${jadwal.id}">Detail</a>               
+                                    </td>                 
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <br>
+                    <div th:unless="${listJadwal.size() != 0}" style="text-align: center;">
+                        <p>Tidak ada jadwal kelas!</p>
+                    </div>
+        
+                  </div>
+
+                  <div class="tab-pane active" id="data-harian">
+                    <div th:if="${listHariIni.size() != 0}">
+                        <table class="table table-striped align-middle" id="jadwalharian-table">
+                            <thead style="background-color: #31318B; color: #ffffff">
+                            <tr>
+                                <th scope="col">No</th>
+                                <th scope="col">Mata Pelajaran</th>
+                                <th scope="col">Pengajar</th>
+                                <th scope="col">Kelas</th>
+                                <th scope="col">Ruang Kelas</th>
+                                <th scope="col">Tanggal Kelas</th>
+                                <th scope="col">Waktu Kelas</th>
+                                <th scope="col" sec:authorize="hasRole('ADMIN')">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="jadwal, iterationStatus : ${listHariIni}">
+                                    <th scope="row"></th>
+                                    <td th:text="${jadwal.mapelJadwal.name}"></td>
+                                    <td th:text="${jadwal.pengajarKelas.name}"></td>
+                                    <td th:text="${jadwal.kelas.name}"></td>
+                                    <td th:text="${jadwal.ruangKelas}"></td>
+                                    <td th:text="${#temporals.format(jadwal.startDateClass, 'dd MMMM yyyy')}"></td>
+                                    <td th:text="${#temporals.format(jadwal.startDateClass, 'HH:mm')} + ' - ' +${#temporals.format(jadwal.endDateClass, 'HH:mm')}"></td>
+                
+                                    <td sec:authorize="hasRole('ADMIN')">
+                                        <a class="btn btn-outline-primary align-content-center" th:href="@{/jadwal-kelas/} + ${jadwal.id}">Detail</a>               
+                                    </td>                 
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <br>
+                    <div th:unless="${listHariIni.size() != 0}" style="text-align: center;">
+                        <p>Tidak ada jadwal kelas!</p>
+                    </div>
+                  </div>
+
+                  <div class="tab-pane" id="data-mingguan">
+                    <div th:if="${listMingguIni.size() != 0}">
+                        <table class="table table-striped align-middle" id="jadwalmingguan-table">
+                            <thead style="background-color: #31318B; color: #ffffff">
+                            <tr>
+                                <th scope="col">No</th>
+                                <th scope="col">Mata Pelajaran</th>
+                                <th scope="col">Pengajar</th>
+                                <th scope="col">Kelas</th>
+                                <th scope="col">Ruang Kelas</th>
+                                <th scope="col">Tanggal Kelas</th>
+                                <th scope="col">Waktu Kelas</th>
+                                <th scope="col" sec:authorize="hasRole('ADMIN')">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="jadwal, iterationStatus : ${listMingguIni}">
+                                    <th scope="row"></th>
+                                    <td th:text="${jadwal.mapelJadwal.name}"></td>
+                                    <td th:text="${jadwal.pengajarKelas.name}"></td>
+                                    <td th:text="${jadwal.kelas.name}"></td>
+                                    <td th:text="${jadwal.ruangKelas}"></td>
+                                    <td th:text="${#temporals.format(jadwal.startDateClass, 'dd MMMM yyyy')}"></td>
+                                    <td th:text="${#temporals.format(jadwal.startDateClass, 'HH:mm')} + ' - ' +${#temporals.format(jadwal.endDateClass, 'HH:mm')}"></td>
+                
+                                    <td sec:authorize="hasRole('ADMIN')">
+                                        <a class="btn btn-outline-primary align-content-center" th:href="@{/jadwal-kelas/} + ${jadwal.id}">Detail</a>               
+                                    </td>                 
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <br>
+                    <div th:unless="${listMingguIni.size() != 0}" style="text-align: center;">
+                        <p>Tidak ada jadwal kelas!</p>
+                    </div>
+        
+                  </div>
+
+                </div>
+              </div>
+        <!-- </div>
+
+        <div id="option2" class="group">
+            <div id='calendar'></div>
+        </div> -->
 </div>
 
 
@@ -103,7 +279,7 @@
             ],
             order: [1, 'asc'],
         });
-     
+
         t.on('order.dt search.dt', function () {
             let i = 1;
      
@@ -112,7 +288,152 @@
             });
         }).draw();
 
+        var h = $('#jadwalharian-table').DataTable({
+            columnDefs: [
+                {
+                    searchable: false,
+                    orderable: false,
+                    targets: 0,
+                },
+            ],
+            order: [1, 'asc'],
+        });
+        h.on('order.dt search.dt', function () {
+            let i = 1;
+     
+            h.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {
+                this.data(i++);
+            });
+        }).draw();
+
+        var m = $('#jadwalmingguan-table').DataTable({
+            columnDefs: [
+                {
+                    searchable: false,
+                    orderable: false,
+                    targets: 0,
+                },
+            ],
+            order: [1, 'asc'],
+        });
+        m.on('order.dt search.dt', function () {
+            let i = 1;
+     
+            m.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {
+                this.data(i++);
+            });
+        }).draw();
+
+        $('#kelas-dropdown, #pengajar-dropdown, #matapelajaran-dropdown').change(function () {
+            var selectedOption1 = $('#kelas-dropdown').val();
+            var selectedOption2 = $('#pengajar-dropdown').val();
+            var selectedOption3 = $('#matapelajaran-dropdown').val();
+
+            console.log(selectedOption1);
+            console.log(selectedOption2);
+
+           
+            t.column(3).search(selectedOption1);
+            t.column(2).search(selectedOption2);
+            t.column(1).search(selectedOption3);
+            t.draw();
+
+            m.column(3).search(selectedOption1);
+            m.column(2).search(selectedOption2);
+            m.column(1).search(selectedOption3);
+            m.draw();
+
+            h.column(3).search(selectedOption1);
+            h.column(2).search(selectedOption2);
+            h.column(1).search(selectedOption3);
+            h.draw();
+
+            
+        } );
+        
+       
+        /*<![CDATA[*/  
+        userEmail = /*[[${#authentication.getPrincipal().username}]]*/ 'default'; 
+                    /*]]>*/
+
+        var theLocation = window.location;
+        var lastPart = (theLocation.href).split('/').slice(-1)[0];
+        var anak = (theLocation.href).split('/').slice(-2)[0];
+
+        var json; 
+
+        if (anak == "anak") {
+            json = lastPart;
+        }else {
+            json = userEmail;
+        }
+
+        var urlEvents = "/api/v1/jadwal-kelas/get-jadwal-kelas/" + json;
+        console.log(urlEvents)
+
+
+        var todayDate = moment().startOf("day");
+        var TODAY = todayDate.format("YYYY-MM-DD");
+
+
+        $("#calendar").fullCalendar({
+            eventBackgroundColor: "#31318B",
+            eventBorderColor: "#31318B",
+
+            defaultView: 'agendaWeek',
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek'
+            },
+
+            height: 800,
+            contentHeight: 500,
+            aspectRatio: 3,
+            initialDate: TODAY,
+            allDaySlot: false,
+
+            minTime: "07:00:00",
+            maxTime: "21:00:00",
+
+
+            views: {
+                month : {
+                columnFormat: 'ddd' // set format for month here
+                },
+                week: {
+                    columnFormat: 'ddd D MMM' // set format for week here
+                },
+                
+            },
+
+
+            // example: todo sprint 3
+            events: urlEvents,
+            // eventClick: function(event) {
+            //     if (event.url) {
+            //         //if you want to open url in the same tab
+            //         location.href = event.url;
+            //         //if you want to open url in another window / tab, use the commented code below
+            //         //window.open(event.url);
+            //         return false;
+            //     }
+            // }
+
+            eventClick: function(calEvent, jsEvent, view) {
+            // Redirect to the event URL in the same tab
+                window.location.href = calEvent.url;
+            }
+        })
+
+        $('.group').hide();
+        $('#option1').show();
+        $('#tampilan-dropdown').change(function () {
+            $('.group').hide();
+            $('#'+$(this).val()).show();
+        })
     });
 </script>
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script> -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
 </html>

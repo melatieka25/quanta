@@ -7,16 +7,16 @@ import lombok.Setter;
 @Setter
 public class StatsModel implements Comparable<StatsModel>{
     String name;
-    float percentage;
+    float value;
 
-    public StatsModel(String name, float percentage){
+    public StatsModel(String name, float value){
         this.name = name;
-        this.percentage = percentage;
+        this.value = value;
     }
 
     @Override
     public int compareTo(StatsModel itemStats){
-        return compare(this.percentage, itemStats.percentage);
+        return compare(this.value, itemStats.value);
     }
 
     private int compare(Float a, Float b){

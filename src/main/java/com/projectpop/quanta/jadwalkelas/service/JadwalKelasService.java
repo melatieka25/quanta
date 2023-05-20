@@ -24,4 +24,6 @@ public interface JadwalKelasService {
     List<JadwalKelasModel> getListJadwalByUser(UserModel user);
     List<JadwalKelasModel> getListJadwalKelasByTahunAjarAndMonth(TahunAjarModel tahunAjar, Integer month);
     List<JadwalKelasModel> getListJadwalKelasByKelasAndTanggal(LocalDate tanggal, KelasModel kelas);
+    List<JadwalKelasModel> getListJadwalHariIni(UserModel user);
+    List<JadwalKelasModel> getListJadwalMingguIni(UserModel user);
 }

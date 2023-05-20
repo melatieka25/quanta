@@ -27,4 +27,10 @@ public class SiswaKonsultasiModel {
     @ManyToOne
     @JoinColumn(name= "konsultasi_id")
     private KonsultasiModel konsultasi;
+
+    @Column()
+    private Boolean isPresent;
+
+    @Column()
+    private Integer durasiHadir;
 }
