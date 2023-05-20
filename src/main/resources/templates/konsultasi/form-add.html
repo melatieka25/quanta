@@ -12,14 +12,17 @@
     font-family: 'DM Sans';
   }
 </style>
-<nav th:replace="fragments/fragment :: navbar (${'Konsultasi'},${isKakakAsuh})"></nav>
+<nav sec:authorize="hasRole('SISWA')" th:replace="fragments/fragment :: navbar (${'konsultasi'},${isKakakAsuh})"></nav>
+<nav sec:authorize="hasAnyRole('ADMIN', 'PENGAJAR')" th:replace="fragments/fragment :: navbar (${'konsultasi'},${isKakakAsuh})"></nav>
 <div class="alert alert-success" role="alert" th:text="${message}" th:if="${message}"></div>
 <div class="alert alert-danger" role="alert" th:text="${errorMessage}" th:if="${errorMessage}"></div>
 <div class="container m-5">
   <div class="container" style="width:600px;">
     <div class="justify-content-center">
       <h2 style="font-weight: bolder;">Tambah Konsultasi</h2>
-      <br>
+    <div class="card mt-3" style="background-color:#F7FAFC">
+        <div class="card-body">
+            <div class="justify-content-center">
       <form name="request-form" th:action="@{/konsultasi/add}" th:object="${konsultasi}" method="POST">
 
         <div class="card-body">
@@ -42,7 +45,7 @@
                 <br>
 
                 Tanggal: <br>
-                <input class="form-control datepicker" id="tanggal" type="date" name="tanggal" required/>
+                <input class="form-control datepicker" id="tanggal" type="date" timezone="Asia/Jakarta" name="tanggal" required/>
                 <br>
 
                 Waktu <br>
@@ -56,16 +59,25 @@
                 <br>
 
               </div>
-            </div>
 
+
+            </div>
+              <div class="row">
+                  <div class="col">
+                      <a onclick="history.go(-1)" class="btn btn-outline-secondary" style="display:block; width:100%; margin-top:20px;">
+                          Kembali
+                      </a>
+                  </div>
+                  <div class="col">
+                      <a data-toggle="modal" data-target="#modal-update" class="btn btn-primary" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B" >Simpan</a>
+                  </div>
+              </div>
           </div>
 
         </div>
 
 
 
-        <a class="btn btn-secondary" onclick="history.go(-1)">Kembali</a>
-          <a class="btn" style="background-color: #31318B; color: white;" data-toggle="modal" data-target="#modal-update">Submit</a>
 
           <!-- Modal -->
           <div class="modal fade" id="modal-update" tabindex="-1" role="dialog" aria-labelledby="popupLabel" aria-hidden="true">
@@ -98,7 +110,10 @@
 
 
       </form>
+            </div>
+        </div>
     </div>
+            </div>
   </div>
 </div>
 
@@ -203,6 +218,23 @@
       return true;
     })
 
+      $("#waktu-dropdown").click(function() {
+          var pengajar_id = $("#pengajar-dropdown").find(":selected").val();
+          var mapel_id = $("#pengajar-dropdown").find(":selected").val();
+          var tanggal = $("#tanggal").val();
+          if((pengajar_id == "") && (mapel_id == "")) {
+              alert("Mohon pilih mata pelajaran dan pengajar terlebih dahulu");
+              return false;
+          } else if(pengajar_id == "") {
+              alert("Mohon pilih pengajar terlebih dahulu");
+              return false;
+          }  else if(tanggal == "") {
+              alert("Mohon pilih tanggal terlebih dahulu");
+              return false;
+          }
+          return true;
+      })
+
     // Sets the value to '' in case of an invalid date
     document.querySelector('#tanggal').onchange = evt => {
       if (!validate(evt.target.value)) {
@@ -215,26 +247,30 @@
       var today = new Date();
       var futureDate = new Date();
       futureDate.setDate(today.getDate() + (6 - today.getDay())); // Calculate date 7 days ahead
-
-      var maxDate = futureDate.toISOString().split('T')[0]; // Format as yyyy-mm-dd
+      var maxDate = futureDate.getFullYear() + "-" + (('0'+(futureDate.getMonth()+1)).slice(-2)) + "-" + futureDate.getDate()
 
       if (today.getDay()===0){
           var tommorow = new Date();
           tommorow.setDate(today.getDate() + 1);
-          var minDate = tommorow.toISOString().split('T')[0]; // Format as yyyy-mm-dd
+          var minDate = tommorow.getFullYear() + "-" + (('0'+(tommorow.getMonth()+1)).slice(-2)) + "-" + tommorow.getDate()
+
           document.getElementById('tanggal').setAttribute('min', minDate);
           document.getElementById('tanggal').setAttribute('max', maxDate);
       } else if (today.getDay()===6){
           var sundayDate = new Date();
           sundayDate.setDate(today.getDate() + 2); // Calculate date 7 days ahead
-          var monday = sundayDate.toISOString().split('T')[0]; // Format as yyyy-mm-dd
+          var monday = sundayDate.getFullYear() + "-" + (('0'+(sundayDate.getMonth()+1)).slice(-2)) + "-" + sundayDate.getDate()
+
           document.getElementById('tanggal').setAttribute('min', monday);
 
           futureDate.setDate(today.getDate() + 7); // Calculate date 7 days ahead
-          maxDate = futureDate.toISOString().split('T')[0]; // Format as yyyy-mm-dd
+          maxDate = futureDate.getFullYear() + "-" + (('0'+(futureDate.getMonth()+1)).slice(-2)) + "-" + futureDate.getDate()
+
           document.getElementById('tanggal').setAttribute('max', maxDate);
       } else {
-          document.getElementById('tanggal').setAttribute('min', today.toISOString().split('T')[0]);
+          var minDate = today.getFullYear() + "-" + (('0'+(today.getMonth()+1)).slice(-2)) + "-" + today.getDate()
+
+          document.getElementById('tanggal').setAttribute('min', minDate);
           document.getElementById('tanggal').setAttribute('max', maxDate);
       }
 

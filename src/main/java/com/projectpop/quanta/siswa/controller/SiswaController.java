@@ -1,17 +1,15 @@
 package com.projectpop.quanta.siswa.controller;
 
-import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
+import com.projectpop.quanta.email.service.EmailService;
 import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
 import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.kelas.service.KelasService;
-import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.service.PengajarService;
 import com.projectpop.quanta.pesan.model.PesanModel;
 import com.projectpop.quanta.pesan.service.PesanService;
 import com.projectpop.quanta.presensi.model.PresensiModel;
 import com.projectpop.quanta.presensi.model.PresensiStatus;
-import com.projectpop.quanta.siswajadwalkelas.model.SiswaJadwalModel;
 import com.projectpop.quanta.siswakonsultasi.model.SiswaKonsultasiModel;
 import com.projectpop.quanta.tahunajar.service.TahunAjarService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,9 +41,7 @@ import com.projectpop.quanta.user.service.UserService;
 import com.projectpop.quanta.user.auth.PasswordManager;
 
 import java.security.Principal;
-import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -56,6 +52,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 @Controller
 @RequestMapping("/siswa")
@@ -85,6 +83,9 @@ public class SiswaController {
     @Autowired
     private PesanService pesanService;
 
+    @Autowired
+    private EmailService emailService;
+
     @GetMapping("/create-siswa")
     public String addSiswaFormPage(Model model, Principal principal) {
         var userModel = userService.getUserByEmail(principal.getName());
@@ -102,7 +103,10 @@ public class SiswaController {
     public String addSiswaSubmitPage(@ModelAttribute SiswaModel siswa, @RequestParam("statusWali") String statusWali, Model model, RedirectAttributes redirectAttrs) {
         siswa.setRole(UserRole.SISWA);
         UserModel sameEmail = userService.getUserByEmail(siswa.getEmail());
-        String password = PasswordManager.generateCommonTextPassword();
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("ddMM");
+        String formattedDate = siswa.getDob().format(dateFormatter);
+        String password = PasswordManager.generateCommonTextPassword(formattedDate);
         siswa.setPassword(password);
 
         if (sameEmail == null){
@@ -114,6 +118,10 @@ public class SiswaController {
                 OrtuModel ortuSiswa = ortuService.getOrtuById(siswa.getOrtuId());
                 siswa.setOrtu(ortuSiswa);
                 siswaService.addSiswa(siswa);
+                String emailPenerima = siswa.getEmail();
+                String emailSubject = "Selamat! Akun QUANTA (Quantum Assistant) Anda Telah Berhasil Dibuat";
+                String emailBody = emailService.getCredentialEmailBody(siswa);
+                emailService.sendEmail(emailPenerima, emailSubject, emailBody);
                 if (ortuSiswa.getListAnak() == null){
                     ortuSiswa.setListAnak(new ArrayList<SiswaModel>());
                 }
@@ -123,7 +131,9 @@ public class SiswaController {
                 OrtuModel ortu = siswa.getOrtu();
                 ortu.setRole(UserRole.ORTU);
                 UserModel sameEmailOrtu = userService.getUserByEmail(ortu.getEmail());
-                String passwordOrtu = PasswordManager.generateCommonTextPassword();
+                
+                String formattedDateOrtu = ortu.getDob().format(dateFormatter);
+                String passwordOrtu = PasswordManager.generateCommonTextPassword(formattedDateOrtu);
                 ortu.setPassword(passwordOrtu);
 
                 if (sameEmailOrtu == null){
@@ -131,6 +141,10 @@ public class SiswaController {
                     ortu.setIsActive(true);
                     ortu.setIsPassUpdated(false);
                     ortuService.addOrtu(ortu);
+                    String emailPenerima = ortu.getEmail();
+                    String emailSubject = "Selamat! Akun QUANTA (Quantum Assistant) Anda Telah Berhasil Dibuat";
+                    String emailBody = emailService.getCredentialEmailBody(ortu);
+                    emailService.sendEmail(emailPenerima, emailSubject, emailBody);
 
                     ArrayList<SiswaModel> listAnak = new ArrayList<SiswaModel>();
                     listAnak.add(siswa);
@@ -144,6 +158,10 @@ public class SiswaController {
                 }
 
                 siswaService.addSiswa(siswa);
+                String emailPenerima = siswa.getEmail();
+                String emailSubject = "Selamat! Akun QUANTA (Quantum Assistant) Anda Telah Berhasil Dibuat";
+                String emailBody = emailService.getCredentialEmailBody(siswa);
+                emailService.sendEmail(emailPenerima, emailSubject, emailBody);
                 
                 redirectAttrs.addFlashAttribute("message", "Siswa dengan nama " + siswa.getNameEmail() + " dan password " + siswa.getPasswordPertama() + " serta wali dengan nama " + ortu.getNameEmail() + " dan password " + ortu.getPasswordPertama() + " telah berhasil ditambahkan!");
                 return "redirect:/siswa/detail/" + siswa.getId();
@@ -377,15 +395,20 @@ public class SiswaController {
             String tahunPesan = DateTimeFormatter.ofPattern("yyyy").format(pesanModel.getDateCreated());
             if (tahunSkrg.contains(tahunPesan)){
                 if (pesanModel.getUser().getRole().toString().equals("PENGAJAR")){
-                    linkedHashMapPesan.put(pesanModel,new String[]{"Kakak Asuh", localDateTimeToDateWithSlash(pesanModel.getDateCreated()), localDateTimeToTimeWithSlash(pesanModel.getDateCreated())});
-                    mapPesan.put(pesanModel,new String[]{"Kakak Asuh", localDateTimeToDateWithSlash(pesanModel.getDateCreated()), localDateTimeToTimeWithSlash(pesanModel.getDateCreated())});
+                    long duration = DAYS.between(pesanModel.getDateCreated(),LocalDateTime.now());
+                    linkedHashMapPesan.put(pesanModel,new String[]{"Kakak Asuh", localDateTimeToDateWithSlash(pesanModel.getDateCreated()), localDateTimeToTimeWithSlash(pesanModel.getDateCreated()),Long.toString(duration)});
+                    mapPesan.put(pesanModel,new String[]{"Kakak Asuh", localDateTimeToDateWithSlash(pesanModel.getDateCreated()), localDateTimeToTimeWithSlash(pesanModel.getDateCreated()),Long.toString(duration)});
                 }
                 else if(pesanModel.getUser().getRole().toString().equals("ORTU")){
-                    linkedHashMapPesan.put(pesanModel,new String[]{"Orang Tua Siswa", localDateTimeToDateWithSlash(pesanModel.getDateCreated()), localDateTimeToTimeWithSlash(pesanModel.getDateCreated())});
-                    mapPesan.put(pesanModel, new String[]{"Orang Tua Siswa", localDateTimeToDateWithSlash(pesanModel.getDateCreated()), localDateTimeToTimeWithSlash(pesanModel.getDateCreated())});
+                    long duration = DAYS.between(pesanModel.getDateCreated(),LocalDateTime.now());
+                    linkedHashMapPesan.put(pesanModel,new String[]{"Orang Tua Siswa", localDateTimeToDateWithSlash(pesanModel.getDateCreated()), localDateTimeToTimeWithSlash(pesanModel.getDateCreated()),Long.toString(duration)});
+                    mapPesan.put(pesanModel, new String[]{"Orang Tua Siswa", localDateTimeToDateWithSlash(pesanModel.getDateCreated()), localDateTimeToTimeWithSlash(pesanModel.getDateCreated()),Long.toString(duration)});
                 }
             }
         }
+        PesanModel pesanModel1 = new PesanModel();
+        model.addAttribute("pesanModel", pesanModel1);
+        model.addAttribute("idSiswa", idSiswa);
         model.addAttribute("sizeMapPesan", linkedHashMapPesan.size());
         model.addAttribute("mapPesan", linkedHashMapPesan);
         String[] listNamaBulan = new String[]{"Semua","Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"};
@@ -418,7 +441,8 @@ public class SiswaController {
             List<SiswaKonsultasiModel> listKonsultasiSiswa = siswaModel.getListKonsultasiSiswa();
             Integer countDurationKonsul = 0;
             for (SiswaKonsultasiModel siswaKonsultasiModel : listKonsultasiSiswa){
-                countDurationKonsul += siswaKonsultasiModel.getKonsultasi().getDuration();
+//                durasinya tuh dari siswakonsultasi
+                countDurationKonsul += siswaKonsultasiModel.getDurasiHadir();
             }
             float persentaseKehadiranKelas = 0;
             float countHadir = 0;
@@ -442,6 +466,30 @@ public class SiswaController {
             return "rapor-siswa/detail-rapor-siswa";
         }
         return "";
+    }
+    @PostMapping(value = "/add/rapor-siswa/{idSiswa}", params = {"save"})
+    public String addPesan(@PathVariable("idSiswa") Integer idSiswa, Model model, @ModelAttribute PesanModel pesanModel, RedirectAttributes redirectAttributes, Principal principal){
+        UserModel sender = userService.getUserByEmail(principal.getName());
+        pengajarService.checkIsPengajarDanKakakAsuh(sender,model);
+        if (!(sender.getRole().toString().equals("PENGAJAR") || sender.getRole().toString().equals("ORTU"))){
+            redirectAttributes.addFlashAttribute("message","Anda gagal mengirimkan pesan karena anda bukan kakak asuh atau wali siswa");
+            return "redirect:/siswa/rapor-siswa/"+idSiswa;
+        }
+        else if (sender.getRole().toString().equals("PENGAJAR") && (pengajarService.getPengajarById(sender.getId()).getIsKakakAsuh() == Boolean.FALSE)){
+            redirectAttributes.addFlashAttribute("message","Anda gagal mengirimkan pesan karena anda bukan kakak asuh");
+            return "redirect:/siswa/rapor-siswa/"+idSiswa;
+        }
+        else{
+            pesanModel.setSiswaPesan(siswaService.getSiswaById(idSiswa));
+            pesanModel.setUser(sender);
+            pesanModel.setDateCreated(LocalDateTime.now());
+            pesanService.createPesanModel(pesanModel);
+            redirectAttributes.addFlashAttribute("success", "Pesan berhasil ditambahkan");
+        }
+        PesanModel pesanModel1 = new PesanModel();
+        model.addAttribute("pesanModel", pesanModel1);
+        return "redirect:/siswa/rapor-siswa/"+idSiswa;
+
     }
     public static String localDateTimeToDateWithSlash(LocalDateTime localDateTime) {
             return DateTimeFormatter.ofPattern("dd/MM/yyyy").format(localDateTime);
@@ -500,19 +548,30 @@ public class SiswaController {
                 for (int i =0; i < listSiswaCsv.size(); i++){
                     if (siswaService.getSiswaByEmail(listSiswaCsv.get(i).getEmail()) == null){
                         SiswaModel siswa = siswaService.convertSiswaCsv(listSiswaCsv.get(i));
-                        String password = PasswordManager.generateCommonTextPassword();
+                        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("ddMM");
+                        String formattedDate = siswa.getDob().format(dateFormatter);
+                        String password = PasswordManager.generateCommonTextPassword(formattedDate);
                         siswa.setPassword(password);
                         siswa.setPasswordPertama(password);
                         siswaService.addSiswa(siswa);
+                        String emailPenerima = siswa.getEmail();
+                        String emailSubject = "Selamat! Akun QUANTA (Quantum Assistant) Anda Telah Berhasil Dibuat";
+                        String emailBody = emailService.getCredentialEmailBody(siswa);
+                        emailService.sendEmail(emailPenerima, emailSubject, emailBody);
                         listSiswa.add(siswa);
                         counterSiswa++;
                         OrtuModel ortu = ortuService.getOrtuByEmail(listSiswaCsv.get(i).getEmailOrtu());
                         if (ortu == null) {
                             ortu = ortuService.convertOrtuCsv(listSiswaCsv.get(i));
-                            String passwordOrtu = PasswordManager.generateCommonTextPassword();
+                            String formattedDateOrtu = ortu.getDob().format(dateFormatter);
+                            String passwordOrtu = PasswordManager.generateCommonTextPassword(formattedDateOrtu);
                             ortu.setPassword(passwordOrtu);
                             ortu.setPasswordPertama(passwordOrtu);
                             ortuService.addOrtu(ortu);
+                            String emailOrtu = ortu.getEmail();
+                            String emailSubjectOrtu = "Selamat! Akun QUANTA (Quantum Assistant) Anda Telah Berhasil Dibuat";
+                            String emailBodyOrtu = emailService.getCredentialEmailBody(ortu);
+                            emailService.sendEmail(emailOrtu, emailSubjectOrtu, emailBodyOrtu);
                             siswa.setOrtu(ortu);
                             siswaService.updateSiswa(siswa);
                             listOrtu.add(ortu);
@@ -590,26 +649,31 @@ public class SiswaController {
                     for (int i =0; i < listSiswaCsv.size(); i++){
                         if (siswaService.getSiswaByEmail(listSiswaCsv.get(i).getEmail()) == null){
                             SiswaModel siswa = siswaService.convertSiswaCsv(listSiswaCsv.get(i));
-                            String password = PasswordManager.generateCommonTextPassword();
+                            
+                            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("ddMM");
+                            String formattedDate = siswa.getDob().format(dateFormatter);
+                            String password = PasswordManager.generateCommonTextPassword(formattedDate);
                             siswa.setPassword(password);
                             siswa.setPasswordPertama(password);
                             siswaService.addSiswa(siswa);
+                            String emailPenerima = siswa.getEmail();
+                            String emailSubject = "Selamat! Akun QUANTA (Quantum Assistant) Anda Telah Berhasil Dibuat";
+                            String emailBody = emailService.getCredentialEmailBody(siswa);
+                            emailService.sendEmail(emailPenerima, emailSubject, emailBody);
                             listSiswa.add(siswa);
                             counterSiswa++;
                             OrtuModel ortu = ortuService.getOrtuByEmail(listSiswaCsv.get(i).getEmailOrtu());
                             if (ortu == null) {
                                 ortu = ortuService.convertOrtuCsv(listSiswaCsv.get(i));
-                                String passwordOrtu = PasswordManager.generateCommonTextPassword();
+                                String formattedDateOrtu = ortu.getDob().format(dateFormatter);
+                                String passwordOrtu = PasswordManager.generateCommonTextPassword(formattedDateOrtu);
                                 ortu.setPassword(passwordOrtu);
                                 ortu.setPasswordPertama(passwordOrtu);
                                 ortuService.addOrtu(ortu);
+                                String emailOrtu = ortu.getEmail();
+                                String emailBodyOrtu = emailService.getCredentialEmailBody(ortu);
+                                emailService.sendEmail(emailOrtu, emailSubject, emailBodyOrtu);
                                 siswa.setOrtu(ortu);
-                                siswaService.updateSiswa(siswa);
-                                listOrtu.add(ortu);
-                                counterOrtu++;
-                            } else {
-                                siswa.setOrtu(ortu);
-                                siswaService.updateSiswa(siswa);
                             }
                         }
                     }
@@ -634,5 +698,4 @@ public class SiswaController {
 
         return "manajemen-user/list-siswa-imported";
     }
-
 }

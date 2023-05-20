@@ -12,8 +12,8 @@ public interface SiswaKonsultasiService {
 
     SiswaKonsultasiModel getById(Integer id);
     SiswaKonsultasiModel getBySiswaAndKonsultasi(SiswaModel siswa, Integer idKonsultasi);
-    List<SiswaKonsultasiModel> getListSiswaByKonsultasi(KonsultasiModel konsultasi);
-    Integer getJumlahSiswaKonsultasi(KonsultasiModel idKonsultasi);
+//    List<SiswaKonsultasiModel> getListSiswaByKonsultasi(KonsultasiModel konsultasi);
+//    Integer getJumlahSiswaKonsultasi(KonsultasiModel idKonsultasi);
 
     List<SiswaKonsultasiModel> getListKonsultasiBySiswa(SiswaModel siswa);
 
@@ -26,4 +26,5 @@ public interface SiswaKonsultasiService {
     List<SiswaKonsultasiModel> getListKonsultasiBySiswaAndTanggalPendingAndDiterima(SiswaModel siswa, LocalDate tanggal);
     boolean isRekomended(SiswaModel siswa, KonsultasiModel konsultasi);
     List<SiswaKonsultasiModel> getListKonsultasiSiswaHariIni(SiswaModel siswa);
+    SiswaKonsultasiModel updateSiswaKonsultasi(SiswaKonsultasiModel siswaKonsultasi);
 }

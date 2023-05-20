@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+  <title>Tutup Konsultasi</title>
+  <object th:include="fragments/fragment :: css" th:remove="tag"></object>
+  <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+</head>
+<body>
+<nav th:replace="fragments/fragment :: navbar ('konsultasi',${isKakakAsuh})"></nav>
+<div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${error}" >
+  <div class="d-flex align-items-center">
+    <p th:text="${error}" style="margin-bottom: 0px; margin-top: 0px;"></p>
+  </div>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<div class="alert alert-success alert-dismissible d-flex align-items-center" role="alert" th:if="${success}" >
+  <div class="d-flex align-items-center">
+    <p th:text="${success}" style="margin-bottom: 0px; margin-top: 0px;"></p>
+  </div>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div><div class="container" style="width:80%; padding-top:50px;">
+  <div class="justify-content-center">
+    <div style="margin: auto; padding-top: 4px; width: 50%; padding: 0px; text-align: center">
+      <h2 style="font-weight: bold; padding-top: 0px;" >Presensi Konsultasi</h2>
+      <h4 style="font-weight: normal; padding-top: 4px;" th:text="${konsultasi.mapelKonsul.name + ' - ' + konsultasi.topic}" ></h4>
+      <h6 style="font-weight: normal; padding-top: 4px;" th:text="${#temporals.format(konsultasi.startTime, 'dd MMMM yyyy') + #temporals.format(konsultasi.startTime, ' (HH:mm')} + ' - ' +${#temporals.format(konsultasi.endTime, 'HH:mm)')}" ></h6>
+      <br>
+    </div>
+    <form style="justify-content: center" th:action="@{/konsultasi/close/} + ${konsultasi.id}" th:object="${konsultasi}" modelAttribute="konsultasi" method="POST">
+      <fieldset class="align-content-center">
+        <table style="margin: 20px;" class="table table-striped" id="presensi-table">
+          <thead style="background-color: #31318B; color: #ffffff">
+          <tr >
+            <th scope="col">No</th>
+            <th scope="col">Nama</th>
+            <th scope="col">Kelas</th>
+            <th scope="col">Status Presensi</th>
+            <th scope="col">Durasi Kehadiran (jam)</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr id="iterasi" th:each="siswaKonsultasi, iterationStatus : *{listSiswaKonsultasi}">
+              <input type="hidden" th:field="*{listSiswaKonsultasi[__${iterationStatus.index}__].siswaKonsul.id}" th:value="${siswaKonsultasi.id}">
+
+              <th scope="row" th:text="${iterationStatus.index + 1}"></th>
+
+              <td th:field="*{listSiswaKonsultasi[__${iterationStatus.index}__].siswaKonsul.name}"
+                  th:value="${siswaKonsultasi.siswaKonsul.name}"
+                  th:text="${siswaKonsultasi.siswaKonsul.name} + ' (' + ${siswaKonsultasi.siswaKonsul.email} + ')'">
+
+              </td>
+
+              <td th:text="${siswaKonsultasi.siswaKonsul.kelasBimbel.name}"></td>
+
+              <td>
+                  <div class="col-4">
+                    <select onchange="showId(this)" id="field-status-presensi" th:field="*{listSiswaKonsultasi[__${iterationStatus.index}__].isPresent}"
+                            required style="width: max-content" class="form-control"
+                            >
+                      <option value="true">Hadir</option>
+                      <option value="false">Tidak Hadir</option>
+                    </select>
+                  </div>
+              </td>
+
+              <td>
+                  <div class="col-4">
+                    <select id="field-durasi-presensi" th:field="*{listSiswaKonsultasi[__${iterationStatus.index}__].durasiHadir}"
+                            required style="width: max-content" class="form-control">
+                      <option th:each="durasiOpt : ${listOptionDurasi}"
+                              th:value="${durasiOpt}" th:text="${durasiOpt}">
+                      </option>
+                    </select>
+                  </div>
+
+              </td>
+
+          </tr>
+          </tbody>
+        </table>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-update" style="position: relative; left: 45%; display:block; width:fit-content; margin: 12px; background-color: #31318B; border-color: #31318B" >Simpan</button>
+      </fieldset>
+      <div class="modal fade" id="modal-update" tabindex="-1" role="dialog" aria-labelledby="popupLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="popupLabel"><strong>Konfirmasi Simpan Presensi</strong></h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              Apakah Anda yakin ingin menutup?
+              <br>
+              Pastikan data yang diisikan sudah benar sebelum anda menutup konsultasi.
+              <br>
+              Data yang sudah disimpan tidak dapat diubah lagi.
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+              <button name="save" type="submit" class="btn btn-primary"  style="background-color: #31318B; border-color: #31318B" >Yakin</button>
+            </div>
+          </div>
+          <br>
+        </div>
+      </div>
+    </form>
+    <br>
+    <br>
+  </div>
+</div>
+<script>
+  var rows = document.getElementsByTagName("tr");
+  for (var i = 0; i < rows.length; i++) {
+    var cells = rows[i].getElementsByTagName("select");
+    for (var j = 0; j < cells.length; j++) {
+      var columnName = "";
+      switch(j) {
+        case 0:
+          columnName = "field-status-presensi";
+          break;
+        case 1:
+          columnName = "field-durasi-presensi";
+          break;
+        default:
+          break;
+      }
+      cells[j].setAttribute("id", columnName + "-" + i);
+
+    }
+  }
+
+  function showId(x) {
+    var idxFieldStatus = x.id
+    var rowIdx = idxFieldStatus.charAt(idxFieldStatus.length - 1); // => "1"
+
+    var isPresent=$(x).find(':selected').val();
+    if (isPresent.toString() == "true"){
+      $("#field-durasi-presensi-" + rowIdx).val(2);
+      $("#field-durasi-presensi-" + rowIdx).prop("disabled", false);
+
+
+    } else{
+      $("#field-durasi-presensi-" + rowIdx).val(0);
+      $("#field-durasi-presensi-" + rowIdx).prop("disabled", true);
+    }
+  }
+</script>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+</html>

@@ -36,6 +36,7 @@ public class WebSecurityConfig {
                 .antMatchers("/pengajar/**").hasRole("ADMIN")
                 .antMatchers("/siswa/all-rapor-siswa").hasAnyRole("ADMIN", "PENGAJAR")
                 .antMatchers("/siswa/rapor-saya").hasRole("SISWA")
+                .antMatchers("/siswa/add/rapor-siswa/**").hasAnyRole("PENGAJAR","ORTU")
                 .antMatchers("/siswa/rapor-siswa/**").hasAnyRole("ADMIN", "PENGAJAR","ORTU")
                 .antMatchers("/siswa").hasRole("ADMIN")
                 .antMatchers("/siswa/**").hasRole("ADMIN")

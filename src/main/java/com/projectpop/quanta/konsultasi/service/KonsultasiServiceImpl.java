@@ -12,6 +12,7 @@ import com.projectpop.quanta.siswa.model.SiswaModel;
 import com.projectpop.quanta.siswa.service.SiswaService;
 import com.projectpop.quanta.siswakonsultasi.model.SiswaKonsultasiModel;
 import com.projectpop.quanta.siswakonsultasi.service.SiswaKonsultasiService;
+import com.projectpop.quanta.tahunajar.model.TahunAjarModel;
 import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.orangtua.model.OrtuModel;
@@ -404,8 +405,13 @@ public class KonsultasiServiceImpl implements KonsultasiService{
     public List<KonsultasiModel> getRekomendasiKonsultasi(SiswaModel siswa, Jenjang jenjang) {
         List<KonsultasiModel> ret = new ArrayList<>();
         List<KonsultasiModel> listKonsultasi = getListKonsultasiByJenjangAndStatus(siswa.getJenjang(),PENDING);
+        List<KonsultasiModel> listKonsultasiDiterima = getListKonsultasiByJenjangAndStatus(siswa.getJenjang(),DITERIMA);
+        listKonsultasi.addAll(listKonsultasiDiterima);
         for (KonsultasiModel konsultasi: listKonsultasi) {
-            if (siswaKonsultasiService.isRekomended(siswa, konsultasi) && getIsSiswaAvailable(siswa, konsultasi)){
+            if (siswaKonsultasiService.isRekomended(siswa, konsultasi)
+                    && getIsSiswaAvailable(siswa, konsultasi)
+                    && (konsultasi.getListSiswaKonsultasi().size() < 20)
+                    && (konsultasi.getStartTime().minusMinutes(10).isAfter(LocalDateTime.now()))){
                 ret.add(konsultasi);
             }
         }
@@ -439,6 +445,8 @@ public class KonsultasiServiceImpl implements KonsultasiService{
     @Override
     public void tolakKonsultasiOtomatis(KonsultasiModel konsultasi) {
         konsultasi.setStatus(DITOLAK);
+        konsultasi.setRejectionReason("Ditolak otomatis oleh sistem");
+        konsultasi.setRejectedTime(LocalDateTime.now());
         updateKonsultasi(konsultasi);
 
         ArrayList<String> emailPenerima = new ArrayList<>();
@@ -451,7 +459,7 @@ public class KonsultasiServiceImpl implements KonsultasiService{
                 + "\n- Mata Pelajaran: " + konsultasi.getMapelKonsul().getName()
                 + "\n- Topik: " + konsultasi.getTopic();
 
-        List<SiswaKonsultasiModel> listSiswaKonsul = siswaKonsultasiService.getListSiswaByKonsultasi(konsultasi);
+        List<SiswaKonsultasiModel> listSiswaKonsul = konsultasi.getListSiswaKonsultasi();
         for (SiswaKonsultasiModel siwaKonsul: listSiswaKonsul) {
             emailPenerima.add(siwaKonsul.getSiswaKonsul().getEmail());
         }
@@ -504,5 +512,15 @@ public class KonsultasiServiceImpl implements KonsultasiService{
         }
         return ret;
 
+    }
+
+    @Override
+    public List<KonsultasiModel> getListKonsultasiByTahunAjarAndMonth(TahunAjarModel tahunAjar, Integer month) {
+        return konsultasiDb.findByTahunAjarKonsulAndMonth(tahunAjar, month).orElse(null);
+    }
+
+    @Override
+    public List<KonsultasiModel> getListKonsultasiByTahunAjar(TahunAjarModel tahunAjar) {
+        return null;
     }
 }

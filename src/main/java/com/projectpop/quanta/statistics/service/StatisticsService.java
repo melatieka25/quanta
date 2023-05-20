@@ -1,4 +1,4 @@
-package com.projectpop.quanta.statistics;
+package com.projectpop.quanta.statistics.service;
 
 import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.kelas.model.KelasModel;
@@ -16,5 +16,5 @@ public interface StatisticsService {
     float[][] getMapelStats(TahunAjarModel tahunAjar, Integer month, List<MataPelajaranModel> listMapelSMP,  List<MataPelajaranModel> listMapelSMA, String[][] listNamaMapel);
     float[][] getKelasStats(TahunAjarModel tahunAjar, Integer month,  List<KelasModel> listKelasSMP,  List<KelasModel> listKelasSMA, String[][] listNamaKelas);
     <E> String[][] getTargetLabel(E[] listTargetSMP, E[] listTargetSMA);
-    Map<String, String> getKategoriTer(String[][]listNamaMapel, float[][] listPersentasePresensiMapel,TahunAjarModel tahunAjar, Integer month);
+    Map<String, String> getKategoriTer(String[][]listNamaMapel, float[][] listPersentasePresensiMapel,TahunAjarModel tahunAjar, Integer month, String tipe);
 }
