@@ -41,16 +41,6 @@ public class SiswaKonsultasiServiceImpl implements SiswaKonsultasiService{
         return siswaKonsultasiDb.getByKonsultasiAndSiswaKonsul(konsultasiDb.getById(idKonsultasi), siswa);
     }
 
-//    @Override
-//    public List<SiswaKonsultasiModel> getListSiswaByKonsultasi(KonsultasiModel konsultasi) {
-//        return siswaKonsultasiDb.findAllByKonsultasi(konsultasi);
-//    }
-
-//    @Override
-//    public Integer getJumlahSiswaKonsultasi(KonsultasiModel konsultasi) {
-//        return siswaKonsultasiDb.findAllByKonsultasi(konsultasi).size();
-//    }
-
     @Override
     public List<SiswaKonsultasiModel> getListKonsultasiBySiswa(SiswaModel siswa) {
         return siswaKonsultasiDb.findAllBySiswaKonsul(siswa);
@@ -119,8 +109,8 @@ public class SiswaKonsultasiServiceImpl implements SiswaKonsultasiService{
 
     @Override
     public boolean isRekomended(SiswaModel siswa, KonsultasiModel konsultasi) {
-        List<SiswaKonsultasiModel> listKonsultasiPedending= konsultasi.getListSiswaKonsultasi();
-        for (SiswaKonsultasiModel siswaKonsultasi: listKonsultasiPedending) {
+        List<SiswaKonsultasiModel> listKonsultasi = konsultasi.getListSiswaKonsultasi();
+        for (SiswaKonsultasiModel siswaKonsultasi: listKonsultasi) {
             if (siswaKonsultasi.getSiswaKonsul().equals(siswa)){
                 return false;
             }

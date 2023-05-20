@@ -88,7 +88,7 @@ public class KonsultasiController {
 
         else if(user.getRole().toString().equals("PENGAJAR")){
             PengajarModel pengajar = pengajarService.getPengajarByEmail(principal.getName());
-            List<KonsultasiModel> myListKonsultasi = konsultasiService.getListKonsultasiByPengajar(pengajar);
+            List<KonsultasiModel> myListKonsultasi = konsultasiService.getListKonsultasiByUser(pengajar);
             List<KonsultasiModel> listRequestKonsultasi = konsultasiService.getRequestKonsultasi(pengajar);
 
             model.addAttribute("myListKonsultasi", myListKonsultasi);
@@ -149,7 +149,10 @@ public class KonsultasiController {
             else if (konsultasiService.isExtendAble(konsultasi)){
                 isExtendable = true;
             }
-            else if (siswaKonsultasiService.isRekomended((SiswaModel) userModel, konsultasi)){
+            else if (siswaKonsultasiService.isRekomended((SiswaModel) userModel, konsultasi)
+                    && konsultasiService.getIsSiswaAvailable((SiswaModel) userModel, konsultasi)
+                    && (konsultasi.getListSiswaKonsultasi().size() < 20)
+                    && (konsultasi.getStartTime().minusMinutes(10).isAfter(LocalDateTime.now()))){
                 isJoinable = true;
             }
 
@@ -413,7 +416,11 @@ public class KonsultasiController {
             redirectAttributes.addFlashAttribute("errorMessage", "konsultasi tidak dapat diikuti diikuti karena kuota sudah penuh");
             return "redirect:/konsultasi/view/" + idKonsultasi; // Redirect to success page
         }
-        if (konsultasiService.getIsSiswaAvailable(siswa, konsultasi)){
+        if (siswaKonsultasiService.isRekomended((SiswaModel) userModel, konsultasi)
+                && konsultasiService.getIsSiswaAvailable((SiswaModel) userModel, konsultasi)
+                && (konsultasi.getListSiswaKonsultasi().size() < 20)
+                && (konsultasi.getStartTime().minusMinutes(10).isAfter(LocalDateTime.now()))
+        ){
             SiswaKonsultasiModel siswaKonsultasi = new SiswaKonsultasiModel();
             siswaKonsultasi.setKonsultasi(konsultasi);
             siswaKonsultasi.setSiswaKonsul(siswa);

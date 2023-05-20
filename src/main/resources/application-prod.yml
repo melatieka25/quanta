@@ -18,5 +18,4 @@ spring:
 
     # pembuatan database (create || create-drop || validate || update)
     hibernate.ddl-auto: ${DBSTATUS}
-
     show-sql: true
