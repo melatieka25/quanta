@@ -595,7 +595,23 @@ h2 {
             });
         }, 5000);
 
-      
+       /*<![CDATA[*/  
+        userEmail = /*[[${#authentication.getPrincipal().username}]]*/ 'default'; 
+                    /*]]>*/
+
+        var theLocation = window.location;
+        var lastPart = (theLocation.href).split('/').slice(-1)[0];
+        var anak = (theLocation.href).split('/').slice(-2)[0];
+
+        var json; 
+
+        if (anak == "anak") {
+            json = lastPart;
+        }else {
+            json = userEmail;
+        }
+
+        var urlEvents = "/api/v1/jadwal-kelas/get-jadwal-kelas/" + json;
 
         var todayDate = moment().startOf("day");
         var TODAY = todayDate.format("YYYY-MM-DD");
@@ -632,9 +648,12 @@ h2 {
                 
             },
 
+            events: urlEvents,
 
-            // example: todo sprint 3
-            events: 'https://fullcalendar.io/api/demo-feeds/events.json'
+             eventClick: function(calEvent, jsEvent, view) {
+            // Redirect to the event URL in the same tab
+                window.location.href = calEvent.url;
+            }
         })
 
 

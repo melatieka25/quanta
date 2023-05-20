@@ -113,7 +113,7 @@ public class PageController {
         UserModel user = userService.getUserById(id);
         model.addAttribute("username", user.getName());
 
-        List<JadwalKelasModel> listJadwalHariIni = jadwalKelasService.getListJadwalByUser(user);
+        List<JadwalKelasModel> listJadwalHariIni = jadwalKelasService.getListJadwalHariIni(user);
         model.addAttribute("listJadwalHariIni", listJadwalHariIni);
         List<KonsultasiModel> listKonsulHariIni = konsultasiService.getListKonsultasiByUser(user);
         model.addAttribute("listKonsulHariIni", listKonsulHariIni);

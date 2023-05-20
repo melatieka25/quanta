@@ -189,11 +189,18 @@ public class JadwalKelasServiceImpl implements JadwalKelasService{
         } 
 
 
-        List<JadwalKelasModel> res = getListJadwalHariIni(listJadwal);  
-        return res;
+        // List<JadwalKelasModel> res = getListJadwalHariIni(listJadwal);  
+        return listJadwal;
     }
 
-    public List<JadwalKelasModel> getListJadwalHariIni(List<JadwalKelasModel> listJadwal) {
+    @Override
+    public List<JadwalKelasModel> getListJadwalHariIni(UserModel user) {
+        List<JadwalKelasModel> listJadwal = getListJadwalKelas();  
+
+        if (user.getRole() != UserRole.ADMIN) {
+            listJadwal = getListJadwalByUser(user);
+        }
+
         List<JadwalKelasModel> listJadwalKelasNew = new ArrayList<JadwalKelasModel>();
         LocalDate tanggal = LocalDate.now();
 
@@ -219,5 +226,30 @@ public class JadwalKelasServiceImpl implements JadwalKelasService{
                 listJadwalKelasTanggal.add(jadwalKelas);
             }
         } return listJadwalKelasTanggal;
+    }
+
+    @Override
+    public List<JadwalKelasModel> getListJadwalMingguIni(UserModel user) {
+        List<JadwalKelasModel> listMingguIni = jadwalKelasDb.findAllOfCurrentWeek();
+        if (user.getRole() == UserRole.SISWA) {
+            SiswaModel siswa = siswaService.getSiswaById(user.getId());
+            List<JadwalKelasModel> listSiswa = new ArrayList<>();
+            for (JadwalKelasModel jadwal : listMingguIni) {
+                if (jadwal.getKelas().getName().equals(siswaService.getKelasBimbel(siswa).getName())) {
+                    listSiswa.add(jadwal);
+                }
+            }
+            return listSiswa;
+        } else if (user.getRole() == UserRole.PENGAJAR) {
+            PengajarModel pengajar = pengajarService.getPengajarById(user.getId());
+            List<JadwalKelasModel> listPengajar = new ArrayList<>();
+            for (JadwalKelasModel jadwal : listMingguIni) {
+                if (jadwal.getPengajarKelas().getId().equals(pengajar.getId())) {
+                    listPengajar.add(jadwal);
+                }
+            }
+            return listPengajar;
+        }
+        return listMingguIni;
     }
 }

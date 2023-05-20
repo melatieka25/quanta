@@ -71,6 +71,9 @@ public class JadwalKelasController {
         UserModel user = userService.getUserByEmail(principal.getName());
         pengajarService.checkIsPengajarDanKakakAsuh(user,model);
 
+        // ADMIN
+        List<JadwalKelasModel> listJadwalKelas = jadwalKelasService.getListJadwalKelas();
+
         // ORTU
         if (user.getRole() == UserRole.ORTU) {
             OrtuModel ortu = ortuService.getOrtuById(user.getId());
@@ -79,11 +82,26 @@ public class JadwalKelasController {
             model.addAttribute("anak", anak);
             return "redirect:/jadwal-kelas/anak/" + anak.getId();
 
+        } else if (user.getRole() == UserRole.PENGAJAR || user.getRole() == UserRole.SISWA) {
+            listJadwalKelas = jadwalKelasService.getListJadwalByUser(user);
         }
 
-        // ADMIN
-        List<JadwalKelasModel> listJadwalKelas = jadwalKelasService.getListJadwalKelas();
+        List<JadwalKelasModel> listMingguIni = jadwalKelasService.getListJadwalMingguIni(user);
+        model.addAttribute("listMingguIni", listMingguIni);
+
+        List<JadwalKelasModel> listHariIni = jadwalKelasService.getListJadwalHariIni(user);
+        model.addAttribute("listHariIni", listHariIni);
+
         model.addAttribute("listJadwal", listJadwalKelas);
+
+        List<KelasModel> listKelas = kelasService.getListKelas();
+        model.addAttribute("listKelas", kelasService.getListKelasAktif(listKelas));
+
+        List<PengajarModel> listPengajar = pengajarService.getListPengajarActive();
+        model.addAttribute("listPengajar", listPengajar);
+
+        List<MataPelajaranModel> listMapel = mapelService.getAllMapel();
+        model.addAttribute("listMapel", listMapel);
         return "jadwalkelas/jadwalkelas-viewall";
     }
 
@@ -91,14 +109,20 @@ public class JadwalKelasController {
     public String viewAllJadwalKelasOrtu(@PathVariable("id") Integer id, Principal principal, Model model) {
         SiswaModel siswa = siswaService.getSiswaById(id);
         List<JadwalKelasModel> listJadwalAnak = jadwalKelasService.getListJadwalKelasByKelas(siswaService.getKelasBimbel(siswa));
-        // System.out.println("===== cek nama " + siswa.getName());
         model.addAttribute("listJadwal", listJadwalAnak);
+
+        List<JadwalKelasModel> listHariIni = jadwalKelasService.getListJadwalHariIni(siswa);
+        model.addAttribute("listHariIni", listHariIni);
+
+        List<JadwalKelasModel> listMingguIni = jadwalKelasService.getListJadwalMingguIni(siswa);
+        model.addAttribute("listMingguIni", listMingguIni);
+
         model.addAttribute("anak", siswa);
 
         return "jadwalkelas/jadwalkelas-viewall";
     }
 
-    // VIEW ALL
+    // VIEW DETAIL
     @GetMapping("/{id}")
     public String viewDetailJadwalKelas(@PathVariable("id") Integer id, Model model, Principal principal) {
         var userModel = userService.getUserByEmail(principal.getName());

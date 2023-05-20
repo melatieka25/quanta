@@ -19,4 +19,7 @@ public interface JadwalKelasDb extends JpaRepository<JadwalKelasModel, String>{
     List<JadwalKelasModel> findAllByKelas(KelasModel kelas);
     @Query("SELECT j FROM JadwalKelasModel j WHERE j.kelas.tahunAjar = :tahunAjar AND MONTH(j.startDateClass) = :month")
     List<JadwalKelasModel> findAllByTahunAjarAndMonth(@Param("tahunAjar") TahunAjarModel tahunAjar, @Param("month") Integer month);
+
+    @Query(value = "SELECT * FROM jadwal_kelas j WHERE j.start_time >= DATE_SUB(CURRENT_DATE(), INTERVAL (WEEKDAY(CURRENT_DATE()) + 1) DAY) AND j.start_time < DATE_ADD(CURRENT_DATE(), INTERVAL (7 - WEEKDAY(CURRENT_DATE())) DAY)", nativeQuery = true)
+    List<JadwalKelasModel> findAllOfCurrentWeek();
 }
