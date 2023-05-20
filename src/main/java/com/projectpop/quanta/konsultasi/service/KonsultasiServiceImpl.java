@@ -386,7 +386,7 @@ public class KonsultasiServiceImpl implements KonsultasiService{
         }
 
         
-        return getListKonsulHariIni(listKonsul);
+        return listKonsul;
     }
 
     public List<KonsultasiModel> getListKonsulHariIni(List<KonsultasiModel> listKonsul) {
@@ -496,10 +496,10 @@ public class KonsultasiServiceImpl implements KonsultasiService{
         }
     }
 
-    @Override
-    public List<KonsultasiModel> getListKonsultasiByPengajar(PengajarModel pengajar) {
-        return konsultasiDb.findAllByPengajarKonsul(pengajar);
-    }
+//    @Override
+//    public List<KonsultasiModel> getListKonsultasiByPengajar(PengajarModel pengajar) {
+//        return konsultasiDb.findAllByPengajarKonsul(pengajar);
+//    }
 
     @Override
     public List<KonsultasiModel> getListKonsultasiPengajarHariIni(PengajarModel pengajar) {
