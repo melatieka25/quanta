@@ -12,4 +12,4 @@ spring:
         smtp:
           auth: true
           starttls:
-            enable: true
+            enable: true         
