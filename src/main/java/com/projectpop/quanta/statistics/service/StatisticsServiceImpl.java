@@ -1,4 +1,4 @@
-package com.projectpop.quanta.statistics;
+package com.projectpop.quanta.statistics.service;
 
 import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.jadwalkelas.repository.JadwalKelasDb;
@@ -109,7 +109,7 @@ public class StatisticsServiceImpl implements StatisticsService{
     }
 
     @Override
-    public Map<String, String> getKategoriTer(String[][] listNamaKategori, float[][] listPersentasePresensiMapel,TahunAjarModel tahunAjar, Integer month) {
+    public Map<String, String> getKategoriTer(String[][] listNamaKategori, float[][] listPersentasePresensiMapel,TahunAjarModel tahunAjar, Integer month, String tipe) {
         List<JadwalKelasModel> listJadwalKelas = jadwalKelasDb.findAllByTahunAjarAndMonth(tahunAjar, month);
 
 
@@ -136,10 +136,10 @@ public class StatisticsServiceImpl implements StatisticsService{
                 String SMALowest = copyListPersentasePresensiMapel[1][0].getName();
                 String SMAHighest = copyListPersentasePresensiMapel[1][copyListPersentasePresensiMapel[1].length-1].getName();
 
-                mapMapel.put("Presensi Mapel SMP Tertinggi", SMPHighest);
-                mapMapel.put("Presensi Mapel SMP Terendah", SMPLowest);
-                mapMapel.put("Presensi Mapel SMA Tertinggi", SMAHighest);
-                mapMapel.put("Presensi Mapel SMA Terendah", SMALowest);
+                mapMapel.put("Presensi " + tipe + " SMP Tertinggi", SMPHighest);
+                mapMapel.put("Presensi " + tipe + " SMP Terendah", SMPLowest);
+                mapMapel.put("Presensi " + tipe + " SMA Tertinggi", SMAHighest);
+                mapMapel.put("Presensi " + tipe + " SMA Terendah", SMALowest);
             }
         }
 
