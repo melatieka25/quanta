@@ -1,6 +1,7 @@
 package com.projectpop.quanta.email.service;
 
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
 
 import com.projectpop.quanta.user.model.UserModel;
 
