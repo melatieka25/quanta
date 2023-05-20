@@ -27,5 +27,4 @@ public interface SiswaKonsultasiService {
     boolean isRekomended(SiswaModel siswa, KonsultasiModel konsultasi);
     List<SiswaKonsultasiModel> getListKonsultasiSiswaHariIni(SiswaModel siswa);
     SiswaKonsultasiModel updateSiswaKonsultasi(SiswaKonsultasiModel siswaKonsultasi);
-
 }

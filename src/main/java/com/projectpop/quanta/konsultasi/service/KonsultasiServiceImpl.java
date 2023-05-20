@@ -404,9 +404,13 @@ public class KonsultasiServiceImpl implements KonsultasiService{
     public List<KonsultasiModel> getRekomendasiKonsultasi(SiswaModel siswa, Jenjang jenjang) {
         List<KonsultasiModel> ret = new ArrayList<>();
         List<KonsultasiModel> listKonsultasi = getListKonsultasiByJenjangAndStatus(siswa.getJenjang(),PENDING);
+        List<KonsultasiModel> listKonsultasiDiterima = getListKonsultasiByJenjangAndStatus(siswa.getJenjang(),DITERIMA);
+        listKonsultasi.addAll(listKonsultasiDiterima);
         for (KonsultasiModel konsultasi: listKonsultasi) {
             if (siswaKonsultasiService.isRekomended(siswa, konsultasi)
-                    && getIsSiswaAvailable(siswa, konsultasi) && (konsultasi.getListSiswaKonsultasi().size() < 20)){
+                    && getIsSiswaAvailable(siswa, konsultasi)
+                    && (konsultasi.getListSiswaKonsultasi().size() < 20)
+                    && (konsultasi.getStartTime().minusMinutes(10).isAfter(LocalDateTime.now()))){
                 ret.add(konsultasi);
             }
         }
