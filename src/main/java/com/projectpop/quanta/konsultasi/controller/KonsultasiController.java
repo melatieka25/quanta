@@ -35,6 +35,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -88,11 +89,9 @@ public class KonsultasiController {
         else if(user.getRole().toString().equals("PENGAJAR")){
             PengajarModel pengajar = pengajarService.getPengajarByEmail(principal.getName());
             List<KonsultasiModel> myListKonsultasi = konsultasiService.getListKonsultasiByPengajar(pengajar);
-            List<KonsultasiModel> myListKonsultasiToday = konsultasiService.getListKonsultasiPengajarHariIni(pengajar);
             List<KonsultasiModel> listRequestKonsultasi = konsultasiService.getRequestKonsultasi(pengajar);
 
             model.addAttribute("myListKonsultasi", myListKonsultasi);
-            model.addAttribute("myListKonsultasiToday", myListKonsultasiToday);
             model.addAttribute("listRequestKonsultasi", listRequestKonsultasi);
 
             return "konsultasi/landing-page-pengajar";
@@ -103,12 +102,10 @@ public class KonsultasiController {
             SiswaModel siswa = siswaService.findSiswaByEmail(principal.getName());
             Jenjang jenjang = siswa.getJenjang();
             List<SiswaKonsultasiModel> myListKonsultasi = siswaKonsultasiService.getListKonsultasiBySiswa(siswa);
-            List<SiswaKonsultasiModel> myListKonsultasiToday = siswaKonsultasiService.getListKonsultasiSiswaHariIni(siswa);
             List<KonsultasiModel> listRekomendasiKonsultasi = konsultasiService.getRekomendasiKonsultasi(siswa, jenjang);
 
             model.addAttribute("siswa", siswa);
             model.addAttribute("myListKonsultasi", myListKonsultasi);
-            model.addAttribute("myListKonsultasiToday", myListKonsultasiToday);
             model.addAttribute("listRekomendasiKonsultasi", listRekomendasiKonsultasi);
 
             return "konsultasi/landing-page-siswa";

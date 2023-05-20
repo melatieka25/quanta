@@ -1,5 +1,7 @@
 package com.projectpop.quanta.user.model;
 
+import com.projectpop.quanta.orangtua.model.OrtuModel;
+import com.projectpop.quanta.orangtua.service.OrtuService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.projectpop.quanta.pesan.model.PesanModel;
 import com.sun.istack.NotNull;
@@ -14,6 +16,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
+
 
 @Setter
 @Getter
