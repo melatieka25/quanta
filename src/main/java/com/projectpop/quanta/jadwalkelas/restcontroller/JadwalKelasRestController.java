@@ -3,7 +3,9 @@ package com.projectpop.quanta.jadwalkelas.restcontroller;
 import com.projectpop.quanta.mapel.service.MapelService;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.projectpop.quanta.jadwalkelas.dto.JadwalKelasDTO;
 import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
+import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
 import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.kelas.service.KelasService;
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
@@ -11,7 +13,6 @@ import com.projectpop.quanta.mapel.model.MataPelajaranModel;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.service.PengajarService;
 import com.projectpop.quanta.pengajarmapel.service.PengajarMapelService;
-
 import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.user.service.UserService;
@@ -43,6 +44,10 @@ public class JadwalKelasRestController {
 
     @Autowired
     private KelasService kelasService;
+
+    @Autowired
+    private JadwalKelasService jadwalKelasService;
+
 
     @GetMapping("/get-pengajar/mapel/{id}")
     private List<PengajarModel> getListPengajarByMapel(@PathVariable("id") Integer id) {
@@ -77,12 +82,28 @@ public class JadwalKelasRestController {
         return kelasService.getListKelasByDays(day);
     }
 
-    @GetMapping("/get-jadwal-kelas")
-    private List<JadwalKelasModel> getJadwalHomepage(Principal principal) {
+    @GetMapping("/get-jadwal-kelas/{id}")
+    private List<JadwalKelasDTO> getJadwalHomepage(Principal principal, @PathVariable("id") String id) {
         UserModel user = userService.getUserByEmail(principal.getName());
-            
+        List<JadwalKelasModel> listJadwal = jadwalKelasService.getListJadwalKelas();
 
-        return null;
+        if (user.getRole() == UserRole.SISWA || user.getRole() == UserRole.PENGAJAR) {
+            listJadwal = jadwalKelasService.getListJadwalByUser(user);
+
+        } else if (user.getRole() == UserRole.ORTU) {
+            UserModel anak = userService.getUserById(Integer.valueOf(id));
+            listJadwal = jadwalKelasService.getListJadwalByUser(anak);
+
+        }
+
+        List<JadwalKelasDTO> json = new ArrayList<>();
+        for (JadwalKelasModel jadwal : listJadwal) {
+            String url = "http://localhost:8080/jadwal-kelas/" + jadwal.getId();
+            JadwalKelasDTO item = new JadwalKelasDTO(jadwal.getMapelJadwal().getName(), jadwal.getStartDateClass(), jadwal.getEndDateClass(),url);
+            json.add(item);
+        }
+
+        return json;
     }
 
     
