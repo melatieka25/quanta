@@ -490,7 +490,7 @@ public class KonsultasiController {
         }
 
         List<Integer> listOptionDurasi = new ArrayList<>();
-        for (int i = konsultasi.getDuration()+1; i > 0; i--) {
+        for (int i = konsultasi.getDuration(); i > 0; i--) {
             listOptionDurasi.add(i);
         }
 
