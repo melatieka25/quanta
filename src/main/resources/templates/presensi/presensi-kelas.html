@@ -2,25 +2,68 @@
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
     <title>Kelas yang Diajarkan Hari Ini</title>
-    <object th:include="fragments/fragment :: css" th:remove="tag"></object>
-    <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
+    <style>
+        /* Rules for sizing the icon. */
+        .material-icons.md-18 { font-size: 18px; }
+        .material-icons.md-24 { font-size: 24px; }
+        .material-icons.md-36 { font-size: 36px; }
+        .material-icons.md-48 { font-size: 48px; }
+
+        /* Rules for using icons as black on a light background. */
+        .material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
+        .material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+
+        /* Rules for using icons as white on a dark background. */
+        .material-icons.md-light { color: rgba(255, 255, 255, 1); }
+        .material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+        .btn-link:hover{
+            color: #0A2647 !important;
+        }
+        body {
+            font-family: 'DM Sans';
+        }
+        td, th{
+            padding: 8px 12px !important;
+            border-bottom: hidden;
+        }
+        .dataTables_filter{
+            margin-bottom: 8px;
+        }
+
+        span .paginate_button{
+            padding: 1px !important;
+        }
+
+        .alert {
+            position:fixed;
+            top: 7rem;
+            left: 5%;
+            width: 90%;
+            z-index:9999;
+        }
+    </style>
 </head>
 <body>
-<nav th:replace="fragments/fragment :: navbar ('presensi',${isKakakAsuh})"></nav>
-<div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${error}" >
-    <div class="d-flex align-items-center">
-        <p th:text="${error}" style="margin-bottom: 0px; margin-top: 0px;"></p>
-    </div>
+<nav th:replace="fragments/fragment :: navbar ('Presensi',${isKakakAsuh})"></nav>
+<div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${error}" th:text="${error}">
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
-<div class="alert alert-success alert-dismissible d-flex align-items-center" role="alert" th:if="${success}" >
-    <div class="d-flex align-items-center">
-        <p th:text="${success}" style="margin-bottom: 0px; margin-top: 0px;"></p>
-    </div>
+<div class="alert alert-success alert-dismissible d-flex align-items-center" role="alert" th:if="${success}" th:text="${success}">
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 <div class="container" style=" margin-top:40px; width: 80%">
     <div class="justify-content-center">
+        <a type="button" class="btn-link" href="/presensi" style="display: flex; align-items: center; text-decoration: none; color: #31318B; font-weight: normal; width: max-content">
+            <span class="material-icons md-18"> arrow_back_ios </span>
+            Kembali ke Daftar Kelas
+        </a>
         <div style="margin-top: 3rem; margin-bottom: 2rem; text-align: center;">
             <h2 style="font-weight: bold; margin-bottom: 0.75rem;" th:text="Kelas +' '+ ${kelas.name}"></h2>
             <h4 style="font-weight: normal; padding-top: 4px;" th:text="${hari}+', '+ ${tanggal}+' '+${bulan}+' '+ ${tahun}"></h4>
@@ -30,7 +73,7 @@
         <form style="justify-content: center" th:action="@{/presensi/read/}+ ${idJadwalKelas}" th:object="${jadwalKelasModel}" method="POST">
 
             <fieldset class="align-content-center">
-                <table style="margin: 20px;" class="table table-striped align-middle" id="presensi-unfilled-table">
+                <table style="margin-top: 100px;" class="table table-striped align-middle" id="presensi-unfilled-table">
                     <thead style="background-color: #31318B; color: #ffffff">
                     <tr>
                         <th scope="col">No</th>
@@ -89,7 +132,8 @@
         <br>
     </div>
 </div>
-<script>
+</body>
+<script type="text/javascript">
     $(document).ready(() => {
         $('#presensi-unfilled-table').DataTable();
         window.setTimeout(function() {
@@ -99,6 +143,5 @@
         }, 2000);
     });
 </script>
-</body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
 </html>
