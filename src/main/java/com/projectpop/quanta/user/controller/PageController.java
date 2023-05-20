@@ -1,10 +1,7 @@
 package com.projectpop.quanta.user.controller;
 
-import java.io.ObjectInputFilter.Status;
-import java.lang.ProcessBuilder.Redirect;
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 
 import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
@@ -23,20 +20,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
 import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
-import com.projectpop.quanta.konsultasi.model.StatusKonsul;
-import com.projectpop.quanta.konsultasi.service.KonsultasiService;
-import com.projectpop.quanta.orangtua.model.OrtuModel;
-import com.projectpop.quanta.orangtua.service.OrtuService;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
-import com.projectpop.quanta.pengajar.service.PengajarService;
-import com.projectpop.quanta.siswa.model.SiswaModel;
 import com.projectpop.quanta.siswa.service.SiswaService;
 import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.user.service.UserService;
-import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 
 @Controller
 public class PageController {
@@ -87,9 +76,6 @@ public class PageController {
 
             if (user.getRole() == UserRole.SISWA) {
                 SiswaModel siswa = siswaService.getSiswaById(user.getId());
-                // List<KonsultasiModel> listKonsulDiterima = konsultasiService.getListKonsultasiByJenjangAndStatus(siswa.getJenjang(), StatusKonsul.DITERIMA);
-                // List<KonsultasiModel> listKonsulPending = konsultasiService.getListKonsultasiByJenjangAndStatus(siswa.getJenjang(), StatusKonsul.PENDING);
-                // listKonsulDiterima.addAll(listKonsulPending);
                 model.addAttribute("listKonsultoJoin", konsultasiService.getRekomendasiKonsultasi(siswa, siswa.getJenjang()));
             } else {
                 PengajarModel pengajar = pengajarService.getPengajarById(user.getId());

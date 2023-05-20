@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.projectpop.quanta.admin.model.AdminModel;
 import com.projectpop.quanta.admin.service.AdminService;
 import com.projectpop.quanta.orangtua.model.OrtuModel;
 import com.projectpop.quanta.orangtua.service.OrtuService;
@@ -20,7 +19,6 @@ import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.service.PengajarService;
 import com.projectpop.quanta.siswa.model.SiswaModel;
 import com.projectpop.quanta.siswa.service.SiswaService;
-import com.projectpop.quanta.user.auth.PasswordManager;
 import com.projectpop.quanta.user.model.UpdatePasswordModel;
 import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.user.model.UserRole;
@@ -41,9 +39,6 @@ public class UserController {
 
     @Autowired
     private PengajarService pengajarService;
-
-    @Autowired
-    private AdminService adminService;
 
 
     @GetMapping("/profil")
