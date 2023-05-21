@@ -59,21 +59,10 @@
         <div style="margin-top: 3rem; margin-bottom: 2rem; text-align: center">
             <h2 style="font-weight: bold; margin-bottom: 0.75rem;">Daftar Jadwal Kelas</h2>
             <div sec:authorize="hasRole('ADMIN')">
-                <a class="btn" style="background-color: #31318B; color: white;" th:href="@{/jadwal-kelas/add}">Buat Jadwal</a>
+                <a class="btn" style="background-color: #31318B; color: white;" th:href="@{/jadwal-kelas/add}">Tambah Jadwal Kelas</a>
             </div>
             <br>
         </div>
-
-        <!-- <div sec:authorize="hasAnyRole('SISWA', 'PENGAJAR', 'ORTU')" class="row justify-content-start px-3">
-            <div class="col-4"  style="padding-left: 0 !important">
-                <label for="tampilan-dropdown" class="form-label">Pilih tampilan</label>
-                <select class="form-select" id="tampilan-dropdown" name="tampilan-dropdown">
-                    <option value="option1">Tabel</option>
-                    <option value="option2">Kalender</option>
-                </select>
-            </div>
-            
-        </div> -->
 
         <div class="row justify-content-start px-3">
             <div class="col-4" style="padding-left: 0 !important;">
