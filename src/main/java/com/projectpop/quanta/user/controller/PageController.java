@@ -3,7 +3,6 @@ package com.projectpop.quanta.user.controller;
 import java.security.Principal;
 import java.util.List;
 
-import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
 import com.projectpop.quanta.konsultasi.service.KonsultasiService;
 import com.projectpop.quanta.orangtua.model.OrtuModel;
@@ -65,14 +64,7 @@ public class PageController {
         model.addAttribute("username", user.getName());
 
         if (user.getRole() == UserRole.SISWA || user.getRole() == UserRole.PENGAJAR) {
-            
-            List<JadwalKelasModel> listJadwalHariIni = jadwalKelasService.getListJadwalByUser(user);
-            List<JadwalKelasModel> listJadwal = jadwalKelasService.getListJadwalKelas();
-            model.addAttribute("listJadwalHariIni", listJadwalHariIni);
-            model.addAttribute("listJadwal", listJadwal);
 
-            List<KonsultasiModel> listKonsulHariIni = konsultasiService.getListKonsultasiByUser(user);
-            model.addAttribute("listKonsulHariIni", listKonsulHariIni);
 
             if (user.getRole() == UserRole.SISWA) {
                 SiswaModel siswa = siswaService.getSiswaById(user.getId());
@@ -98,11 +90,6 @@ public class PageController {
     public String homeOrtu(@PathVariable("id") Integer id, Principal principal, Model model) {
         UserModel user = userService.getUserById(id);
         model.addAttribute("username", user.getName());
-
-        List<JadwalKelasModel> listJadwalHariIni = jadwalKelasService.getListJadwalHariIni(user);
-        model.addAttribute("listJadwalHariIni", listJadwalHariIni);
-        List<KonsultasiModel> listKonsulHariIni = konsultasiService.getListKonsultasiByUser(user);
-        model.addAttribute("listKonsulHariIni", listKonsulHariIni);
         model.addAttribute("anak", user);
         return "home";
     }

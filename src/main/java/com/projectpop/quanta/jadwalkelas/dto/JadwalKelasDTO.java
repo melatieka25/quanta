@@ -15,4 +15,5 @@ public class JadwalKelasDTO {
     LocalDateTime start;
     LocalDateTime end;
     String url;
+    String backgroundColor;
 }

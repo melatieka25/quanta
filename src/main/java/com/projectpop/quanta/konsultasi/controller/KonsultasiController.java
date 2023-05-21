@@ -143,8 +143,8 @@ public class KonsultasiController {
             boolean isCancelable = false;
             boolean isExtendable = false;
 
-            if (konsultasi.getStatus().equals(PENDING)){
-                isCancelable = true;
+            if (konsultasi.getStatus().equals(PENDING)&&!siswaKonsultasiService.isRekomended((SiswaModel)userModel,konsultasi)){
+                isCancelable=true;
             }
             else if (konsultasiService.isExtendAble(konsultasi)){
                 isExtendable = true;

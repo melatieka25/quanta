@@ -17,9 +17,6 @@ import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.orangtua.model.OrtuModel;
 import com.projectpop.quanta.orangtua.service.OrtuService;
-
-import com.projectpop.quanta.siswajadwalkelas.model.SiswaJadwalModel;
-import com.projectpop.quanta.siswajadwalkelas.service.SiswaJadwalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
