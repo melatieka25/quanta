@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <title>Halaman tidak ditemukan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <object th:include="fragments/fragment :: css" th:remove="tag"></object>
+    <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+    <object th:include="fragments/fragment :: css" th:remove="tag"></object>
+    <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+        <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
+
+    <style>
+       
+       body {
+            font-family: 'DM Sans';
+            height: 100%;
+            margin: 0;
+        }
+    </style>
+</head>
+<body class="bg-purple">
+        
+        <div class="container" style="justify-content: center; align-items: center;">
+            <div class="row">
+                <div class="col">
+                    <img src="https://drive.google.com/file/d/120IW2tUZNMFqmkwyJvLYOQSUoS3aGNPi/view?usp=sharing">
+                </div>
+                <div class="col">
+                    <h2><strong>Ups, halaman tidak ditemukan!</strong></h2>
+                    <p>Halaman ini mungkin tidak ada atau sudah dihapus</p>
+                    <a type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white" th:href="@{/}">Kembali ke beranda</a>                    
+                </div>
+            </div>
+
+        </div>
+
+    </body>
+</html>

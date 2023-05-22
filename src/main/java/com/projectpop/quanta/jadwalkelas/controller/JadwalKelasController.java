@@ -117,6 +117,15 @@ public class JadwalKelasController {
         List<JadwalKelasModel> listMingguIni = jadwalKelasService.getListJadwalMingguIni(siswa);
         model.addAttribute("listMingguIni", listMingguIni);
 
+        List<KelasModel> listKelas = kelasService.getListKelas();
+        model.addAttribute("listKelas", kelasService.getListKelasAktif(listKelas));
+
+        List<PengajarModel> listPengajar = pengajarService.getListPengajarActive();
+        model.addAttribute("listPengajar", listPengajar);
+
+        List<MataPelajaranModel> listMapel = mapelService.getAllMapel();
+        model.addAttribute("listMapel", listMapel);
+
         model.addAttribute("anak", siswa);
 
         return "jadwalkelas/jadwalkelas-viewall";
