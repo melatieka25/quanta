@@ -105,9 +105,15 @@ public class JadwalKelasController {
         return "jadwalkelas/jadwalkelas-viewall";
     }
 
+<<<<<<< Updated upstream
     @GetMapping("/anak/{id}")
     public String viewAllJadwalKelasOrtu(@PathVariable("id") Integer id, Principal principal, Model model) {
         SiswaModel siswa = siswaService.getSiswaById(id);
+=======
+    @GetMapping("/anak/{idSiswa}")
+    public String viewAllJadwalKelasOrtu(@PathVariable("idSiswa") Integer idSiswa, Principal principal, Model model) {
+        SiswaModel siswa = siswaService.getSiswaById(idSiswa);
+>>>>>>> Stashed changes
         List<JadwalKelasModel> listJadwalAnak = jadwalKelasService.getListJadwalKelasByKelas(siswaService.getKelasBimbel(siswa));
         model.addAttribute("listJadwal", listJadwalAnak);
 
@@ -116,6 +122,15 @@ public class JadwalKelasController {
 
         List<JadwalKelasModel> listMingguIni = jadwalKelasService.getListJadwalMingguIni(siswa);
         model.addAttribute("listMingguIni", listMingguIni);
+
+        List<KelasModel> listKelas = kelasService.getListKelas();
+        model.addAttribute("listKelas", kelasService.getListKelasAktif(listKelas));
+
+        List<PengajarModel> listPengajar = pengajarService.getListPengajarActive();
+        model.addAttribute("listPengajar", listPengajar);
+
+        List<MataPelajaranModel> listMapel = mapelService.getAllMapel();
+        model.addAttribute("listMapel", listMapel);
 
         model.addAttribute("anak", siswa);
 
@@ -137,6 +152,7 @@ public class JadwalKelasController {
         } 
         model.addAttribute("jadwal", jadwal);
         model.addAttribute("canUpdate", canUpdate);
+        model.addAttribute("anak", userModel);
         return "jadwalkelas/jadwalkelas-view-detail";
     }
 

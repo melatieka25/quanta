@@ -1,12 +1,8 @@
 package com.projectpop.quanta.user.controller;
 
-import java.io.ObjectInputFilter.Status;
-import java.lang.ProcessBuilder.Redirect;
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 
-import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
 import com.projectpop.quanta.konsultasi.service.KonsultasiService;
 import com.projectpop.quanta.orangtua.model.OrtuModel;
@@ -23,20 +19,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
 import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
-import com.projectpop.quanta.konsultasi.model.StatusKonsul;
-import com.projectpop.quanta.konsultasi.service.KonsultasiService;
-import com.projectpop.quanta.orangtua.model.OrtuModel;
-import com.projectpop.quanta.orangtua.service.OrtuService;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
-import com.projectpop.quanta.pengajar.service.PengajarService;
-import com.projectpop.quanta.siswa.model.SiswaModel;
 import com.projectpop.quanta.siswa.service.SiswaService;
 import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.user.service.UserService;
-import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 
 @Controller
 public class PageController {
@@ -76,20 +64,10 @@ public class PageController {
         model.addAttribute("username", user.getName());
 
         if (user.getRole() == UserRole.SISWA || user.getRole() == UserRole.PENGAJAR) {
-            
-            List<JadwalKelasModel> listJadwalHariIni = jadwalKelasService.getListJadwalByUser(user);
-            List<JadwalKelasModel> listJadwal = jadwalKelasService.getListJadwalKelas();
-            model.addAttribute("listJadwalHariIni", listJadwalHariIni);
-            model.addAttribute("listJadwal", listJadwal);
 
-            List<KonsultasiModel> listKonsulHariIni = konsultasiService.getListKonsultasiByUser(user);
-            model.addAttribute("listKonsulHariIni", listKonsulHariIni);
 
             if (user.getRole() == UserRole.SISWA) {
                 SiswaModel siswa = siswaService.getSiswaById(user.getId());
-                // List<KonsultasiModel> listKonsulDiterima = konsultasiService.getListKonsultasiByJenjangAndStatus(siswa.getJenjang(), StatusKonsul.DITERIMA);
-                // List<KonsultasiModel> listKonsulPending = konsultasiService.getListKonsultasiByJenjangAndStatus(siswa.getJenjang(), StatusKonsul.PENDING);
-                // listKonsulDiterima.addAll(listKonsulPending);
                 model.addAttribute("listKonsultoJoin", konsultasiService.getRekomendasiKonsultasi(siswa, siswa.getJenjang()));
             } else {
                 PengajarModel pengajar = pengajarService.getPengajarById(user.getId());
@@ -108,15 +86,16 @@ public class PageController {
     }
 
 
+<<<<<<< Updated upstream
     @RequestMapping("/anak/{id}")
     public String homeOrtu(@PathVariable("id") Integer id, Principal principal, Model model) {
         UserModel user = userService.getUserById(id);
+=======
+    @RequestMapping("/anak/{idSiswa}")
+    public String homeOrtu(@PathVariable("idSiswa") Integer idSiswa, Principal principal, Model model) {
+        UserModel user = userService.getUserById(idSiswa);
+>>>>>>> Stashed changes
         model.addAttribute("username", user.getName());
-
-        List<JadwalKelasModel> listJadwalHariIni = jadwalKelasService.getListJadwalHariIni(user);
-        model.addAttribute("listJadwalHariIni", listJadwalHariIni);
-        List<KonsultasiModel> listKonsulHariIni = konsultasiService.getListKonsultasiByUser(user);
-        model.addAttribute("listKonsulHariIni", listKonsulHariIni);
         model.addAttribute("anak", user);
         return "home";
     }

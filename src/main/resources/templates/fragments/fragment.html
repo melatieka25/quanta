@@ -7,6 +7,7 @@
     </style>
     <head th:fragment="css">
         <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.css">
         <link rel="icon" href="https://cdn.discordapp.com/attachments/827584860582707261/1086997417318158416/favicon.ico" type="image/x-icon" />
@@ -14,9 +15,49 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap" rel="stylesheet">
         <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
+    </head>
+    <head th:fragment="style">
         <style>
             body {
                 font-family: 'DM Sans';
+            }
+            .alert {
+                position:fixed;
+                top: 7rem;
+                left: 5%;
+                width: 90%;
+                z-index:9999;
+            }
+
+            /* Rules for sizing the icon. */
+            .material-icons.md-18 { font-size: 18px; }
+            .material-icons.md-24 { font-size: 24px; }
+            .material-icons.md-36 { font-size: 36px; }
+            .material-icons.md-48 { font-size: 48px; }
+
+            /* Rules for using icons as black on a light background. */
+            .material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
+            .material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+
+            /* Rules for using icons as white on a dark background. */
+            .material-icons.md-light { color: rgba(255, 255, 255, 1); }
+            .material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+            .btn-link:hover{
+                color: #0A2647 !important;
+            }
+
+
+            /* Datatables Style */
+            td, th{
+                padding: 8px 12px !important;
+                border-bottom: hidden;
+            }
+            .dataTables_filter{
+                margin-bottom: 8px;
+            }
+
+            span .paginate_button{
+                padding: 1px !important;
             }
         </style>
     </head>
@@ -25,7 +66,6 @@
                 src="https://code.jquery.com/jquery-3.6.1.min.js"
                 integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
                 crossorigin="anonymous"></script>
-        <script src="https://getbootstrap.com/docs/4.1/assets/js/vendor/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
         <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
     </head>
@@ -96,7 +136,7 @@
                 </a>
             </li>
             <li class="nav-item dropdown">
-                <a sec:authorize="hasRole('ADMIN')" class="nav-link dropdown-toggle" th:classappend="${onevar == 'user'} ? active : ''" href="/" id="navbarDarkDropdownMenuLink manajemenOperasional" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a sec:authorize="hasRole('ADMIN')" class="nav-link dropdown-toggle" th:classappend="${onevar == 'manajemen'} ? active : ''" href="/" id="navbarDarkDropdownMenuLink manajemenOperasional" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Manajemen Operasional
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink manajemenOperasional">
@@ -109,27 +149,72 @@
                 </ul>
             </li>
             <li class="nav-item dropdown">
-                <a sec:authorize="hasRole('ADMIN')" class="nav-link dropdown-toggle" th:classappend="${onevar == 'user'} ? active : ''" href="/" id="navbarDarkDropdownMenuLink Statistika" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Statistik Operasional
+                <a sec:authorize="hasRole('ADMIN')" class="nav-link dropdown-toggle" th:classappend="${onevar == 'Statistik-presensi'} ? active : ''" href="/" id="navbarDarkDropdownMenuLink Statistika" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Statistik Presensi
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink Statistika">
                     <li><a class="dropdown-item" th:href="@{/statistik/mapel}">Mata Pelajaran</a></li>
                     <li><a class="dropdown-item" th:href="@{/statistik/kelas}">Kelas</a></li>
-                    <li><a class="dropdown-item" th:href="@{/statistik/konsultasi/mapel}">Mata Pelajaran Konsultasi</a></li>
-                    <li><a class="dropdown-item" th:href="@{/statistik/konsultasi/pengajar}">Pengajar Konsultasi</a></li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a sec:authorize="hasRole('ADMIN')" class="nav-link dropdown-toggle" th:classappend="${onevar == 'Statistik-konsultasi'} ? active : ''" href="/" id="navbarDarkDropdownMenuLink Statistika" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Statistik Konsultasi
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink Statistika">
+                    <li><a class="dropdown-item" th:href="@{/statistik/konsultasi/mapel}">Mata Pelajaran</a></li>
+                    <li><a class="dropdown-item" th:href="@{/statistik/konsultasi/pengajar}">Pengajar</a></li>
                 </ul>
             </li>
         </ul>
         <div sec:authorize="hasRole('ORTU')">
             <ul class="navbar-nav ml-auto navbar-right" style="padding-right: 150px;">
+<<<<<<< Updated upstream
                 <li class="nav-item dropdown col-auto" style="margin-right: 24px">
+=======
+                <li class="nav-item dropdown col-auto" id="dropdown-anak" style="margin-right: 24px" value="anak">
+                    Pilih Anak:
+>>>>>>> Stashed changes
                     <a href="/" class="dropdown" id="navbarDropdownMenuLink listAnak" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #2d3748; flex-direction: column;"
-                    th:text="'Pilih Anak: ' + ${anak.name}">
+                    th:data-value="${anak.id}"
+                    th:text="${anak.name}"
+                    >
+
                     </a>
                      <script th:inline="javascript"> 
                         /*<![CDATA[*/  
                         userEmail = /*[[${#authentication.getPrincipal().username}]]*/ 'default'; 
                         /*]]>*/
+<<<<<<< Updated upstream
+=======
+                        // let idAnak = document.getElementById('navbarDropdownMenuLink listAnak').data('value');
+                        var idAnak = $('#dropdown-anak a').data('value');
+                        console.log("cek id");
+                        console.log(idAnak);
+
+                        // var theLocation = window.location;
+                        // var lastPart = (theLocation.href).split('/').slice(-1)[0];
+                        // console.log(lastPart);
+    
+                        var homeUrl = `/anak/${idAnak}`
+                        $("#home-ortu").attr('href', homeUrl);
+    
+                        var jadwalURL = `/jadwal-kelas/anak/${idAnak}`
+                        $("#jadwal-ortu").attr('href', jadwalURL);
+
+                        var raporAnakURL = `/siswa/rapor-siswa/${idAnak}`
+                        $("#rapor-anak").attr('href', raporAnakURL);
+                        
+                        // $('#dropdown-anak').ready(function(e){
+                        //     $('#navbarDropdownMenuLink listAnak').on('click', function(){
+                        //         console.log("tes")
+                        //         idAnak = e.target.value;
+                                
+                        //     });
+                        // });
+
+                        
+>>>>>>> Stashed changes
                     
                         var json_url = "/api/v1/ortu/list-anak/" + userEmail;
                         console.log(json_url);
@@ -137,7 +222,11 @@
                             jQuery.getJSON(json_url, function(data){
                             $("#list-anak").html("");
                                                 
+<<<<<<< Updated upstream
                             jQuery.each(data, function(key, val){
+=======
+                            jQuery.each(data, function(key,val){
+>>>>>>> Stashed changes
                                 var url = '/anak/' + val.id;
                                 $("#list-anak").append("<a class='dropdown-item' href=" + url + ">"+ val.name + "</a>")
                             });
@@ -169,6 +258,7 @@
                             });
                         });
     
+<<<<<<< Updated upstream
                         var theLocation = window.location;
                         var lastPart = (theLocation.href).split('/').slice(-1)[0];
                         console.log(lastPart);
@@ -182,6 +272,9 @@
 
                         var raporAnakURL = "/siswa/rapor-siswa/" + lastPart
                         $("#rapor-anak").attr('href', raporAnakURL);
+=======
+                       
+>>>>>>> Stashed changes
 
                     </script>
                     <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink listAnak">

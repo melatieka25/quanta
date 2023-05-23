@@ -109,17 +109,10 @@
     </style>  
 </head>
 <body>
-<<<<<<< HEAD
-<nav th:replace="fragments/fragment :: navbar (${'user'})"></nav>
-<div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${error}" >
-    <div class="d-flex align-items-center">
-        <p th:text="${error}" style="margin-bottom: 0px; margin-top: 0px;"></p>
-=======
 <nav th:replace="fragments/fragment :: navbar (${'manajemenUser'},${isKakakAsuh})"></nav>
 <div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${errorMessage}" >
     <div class="d-flex align-items-center">
         <p th:text="${errorMessage}" style="margin-bottom: 0px; margin-top: 0px;"></p>
->>>>>>> 03c35be0cc46d5db528441e00508270f936cdc01
     </div>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
@@ -150,11 +143,7 @@
                     </a>
                 </div>
                 <div class="col">
-<<<<<<< HEAD
-                    <button type="submit" class="btn btn-primary" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B" >Import Pengajar</button>
-=======
                     <button type="submit" id="simpan-button" class="btn btn-primary" style="display:block; width:100%; margin-top:20px; background-color: #31318B; border-color: #31318B" disabled>Simpan</button>
->>>>>>> 03c35be0cc46d5db528441e00508270f936cdc01
                 </div>
             </div>
             </form>
@@ -215,10 +204,7 @@
         dropArea.onclick = () => {
             input.click();
         };
-<<<<<<< HEAD
-=======
         simpanBtn.disabled = true;
->>>>>>> 03c35be0cc46d5db528441e00508270f936cdc01
     });
 
 </script>

@@ -72,11 +72,16 @@
 
         #calendar {
             max-width: 1100px;
+            max-height: max-content;
             margin: 40px auto;
         }
 
         #calendar .fc-today {
             background: #EDF2f7;
+        }
+
+        #calendar .fc-title {
+            color: #EDF2f7;
         }
 
         #calendar .fc-widget-header{
@@ -85,145 +90,114 @@
         }
 
         :root {
-  --red: #2a2a80;
-  --darkred: #2a2a80;
-  /* --platinum: #e5e5e5; */
-  --black: #2b2d42;
-  --white: #fff;
-  --thumb: #edf2f4;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-/* body {
-  font: 16px / 24px;
-  color: var(--black);
-  background: var(--platinum);
-  margin: 50px 0;
-} */
-
-.container {
-  max-width: 1400px;
-  padding: 0 15px;
-  margin: 0 auto;
-}
-
-h2 {
-  font-size: 32px;
-  margin-bottom: 1em;
-}
-
-.cards {
-  display: flex;
-  padding: 25px 0px;
-  list-style: none;
-  overflow-x: scroll;
-  scroll-snap-type: x mandatory;
-}
-
-.card {
-  display: flex;
-  flex-direction: column;
-  flex: 0 0 100%;
-  padding: 20px;
-  background: var(--white);
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 15%);
-  scroll-snap-align: start;
-  transition: all 0.2s;
-}
-
-.card:not(:last-child) {
-  margin-right: 10px;
-}
-
-/* .card:hover {
-  color: var(--white);
-  background: var(--red);
-} */
-
-.card .card-title {
-  font-size: 20px;
-}
-
-.card .card-content {
-    font-size: 16px;
-
-    margin: 20px 0;
-    max-width: 100%;
-}
-
-.card .card-link-wrapper {
-  margin-top: auto;
-}
-
-.card .card-link {
-  display: inline-block;
-  text-decoration: none;
-  color: white;
-  background: var(--red);
-  padding: 6px 12px;
-  border-radius: 8px;
-  transition: background 0.2s;
-}
-
-/* .card:hover .card-link {
-  background: var(--darkred);
-} */
-
-.cards::-webkit-scrollbar {
-  height: 12px;
-}
-
-.cards::-webkit-scrollbar-thumb,
-.cards::-webkit-scrollbar-track {
-  border-radius: 92px;
-}
-
-.cards::-webkit-scrollbar-thumb {
-  background: lightgray;
-}
-
-.cards::-webkit-scrollbar-track {
-  background: var(--thumb);
-}
-
-@media (min-width: 500px) {
-  .card {
-    flex-basis: calc(50% - 10px);
-  }
-
-  .card:not(:last-child) {
-    margin-right: 20px;
-  }
-}
-
-@media (min-width: 700px) {
-  .card {
-    flex-basis: calc(calc(100% / 3) - 20px);
-  }
-
-  .card:not(:last-child) {
-    margin-right: 30px;
-  }
-}
-
-@media (min-width: 1100px) {
-  .card {
-    flex-basis: calc(25% - 30px);
-  }
-
-  .card:not(:last-child) {
-    margin-right: 40px;
-  }
-}
+            --red: #2a2a80;
+            --darkred: #2a2a80;
+            /* --platinum: #e5e5e5; */
+            --black: #2b2d42;
+            --white: #fff;
+            --thumb: #edf2f4;
+            }
 
 
-    
+        .cards {
+        display: flex;
+        justify-content: center;
+        padding: 25px 0px;
+        list-style: none;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        }
+
+        .card {
+        /* display: flex; */
+        width: 4em;
+        /* height: em; */
+        flex-direction: column;
+        flex: 0 0 100%;
+        padding: 20px;
+        background: var(--white);
+        box-shadow: 0px 14px 54px rgba(0, 0, 0, 0.04);
+        border-radius: 10px;
+        scroll-snap-align: start;
+        transition: all 0.2s;
+        }
+
+        .card:not(:last-child) {
+        margin-right: 10px;
+        }
+
+
+        .card .card-title {
+        font-size: 20px;
+        }
+
+        .card .card-content {
+            font-size: 16px;
+            margin: 20px 0;
+        }
+
+        .card .card-link-wrapper {
+        margin-top: auto;
+        }
+
+        .card .card-link {
+        display: inline-block;
+        text-decoration: none;
+        color: white;
+        background: var(--red);
+        padding: 6px 12px;
+        border-radius: 8px;
+        transition: background 0.2s;
+        }
+
+
+        .cards::-webkit-scrollbar {
+        height: 12px;
+        }
+
+        .cards::-webkit-scrollbar-thumb,
+        .cards::-webkit-scrollbar-track {
+        border-radius: 92px;
+        }
+
+        .cards::-webkit-scrollbar-thumb {
+        background: lightgray;
+        }
+
+        .cards::-webkit-scrollbar-track {
+        background: var(--thumb);
+        }
+
+        @media (min-width: 500px) {
+        .card {
+            flex-basis: calc(50% - 10px);
+        }
+
+        .card:not(:last-child) {
+            margin-right: 20px;
+        }
+        }
+
+        @media (min-width: 700px) {
+        .card {
+            flex-basis: calc(calc(100% / 3) - 20px);
+        }
+
+        .card:not(:last-child) {
+            margin-right: 30px;
+        }
+        }
+
+        @media (min-width: 1100px) {
+        .card {
+            flex-basis: calc(25% - 30px);
+        }
+
+        .card:not(:last-child) {
+            margin-right: 40px;
+        }
+        }
+
       
     </style>
 </head>
@@ -250,102 +224,7 @@ h2 {
         </div>
     </div>
 
-    <div class="container" style="padding-top: 40px; width: 75%;">
-        <!-- <div class="d-flex justify-content-between">
-                <div class="p-2">
-                  <img class="img-fluid" src="https://i.ibb.co/4mHbqt9/education.png" alt="education">
-                </div>
-                  <div class="p-2">
-                      <div class="row mb-3">
-                          <h3><strong>Jadwal Kelas Hari Ini</strong></h3>
-                      </div>
-                      <div th:if="${listJadwalHariIni.size() != 0}">
-
-                        <div class="row mb-3" th:each="jadwal, iterationStatus : ${listJadwalHariIni}"> 
-                            <div class="card" style="width: 20rem;">
-                                <div class="card-body">
-                                    <h5 class="card-title mb-3" th:text="${jadwal.mapelJadwal.name}"></h5>
-                                    <table class="card-text mb-3">
-                                        <tbody>
-                                            <tr>
-                                                <td>Pukul</td>
-                                                <td>:</td>
-                                                <td th:text="${#temporals.format(jadwal.startDateClass, 'HH:mm')} + ' - ' +${#temporals.format(jadwal.endDateClass, 'HH:mm')}"></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Ruang</td>
-                                                <td>:</td>
-                                                <td th:text="${jadwal.ruangKelas}"></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Kelas</td>
-                                                <td>:</td>
-                                                <td th:text="${jadwal.kelas.name}"></td>
-                                            </tr>
-                                        </tbody>
-        
-                                    </table>
-                                    <a th:href="@{/presensi/read/} + ${jadwal.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
-                                        Lihat Presensi </a>                            
-        
-                                </div>
-                            </div>
-                        </div>
-                      </div>
-
-                      <div th:unless="${listJadwalHariIni.size() != 0}">
-                        <p th:text="'Tidak ada jadwal hari ini'"></p>
-                      </div>
-                      
-                      
-                  </div>
-                  <div class="p-2">
-                    <div class="row mb-3">
-                        <h3><strong>Konsultasi Hari Ini</strong></h3>
-                    </div>
-                    <div th:if="${listKonsulHariIni.size() != 0}">
-                        <div class="row mb-3" th:each="konsul, iterationStatus : ${listKonsulHariIni}">
-                            <div class="card" style="width: 20rem;">
-                                <div class="card-body">
-                                    <h5 class="card-title mb-3" th:text="${konsul.mapelKonsul.name}"></h5>
-                                    <table class="card-text mb-3">
-                                        <tbody>
-                                            <tr>
-                                                <td>Pukul</td>
-                                                <td>:</td>
-                                                <td th:text="${#temporals.format(konsul.startTime, 'HH:mm')} + ' - ' +${#temporals.format(konsul.endTime, 'HH:mm')}"></td>
-                                                </tr>
-                                            <tr>
-                                                <td>Ruang</td>
-                                                <td>:</td>
-                                                <td th:text="${konsul.place}"></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Jenjang Kelas</td>
-                                                <td>:</td>
-                                                <td th:text="${konsul.jenjangKelas.displayValue}"></td>
-                                            </tr>
-                                        </tbody>
-            
-                                        </table>
-                                        <div sec:authorize="hasRole('PENGAJAR')"> 
-                                            <a th:href="@{/konsultasi/view/} + ${konsul.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
-                                            Lihat Detail </a>
-                                        </div>
-                                        <div sec:authorize="hasRole('SISWA')"> 
-                                            <a th:href="@{/konsultasi/siswa/view/} + ${konsul.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
-                                            Lihat Detail </a>
-                                        </div>
-                                    </div>
-                                </div>
-                        </div>
-                    </div>
-                    <div th:unless="${listKonsulHariIni.size() != 0}">
-                        <p th:text="'Tidak ada konsultasi hari ini'"></p>
-                      </div>
-                  </div>
-            </div> -->
-        
+    <div class="container-fluid" style="padding-top: 40px; width: 75%;">
         <!-- CARD CAROUSEL REF: https://webdesign.tutsplus.com/tutorials/horizontal-scrolling-card-ui-flexbox-and-css-grid--cms-41922 -->
         <div class="container" sec:authorize="hasRole('SISWA')">
             <div th:if="${listKonsultoJoin.size() != 0}">
@@ -408,7 +287,6 @@ h2 {
             </div>
             <div th:unless="${listKonsultoJoin.size() != 0}">
             </div>
-            <br><br>
         </div>
 
         <div class="container" sec:authorize="hasRole('PENGAJAR')">
@@ -465,121 +343,119 @@ h2 {
                 </li>
                 
                 </ul>
+                <br>
             </div>
             <div th:unless="${listReqKonsul.size() != 0}">
             </div>
-            <br><br>
         </div>
         
-        <div sec:authorize="hasAnyRole('PENGAJAR', 'SISWA', 'ORTU')">  
-            <div class="container">
-                <!-- <h2><strong>Agenda Hari Ini</strong></h2> -->
-                <div th:if="${listJadwalHariIni.size() != 0}">
-                    <h2 style="text-align: center;"><strong>Jadwal Hari Ini</strong></h2>
-                    <ul class="cards">
-                    <li class="card" th:each="jadwal, iterationStatus : ${listJadwalHariIni}">
-                        <div>
-                            <h3 class="card-title" th:text="${jadwal.mapelJadwal.name}" style="font-weight: bold;"></h3>
-                            <div class="card-content">
-                                <div class="row">
-                                    <div class="col-auto mr-auto">
-                                        <span class="material-icons">
-                                            schedule
-                                        </span>
+        <!-- <div sec:authorize="hasAnyRole('PENGAJAR', 'SISWA', 'ORTU')">  
+            
+                    <div th:if="${listJadwalHariIni.size() != 0}">
+                        <h3 style="text-align: center;"><strong>Jadwal Hari Ini</strong></h3>
+                        <ul class="cards">
+                        <li class="card" th:each="jadwal, iterationStatus : ${listJadwalHariIni}">
+                            <div>
+                                <h3 class="card-title" th:text="${jadwal.mapelJadwal.name}" style="font-weight: bold;"></h3>
+                                <div class="card-content">
+                                    <div class="row">
+                                        <div class="col-auto mr-auto">
+                                            <span class="material-icons">
+                                                schedule
+                                            </span>
+                                        </div>
+                                        <div class="col-auto ml-md-auto" th:text="${#temporals.format(jadwal.startDateClass, 'HH:mm')} + ' - ' +${#temporals.format(jadwal.endDateClass, 'HH:mm')}"></div>
                                     </div>
-                                    <div class="col-auto ml-md-auto" th:text="${#temporals.format(jadwal.startDateClass, 'HH:mm')} + ' - ' +${#temporals.format(jadwal.endDateClass, 'HH:mm')}"></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-auto mr-auto">
-                                        <span class="material-icons">
-                                            pin_drop
-                                        </span>
+                                    <div class="row">
+                                        <div class="col-auto mr-auto">
+                                            <span class="material-icons">
+                                                pin_drop
+                                            </span>
+                                        </div>
+                                        <div class="col-auto ml-md-auto" th:text="${jadwal.ruangKelas}"></div>
                                     </div>
-                                    <div class="col-auto ml-md-auto" th:text="${jadwal.ruangKelas}"></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-auto mr-auto">
-                                        <span class="material-icons">
-                                            person
-                                        </span>
+                                    <div class="row">
+                                        <div class="col-auto mr-auto">
+                                            <span class="material-icons">
+                                                person
+                                            </span>
+                                        </div>
+                                        <div sec:authorize="hasRole('SISWA')" class="col-auto ml-md-auto" th:text="${jadwal.pengajarKelas.name}"></div>
+                                        <div sec:authorize="hasRole('PENGAJAR')" class="col-auto ml-md-auto" th:text="${jadwal.kelas.name}"></div>
+    
                                     </div>
-                                    <div sec:authorize="hasRole('SISWA')" class="col-auto ml-md-auto" th:text="${jadwal.pengajarKelas.name}"></div>
-                                    <div sec:authorize="hasRole('PENGAJAR')" class="col-auto ml-md-auto" th:text="${jadwal.kelas.name}"></div>
-
+    
+    
+                                        
                                 </div>
-
-
-                                    
                             </div>
-                        </div>
-                        <div class="card-link-wrapper" sec:authorize="hasRole('PENGAJAR')">
-                            <a th:href="@{/presensi/read/} + ${jadwal.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
-                                Lihat Presensi </a>
-                        </div>
-                    </li>
-                    
-                    </ul>
-                </div>
-                <div th:unless="${listJadwalHariIni.size() != 0}">
-                </div>
-                <br><br>
-
-                <div th:if="${listKonsulHariIni.size() != 0}">
-                    <h4 style="text-align: center;"><strong>Konsultasi Kamu Hari Ini</strong></h4>
-                    <ul class="cards">
-                    <li class="card" th:each="konsul, iterationStatus : ${listKonsulHariIni}">
-                        <div>
-                            <h3 class="card-title" th:text="${konsul.mapelKonsul.name}" style="font-weight: bold;"></h3>
-                            <div class="card-content">
-                                <div class="row">
-                                    <div class="col-auto mr-auto">
-                                        <span class="material-icons">
-                                            schedule
-                                        </span>
-                                    </div>
-                                    <div class="col-auto ml-md-auto" th:text="${#temporals.format(konsul.startTime, 'HH:mm')} + ' - ' +${#temporals.format(konsul.endTime, 'HH:mm')}"></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-auto mr-auto">
-                                        <span class="material-icons">
-                                            pin_drop
-                                            </span>
-                                    </div>
-                                    <div class="col-auto ml-md-auto" th:text="${konsul.place}"></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-auto mr-auto">
-                                        <span class="material-icons">
-                                            school
-                                            </span>
-                                    </div>
-                                    <div class="col-auto ml-md-auto" th:text="${konsul.jenjangKelas.displayValue}"></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-auto mr-auto">
-                                        <span class="material-icons">
-                                            book
-                                            </span>
-                                    </div>
-                                    <div class="col-auto ml-md-auto" th:text="${konsul.topic}"></div>
-                                </div>
-
-                               
+                            <div class="card-link-wrapper">
+                                <a  sec:authorize="hasRole('PENGAJAR')" th:href="@{/presensi/read/} + ${jadwal.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
+                                    Lihat Presensi </a>
+                                <a  sec:authorize="hasRole('SISWA')" th:href="@{/jadwal-kelas/} + ${jadwal.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
+                                    Lihat Detail </a>
                             </div>
-                        </div>
-                        <div class="card-link-wrapper" sec:authorize="hasRole('PENGAJAR')">
-                            <a th:href="@{/konsultasi/view/} + ${konsul.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
-                                Lihat Detail </a>
-                        </div>
-                    </li>
-                    
-                    </ul>
-                </div>
-                <div th:unless="${listKonsulHariIni.size() != 0}">
-                </div>
-              </div>
-        </div>
-        <h3 style="text-align: center; padding-top: 40px;"><strong>Jadwal Quantum Research</strong></h3>
+                        </li>
+                        
+                        </ul>
+                    </div>
+                
+                <div class="col">
+                    <div th:if="${listKonsulHariIni.size() != 0}">
+                        <h3 style="text-align: center;"><strong>Konsultasi Hari Ini</strong></h3>
+                        <ul class="cards">
+                        <li class="card" th:each="konsul, iterationStatus : ${listKonsulHariIni}">
+                            <div>
+                                <h3 class="card-title" th:text="${konsul.mapelKonsul.name}" style="font-weight: bold;"></h3>
+                                <div class="card-content">
+                                    <div class="row">
+                                        <div class="col-auto mr-auto">
+                                            <span class="material-icons">
+                                                schedule
+                                            </span>
+                                        </div>
+                                        <div class="col-auto ml-md-auto" th:text="${#temporals.format(konsul.startTime, 'HH:mm')} + ' - ' +${#temporals.format(konsul.endTime, 'HH:mm')}"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-auto mr-auto">
+                                            <span class="material-icons">
+                                                pin_drop
+                                                </span>
+                                        </div>
+                                        <div class="col-auto ml-md-auto" th:text="${konsul.place}"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-auto mr-auto">
+                                            <span class="material-icons">
+                                                school
+                                                </span>
+                                        </div>
+                                        <div class="col-auto ml-md-auto" th:text="${konsul.jenjangKelas.displayValue}"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-auto mr-auto">
+                                            <span class="material-icons">
+                                                book
+                                                </span>
+                                        </div>
+                                        <div class="col-auto ml-md-auto" th:text="${konsul.topic}"></div>
+                                    </div>
+
+                                
+                                </div>
+                            </div>
+                            <div class="card-link-wrapper">
+                                <a  th:href="@{/konsultasi/view/} + ${konsul.id}" type="button" class="btn btn-outline-primary" style="display:block; width:75%;  background-color: #31318B; border-color: #31318B; color: white">
+                                    Lihat Detail </a>
+                            </div>
+                        </li>
+                        
+                        </ul>
+                    </div>
+            </div>
+
+        </div> -->
+        <h2 style="text-align: center; padding-top: 40px;"><strong>Jadwal Kamu</strong></h2>
         <div id='calendar'></div>
     </div>
     
@@ -618,18 +494,18 @@ h2 {
 
 
         $("#calendar").fullCalendar({
-            eventBackgroundColor: "#31318B",
-            eventBorderColor: "#31318B",
+            // eventBackgroundColor: "#31318B",
+            eventBorderColor: "#00000000",
 
             defaultView: 'agendaWeek',
             header: {
-                left: 'prev,next today',
+                right: 'prev,next, today',
                 // center: 'title',
-                right: 'month,agendaWeek'
+                // right: 'agendaWeek'
             },
 
             height: 800,
-            contentHeight: 500,
+            // contentHeight: ,
             aspectRatio: 3,
             initialDate: TODAY,
             allDaySlot: false,
