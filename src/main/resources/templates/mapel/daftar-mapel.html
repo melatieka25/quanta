@@ -10,7 +10,7 @@
     <object th:include="fragments/fragment :: style" th:remove="tag"></object>
 </head>
 <body>
-<nav th:replace="fragments/fragment :: navbar (${'Mapel'},${isKakakAsuh})"></nav>
+<nav th:replace="fragments/fragment :: navbar (${'manajemen'},${isKakakAsuh})"></nav>
 <div class="alert alert-danger alert-dismissible" role="alert" th:if="${error}" th:text="${error}">
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
