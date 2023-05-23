@@ -105,15 +105,9 @@ public class JadwalKelasController {
         return "jadwalkelas/jadwalkelas-viewall";
     }
 
-<<<<<<< Updated upstream
-    @GetMapping("/anak/{id}")
-    public String viewAllJadwalKelasOrtu(@PathVariable("id") Integer id, Principal principal, Model model) {
-        SiswaModel siswa = siswaService.getSiswaById(id);
-=======
     @GetMapping("/anak/{idSiswa}")
     public String viewAllJadwalKelasOrtu(@PathVariable("idSiswa") Integer idSiswa, Principal principal, Model model) {
         SiswaModel siswa = siswaService.getSiswaById(idSiswa);
->>>>>>> Stashed changes
         List<JadwalKelasModel> listJadwalAnak = jadwalKelasService.getListJadwalKelasByKelas(siswaService.getKelasBimbel(siswa));
         model.addAttribute("listJadwal", listJadwalAnak);
 
