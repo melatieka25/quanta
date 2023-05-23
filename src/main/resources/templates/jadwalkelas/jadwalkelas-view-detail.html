@@ -1,39 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
-    <title>Detail Jadwal Kelas</title>
-    <object th:include="fragments/fragment :: css" th:remove="tag"></object>
-    <object th:include="fragments/fragment :: js" th:remove="tag"></object>
-    <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <style>
-      body {
-          font-family: 'DM Sans';
-      }
-      .alert {
-        position:fixed;
-        top: 7rem;
-        left: 5%;
-        width: 90%;
-        z-index:9999;
-    }
-     /* Rules for sizing the icon. */
-     .material-icons.md-18 { font-size: 18px; }
-    .material-icons.md-24 { font-size: 24px; }
-    .material-icons.md-36 { font-size: 36px; }
-    .material-icons.md-48 { font-size: 48px; }
+  <title>Detail Jadwal Kelas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    /* Rules for using icons as black on a light background. */
-    .material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
-    .material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+  <object th:include="fragments/fragment :: css" th:remove="tag"></object>
+  <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+  <object th:include="fragments/fragment :: style" th:remove="tag"></object>
 
-    /* Rules for using icons as white on a dark background. */
-    .material-icons.md-light { color: rgba(255, 255, 255, 1); }
-    .material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
-    .btn-link:hover{
-      color: #0A2647 !important;
-    }
-  </style>  
 </head>
 <body>
   <nav th:replace="fragments/fragment :: navbar (${'jadwalKelas'},${isKakakAsuh})"></nav>

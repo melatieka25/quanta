@@ -86,9 +86,15 @@ public class PageController {
     }
 
 
+<<<<<<< Updated upstream
     @RequestMapping("/anak/{id}")
     public String homeOrtu(@PathVariable("id") Integer id, Principal principal, Model model) {
         UserModel user = userService.getUserById(id);
+=======
+    @RequestMapping("/anak/{idSiswa}")
+    public String homeOrtu(@PathVariable("idSiswa") Integer idSiswa, Principal principal, Model model) {
+        UserModel user = userService.getUserById(idSiswa);
+>>>>>>> Stashed changes
         model.addAttribute("username", user.getName());
         model.addAttribute("anak", user);
         return "home";
