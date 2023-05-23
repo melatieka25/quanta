@@ -108,7 +108,9 @@ public class JadwalKelasRestController {
 
         List<JadwalKelasDTO> json = new ArrayList<>();
         for (JadwalKelasModel jadwal : listJadwal) {
-            String url = "https://quanta.up.railway.app/jadwal-kelas/" + jadwal.getId();
+            // String url = "https://quanta.up.railway.app/jadwal-kelas/" + jadwal.getId();
+            String url = "http://localhost:8080/jadwal-kelas/" + jadwal.getId();
+
             String title = "[Jadwal] " + jadwal.getMapelJadwal().getName();
             JadwalKelasDTO item = new JadwalKelasDTO(title, jadwal.getStartDateClass(), jadwal.getEndDateClass(),url, "#31318B");
             json.add(item);
@@ -116,7 +118,9 @@ public class JadwalKelasRestController {
 
         for (KonsultasiModel konsul : listKonsul) {
             if (konsul.getStatus() == StatusKonsul.DITERIMA) {
-                String url = "https://quanta.up.railway.app/konsultasi/view/" + konsul.getId();
+                // String url = "https://quanta.up.railway.app/konsultasi/view/" + konsul.getId();
+                String url = "http://localhost:8080/konsultasi/view/" + konsul.getId();
+
                 String title = "[Konsultasi] " + konsul.getMapelKonsul().getName();
                 JadwalKelasDTO item = new JadwalKelasDTO(title, konsul.getStartTime(), konsul.getEndTime(), url, "#981217");
                 json.add(item);
