@@ -568,14 +568,14 @@ public class SiswaController {
                             ortu.setPassword(passwordOrtu);
                             ortu.setPasswordPertama(passwordOrtu);
                             ortuService.addOrtu(ortu);
-                            String emailOrtu = ortu.getEmail();
-                            String emailSubjectOrtu = "Selamat! Akun QUANTA (Quantum Assistant) Anda Telah Berhasil Dibuat";
-                            String emailBodyOrtu = emailService.getCredentialEmailBody(ortu);
-                            emailService.sendEmail(emailOrtu, emailSubjectOrtu, emailBodyOrtu);
                             siswa.setOrtu(ortu);
                             siswaService.updateSiswa(siswa);
                             listOrtu.add(ortu);
                             counterOrtu++;
+                            String emailOrtu = ortu.getEmail();
+                            String emailSubjectOrtu = "Selamat! Akun QUANTA (Quantum Assistant) Anda Telah Berhasil Dibuat";
+                            String emailBodyOrtu = emailService.getCredentialEmailBody(ortu);
+                            emailService.sendEmail(emailOrtu, emailSubjectOrtu, emailBodyOrtu);
                         } else {
                             siswa.setOrtu(ortu);
                             siswaService.updateSiswa(siswa);
@@ -670,10 +670,13 @@ public class SiswaController {
                                 ortu.setPassword(passwordOrtu);
                                 ortu.setPasswordPertama(passwordOrtu);
                                 ortuService.addOrtu(ortu);
+                                siswa.setOrtu(ortu);
+                                siswaService.updateSiswa(siswa);
+                                counterOrtu++;
+                                listOrtu.add(ortu);
                                 String emailOrtu = ortu.getEmail();
                                 String emailBodyOrtu = emailService.getCredentialEmailBody(ortu);
                                 emailService.sendEmail(emailOrtu, emailSubject, emailBodyOrtu);
-                                siswa.setOrtu(ortu);
                             }
                         }
                     }

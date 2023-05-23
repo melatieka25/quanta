@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.projectpop.quanta.admin.model.AdminModel;
 import com.projectpop.quanta.admin.service.AdminService;
 import com.projectpop.quanta.orangtua.model.OrtuModel;
 import com.projectpop.quanta.orangtua.service.OrtuService;
@@ -20,7 +19,6 @@ import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.service.PengajarService;
 import com.projectpop.quanta.siswa.model.SiswaModel;
 import com.projectpop.quanta.siswa.service.SiswaService;
-import com.projectpop.quanta.user.auth.PasswordManager;
 import com.projectpop.quanta.user.model.UpdatePasswordModel;
 import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.user.model.UserRole;
@@ -41,9 +39,6 @@ public class UserController {
 
     @Autowired
     private PengajarService pengajarService;
-
-    @Autowired
-    private AdminService adminService;
 
 
     @GetMapping("/profil")
@@ -72,6 +67,9 @@ public class UserController {
         } else if (user.getRole() == UserRole.ORTU) {
             OrtuModel ortu = ortuService.getOrtuById(user.getId());
             ortu.setAnakAktif(ortuService.getAnakAktif(ortu));
+            SiswaModel anak = ortuService.getDefaultAnakTerpilih(ortu);
+
+            model.addAttribute("anak", anak);
             model.addAttribute("ortu", ortu);
             model.addAttribute("dateOfBirth", dateOfBirth);
             return "akun-saya/profil-ortu";
@@ -90,6 +88,14 @@ public class UserController {
         var userModel = userService.getUserByEmail(principal.getName());
         pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         UpdatePasswordModel updatePassword = new UpdatePasswordModel();
+
+        if (userModel.getRole() == UserRole.ORTU){
+            OrtuModel ortu = ortuService.getOrtuById(userModel.getId());
+            SiswaModel anak = ortuService.getDefaultAnakTerpilih(ortu);
+
+            model.addAttribute("anak", anak);
+        }
+
         model.addAttribute("updatePassword", updatePassword);
         return "akun-saya/form-update-password";
     }

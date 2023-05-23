@@ -2,8 +2,12 @@
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
   <title>Tutup Konsultasi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <object th:include="fragments/fragment :: css" th:remove="tag"></object>
   <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+  <object th:include="fragments/fragment :: style" th:remove="tag"></object>
+
 </head>
 <body>
 <nav th:replace="fragments/fragment :: navbar ('konsultasi',${isKakakAsuh})"></nav>
@@ -113,6 +117,7 @@
   var rows = document.getElementsByTagName("tr");
   for (var i = 0; i < rows.length; i++) {
     var cells = rows[i].getElementsByTagName("select");
+    var max=$("#field-durasi-presensi").find(':selected').val();
     for (var j = 0; j < cells.length; j++) {
       var columnName = "";
       switch(j) {
@@ -136,7 +141,7 @@
 
     var isPresent=$(x).find(':selected').val();
     if (isPresent.toString() == "true"){
-      $("#field-durasi-presensi-" + rowIdx).val(2);
+      $("#field-durasi-presensi-" + rowIdx).val(max);
       $("#field-durasi-presensi-" + rowIdx).prop("disabled", false);
 
 

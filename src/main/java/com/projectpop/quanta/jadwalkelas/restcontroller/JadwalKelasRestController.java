@@ -8,6 +8,9 @@ import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.jadwalkelas.service.JadwalKelasService;
 import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.kelas.service.KelasService;
+import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
+import com.projectpop.quanta.konsultasi.model.StatusKonsul;
+import com.projectpop.quanta.konsultasi.service.KonsultasiService;
 import com.projectpop.quanta.mapel.model.MataPelajaranModel;
 
 import com.projectpop.quanta.pengajar.model.PengajarModel;
@@ -48,6 +51,9 @@ public class JadwalKelasRestController {
     @Autowired
     private JadwalKelasService jadwalKelasService;
 
+    @Autowired
+    private KonsultasiService konsultasiService;
+
 
     @GetMapping("/get-pengajar/mapel/{id}")
     private List<PengajarModel> getListPengajarByMapel(@PathVariable("id") Integer id) {
@@ -86,21 +92,41 @@ public class JadwalKelasRestController {
     private List<JadwalKelasDTO> getJadwalHomepage(Principal principal, @PathVariable("id") String id) {
         UserModel user = userService.getUserByEmail(principal.getName());
         List<JadwalKelasModel> listJadwal = jadwalKelasService.getListJadwalKelas();
+        List<KonsultasiModel> listKonsul = konsultasiService.getListKonsultasi();
+
 
         if (user.getRole() == UserRole.SISWA || user.getRole() == UserRole.PENGAJAR) {
             listJadwal = jadwalKelasService.getListJadwalByUser(user);
+            listKonsul = konsultasiService.getListKonsultasiByUser(user);
 
         } else if (user.getRole() == UserRole.ORTU) {
             UserModel anak = userService.getUserById(Integer.valueOf(id));
             listJadwal = jadwalKelasService.getListJadwalByUser(anak);
+            listKonsul = konsultasiService.getListKonsultasiByUser(anak);
 
         }
 
         List<JadwalKelasDTO> json = new ArrayList<>();
         for (JadwalKelasModel jadwal : listJadwal) {
+            // String url = "https://quanta.up.railway.app/jadwal-kelas/" + jadwal.getId();
             String url = "http://localhost:8080/jadwal-kelas/" + jadwal.getId();
-            JadwalKelasDTO item = new JadwalKelasDTO(jadwal.getMapelJadwal().getName(), jadwal.getStartDateClass(), jadwal.getEndDateClass(),url);
+
+            String title = "[Jadwal] " + jadwal.getMapelJadwal().getName();
+            JadwalKelasDTO item = new JadwalKelasDTO(title, jadwal.getStartDateClass(), jadwal.getEndDateClass(),url, "#31318B");
             json.add(item);
+        }
+
+        for (KonsultasiModel konsul : listKonsul) {
+            if (konsul.getStatus() == StatusKonsul.DITERIMA) {
+                // String url = "https://quanta.up.railway.app/konsultasi/view/" + konsul.getId();
+                String url = "http://localhost:8080/konsultasi/view/" + konsul.getId();
+
+                String title = "[Konsultasi] " + konsul.getMapelKonsul().getName();
+                JadwalKelasDTO item = new JadwalKelasDTO(title, konsul.getStartTime(), konsul.getEndTime(), url, "#981217");
+                json.add(item);
+            }
+            
+
         }
 
         return json;
