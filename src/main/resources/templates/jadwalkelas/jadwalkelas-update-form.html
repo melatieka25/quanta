@@ -2,23 +2,13 @@
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
     <title>Ubah Jadwal Kelas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <object th:include="fragments/fragment :: css" th:remove="tag"></object>
     <object th:include="fragments/fragment :: js" th:remove="tag"></object>
-    <link href='https://fonts.googleapis.com/css?family=DM Sans' rel='stylesheet'>
+    <object th:include="fragments/fragment :: style" th:remove="tag"></object>
 
 <body>
-<style>
-body {
-    font-family: 'DM Sans';
-}
-.alert {
-        position:fixed;
-        top: 7rem;
-        left: 5%;
-        width: 90%;
-        z-index:9999;
-    }
-</style>
 <nav th:replace="fragments/fragment :: navbar(${'jadwalKelas'},${isKakakAsuh})"></nav>
 <div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${message}" >
     <div class="d-flex align-items-center">

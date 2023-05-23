@@ -17,9 +17,6 @@ import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.orangtua.model.OrtuModel;
 import com.projectpop.quanta.orangtua.service.OrtuService;
-
-import com.projectpop.quanta.siswajadwalkelas.model.SiswaJadwalModel;
-import com.projectpop.quanta.siswajadwalkelas.service.SiswaJadwalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -330,6 +327,10 @@ public class KonsultasiServiceImpl implements KonsultasiService{
     public boolean isInRangeTimeExtend(LocalDateTime waktuAwalKonsul, LocalDateTime waktuAkirKonsulExtend) {
         int hari = waktuAwalKonsul.getDayOfWeek().getValue();
 
+        if (!waktuAwalKonsul.isBefore(LocalDateTime.now()) || !waktuAkirKonsulExtend.minusHours(1).isAfter(LocalDateTime.now())){
+            return false;
+        }
+
         if ((hari >= 1) && (hari <= 5)) {
             LocalDateTime maxWaktuAkhirExtend = LocalDateTime.of(waktuAwalKonsul.toLocalDate(), LocalTime.parse("20:00"));
             if (waktuAkirKonsulExtend.isAfter(maxWaktuAkhirExtend)){
@@ -386,7 +387,7 @@ public class KonsultasiServiceImpl implements KonsultasiService{
         }
 
         
-        return getListKonsulHariIni(listKonsul);
+        return listKonsul;
     }
 
     public List<KonsultasiModel> getListKonsulHariIni(List<KonsultasiModel> listKonsul) {
@@ -496,10 +497,10 @@ public class KonsultasiServiceImpl implements KonsultasiService{
         }
     }
 
-    @Override
-    public List<KonsultasiModel> getListKonsultasiByPengajar(PengajarModel pengajar) {
-        return konsultasiDb.findAllByPengajarKonsul(pengajar);
-    }
+//    @Override
+//    public List<KonsultasiModel> getListKonsultasiByPengajar(PengajarModel pengajar) {
+//        return konsultasiDb.findAllByPengajarKonsul(pengajar);
+//    }
 
     @Override
     public List<KonsultasiModel> getListKonsultasiPengajarHariIni(PengajarModel pengajar) {

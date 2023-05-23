@@ -1,7 +1,6 @@
 package com.projectpop.quanta.konsultasi.controller;
 
 import com.projectpop.quanta.email.service.EmailService;
-import com.projectpop.quanta.jadwalkelas.model.JadwalKelasModel;
 import com.projectpop.quanta.kelas.model.KelasModel;
 import com.projectpop.quanta.konsultasi.model.KonsultasiModel;
 import com.projectpop.quanta.konsultasi.service.KonsultasiService;
@@ -9,14 +8,13 @@ import com.projectpop.quanta.mapel.model.MataPelajaranModel;
 import com.projectpop.quanta.mapel.service.MapelService;
 import com.projectpop.quanta.pengajar.model.PengajarModel;
 import com.projectpop.quanta.pengajar.service.PengajarService;
-import com.projectpop.quanta.presensi.model.PresensiModel;
-import com.projectpop.quanta.presensi.model.PresensiStatus;
 import com.projectpop.quanta.siswa.model.Jenjang;
 import com.projectpop.quanta.siswa.model.SiswaModel;
 import com.projectpop.quanta.siswa.service.SiswaService;
 import com.projectpop.quanta.siswakonsultasi.model.SiswaKonsultasiModel;
 import com.projectpop.quanta.siswakonsultasi.service.SiswaKonsultasiService;
 import com.projectpop.quanta.user.model.UserModel;
+import com.projectpop.quanta.user.model.UserRole;
 import com.projectpop.quanta.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,7 +33,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -88,7 +85,7 @@ public class KonsultasiController {
 
         else if(user.getRole().toString().equals("PENGAJAR")){
             PengajarModel pengajar = pengajarService.getPengajarByEmail(principal.getName());
-            List<KonsultasiModel> myListKonsultasi = konsultasiService.getListKonsultasiByPengajar(pengajar);
+            List<KonsultasiModel> myListKonsultasi = konsultasiService.getListKonsultasiByUser(pengajar);
             List<KonsultasiModel> listRequestKonsultasi = konsultasiService.getRequestKonsultasi(pengajar);
 
             model.addAttribute("myListKonsultasi", myListKonsultasi);
@@ -110,7 +107,7 @@ public class KonsultasiController {
 
             return "konsultasi/landing-page-siswa";
         }
-        return "error";
+        return "error/404";
     }
 
     @GetMapping("/konsultasi/view/{idKonsultasi}" )
@@ -125,6 +122,9 @@ public class KonsultasiController {
         }
 
         if(userModel.getRole().toString().equals("PENGAJAR")){
+            if (!konsultasi.getPengajarKonsul().equals(userModel)){
+                return "error/404";
+            }
             boolean isToValidate = false;
             boolean isToClose = false;
 
@@ -139,17 +139,36 @@ public class KonsultasiController {
         }
 
         if(userModel.getRole().toString().equals("SISWA")){
+            if (null == siswaService.getKelasBimbel(((SiswaModel) userModel))){
+                return "error/404";
+            }
+            else if (!konsultasi.getJenjangKelas().equals(((SiswaModel) userModel).getJenjang())){
+                return "error/404";
+            }
             boolean isJoinable = false;
             boolean isCancelable = false;
             boolean isExtendable = false;
 
-            if (konsultasi.getStatus().equals(PENDING)){
+            KonsultasiModel konsultasiNew = new KonsultasiModel();
+            konsultasiNew.setStartTime(konsultasi.getEndTime());
+            konsultasiNew.setEndTime(konsultasiNew.getStartTime().plusHours(1));
+            konsultasiNew.setDuration(1);
+
+            boolean isNotPartOfKonsul= siswaKonsultasiService.isRekomended((SiswaModel) userModel, konsultasi);
+
+            if (konsultasi.getStatus().equals(PENDING) && !isNotPartOfKonsul){
                 isCancelable = true;
             }
-            else if (konsultasiService.isExtendAble(konsultasi)){
+            else if (konsultasiService.isInRangeTimeExtend(konsultasi.getStartTime(),konsultasiNew.getEndTime())
+                    && konsultasiService.getIsSiswaAvailable((SiswaModel) userModel, konsultasiNew)
+                    && konsultasiService.getIsPengajarAvailable(konsultasi.getPengajarKonsul(), konsultasiNew)
+                    && !isNotPartOfKonsul){
                 isExtendable = true;
             }
-            else if (siswaKonsultasiService.isRekomended((SiswaModel) userModel, konsultasi)){
+            else if (isNotPartOfKonsul
+                    && konsultasiService.getIsSiswaAvailable((SiswaModel) userModel, konsultasi)
+                    && (konsultasi.getListSiswaKonsultasi().size() < 20)
+                    && (konsultasi.getStartTime().minusMinutes(10).isAfter(LocalDateTime.now()))){
                 isJoinable = true;
             }
 
@@ -188,7 +207,10 @@ public class KonsultasiController {
         pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         SiswaModel siswa = siswaService.findSiswaByEmail(authentication.getName());
         SiswaKonsultasiModel siswaKonsultasi = siswaKonsultasiService.getBySiswaAndKonsultasi(siswa, idKonsultasi);
-        KonsultasiModel konsultasiCancel = siswaKonsultasi.getKonsultasi();
+        KonsultasiModel konsultasiCancel = konsultasiService.getKonsultasi(idKonsultasi);
+        if (siswaKonsultasiService.isRekomended(siswa, konsultasiCancel)){
+            return "error/404";
+        }
         if (null != siswaKonsultasiService.cancelConsultation(siswaKonsultasi)) {
             model.addAttribute("konsultasiCancel", konsultasiCancel);
 
@@ -198,23 +220,27 @@ public class KonsultasiController {
 
             redirectAttrs.addFlashAttribute("message", "Konsultasi berhasil dibatalkan!");
 
-            return "redirect:/konsultasi";
+            return "redirect:/konsultasi/view/" + idKonsultasi;
 
         } else {
             redirectAttrs.addFlashAttribute("errorMessage", "Konsultasi gagal dibatalkan!");
 
 
-            return "redirect:/konsultasi";
+            return "redirect:/konsultasi/view/" + idKonsultasi;
         }
 
     }
 
 
     @GetMapping("/konsultasi/add")
-    public String addKonsultasiFormPage(Model model, Principal principal) {
+    public String addKonsultasiFormPage(Model model, Principal principal, RedirectAttributes redirectAttrs) {
         var userModel = userService.getUserByEmail(principal.getName());
-        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
-        KonsultasiModel konsultasi = new KonsultasiModel();
+        if (!userModel.getRole().equals(UserRole.SISWA)){
+            return "error/404";
+        } else if (null == siswaService.getKelasBimbel((SiswaModel) userModel)) {
+            redirectAttrs.addFlashAttribute("errorMessage", "Anda tidak dapat membuat konsultasi karena belum memiliki kelas!");
+            return "redirect:/konsultasi";
+        }
         List<MataPelajaranModel> listMapel = mapelService.getAllMapel();
 
         model.addAttribute("listMapel", listMapel);
@@ -312,13 +338,17 @@ public class KonsultasiController {
         emailService.sendEmail(emailPenerima, emailSubject, emailBody);
 
         redirectAttrs.addFlashAttribute("message", "Konsultasi berhasil ditambahkan!");
-        return "redirect:/konsultasi";
+        return "redirect:/konsultasi/view/" + konsultasi.getId(); // Redirect to success page
     }
 
     @PostMapping(value = "/konsultasi/terima/{idKonsultasi}", params = {"save"})
     public String submitFormTerimaKonsultasi(Principal principal,  @PathVariable Integer idKonsultasi, String place, RedirectAttributes redirectAttributes) {
         KonsultasiModel konsultasi = konsultasiService.getKonsultasi(idKonsultasi);
         PengajarModel pengajar = pengajarService.getPengajarByEmail(principal.getName());
+        if (!konsultasi.getPengajarKonsul().equals(pengajar)){
+            redirectAttributes.addFlashAttribute("errorMessage", "Anda tidak dapat menerima konsultasi ini karena bukan pengajar konsultasi!");
+            return "redirect:/konsultasi/view/" + idKonsultasi;
+        }
 
         String formattedDate = getFormattedDate(konsultasi.getStartTime().toLocalDate());
 
@@ -367,7 +397,7 @@ public class KonsultasiController {
         emailService.sendEmail(emailPenerima, emailSubject, emailBody);
 
         konsultasi.setRejectedTime(LocalDateTime.now());
-        konsultasi.setRejectionReason("Ditolak otomatis oleh sistem");
+        konsultasi.setRejectionReason("sistem secara otomatis karena bentrok");
         konsultasi.setStatus(DITOLAK);
         konsultasiService.updateKonsultasi(konsultasi);
         redirectAttributes.addFlashAttribute("errorMessage", "Konsultasi gagal diterima karena bertabrakan dengan jadwal anda\nKonsultasi ini akan otomatis ditolak!");
@@ -375,11 +405,18 @@ public class KonsultasiController {
 
     }
 
-    @GetMapping("/konsultasi/tolak/{idKonsultasi}")
-    public String tolakKonsultasi(@PathVariable Integer idKonsultasi, RedirectAttributes redirectAttributes) {
+    @PostMapping(value = "/konsultasi/tolak/{idKonsultasi}", params = {"save"})
+    public String submitFormTolakKonsultasi(Principal principal,  @PathVariable Integer idKonsultasi, String rejectionReason, RedirectAttributes redirectAttributes) {
         KonsultasiModel konsultasi = konsultasiService.getKonsultasi(idKonsultasi);
+        PengajarModel pengajar = pengajarService.getPengajarByEmail(principal.getName());
+
+        if (!konsultasi.getPengajarKonsul().equals(pengajar)){
+            redirectAttributes.addFlashAttribute("errorMessage", "Anda tidak dapat menutup konsultasi ini karena bukan pengajar konsultasi!");
+            return "redirect:/konsultasi/view/" + idKonsultasi;
+        }
         konsultasi.setStatus(DITOLAK);
-        konsultasi.setRejectionReason("Ditolak oleh pengajar");
+        konsultasi.setRejectionReason("pengajar karena: \n" + rejectionReason);
+        konsultasi.setRejectedTime(LocalDateTime.now());
         konsultasiService.updateKonsultasi(konsultasi);
 
         ArrayList<String> emailPenerima = new ArrayList<>();
@@ -409,11 +446,17 @@ public class KonsultasiController {
         pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
         SiswaModel siswa = siswaService.findSiswaByEmail(principal.getName());
         KonsultasiModel konsultasi = konsultasiService.getKonsultasi(idKonsultasi);
+        if (!konsultasi.getJenjangKelas().equals(siswa.getJenjang())){
+            return "error/404";
+        }
         if ((konsultasi.getListSiswaKonsultasi().size() >= 20)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "konsultasi tidak dapat diikuti diikuti karena kuota sudah penuh");
+            redirectAttributes.addFlashAttribute("errorMessage", "konsultasi tidak dapat diikuti karena kuota sudah penuh");
             return "redirect:/konsultasi/view/" + idKonsultasi; // Redirect to success page
         }
-        if (konsultasiService.getIsSiswaAvailable(siswa, konsultasi)){
+        if (siswaKonsultasiService.isRekomended((SiswaModel) userModel, konsultasi)
+                && konsultasiService.getIsSiswaAvailable((SiswaModel) userModel, konsultasi)
+                && (konsultasi.getStartTime().minusMinutes(10).isAfter(LocalDateTime.now()))
+        ){
             SiswaKonsultasiModel siswaKonsultasi = new SiswaKonsultasiModel();
             siswaKonsultasi.setKonsultasi(konsultasi);
             siswaKonsultasi.setSiswaKonsul(siswa);
@@ -454,6 +497,10 @@ public class KonsultasiController {
         SiswaModel siswa = siswaService.findSiswaByEmail(principal.getName());
         KonsultasiModel konsultasi = konsultasiService.getKonsultasi(idKonsultasi);
 
+        if(siswaKonsultasiService.isRekomended(siswa, konsultasi)){
+            return "error/404";
+        }
+
         KonsultasiModel konsultasiNew = new KonsultasiModel();
         konsultasiNew.setStartTime(konsultasi.getEndTime());
         konsultasiNew.setEndTime(konsultasiNew.getStartTime().plusHours(1));
@@ -480,6 +527,13 @@ public class KonsultasiController {
     @GetMapping("/konsultasi/close/{idKonsultasi}")
     public String closeKonsultasiFormPage(Model model, Principal principal, @PathVariable Integer idKonsultasi) {
         KonsultasiModel konsultasi = konsultasiService.getKonsultasi(idKonsultasi);
+        PengajarModel pengajar = pengajarService.getPengajarByEmail(principal.getName());
+        if (!konsultasi.getPengajarKonsul().equals(pengajar)){
+            return "error/404";
+        }
+        if (!konsultasiService.isToClose(konsultasi)){
+            return "error/404";
+        }
 
         for (SiswaKonsultasiModel siswaKonsultasi: konsultasi.getListSiswaKonsultasi()) {
             KelasModel kelas = siswaService.getKelasBimbel(siswaKonsultasi.getSiswaKonsul());

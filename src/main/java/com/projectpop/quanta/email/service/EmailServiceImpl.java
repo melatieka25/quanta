@@ -1,6 +1,9 @@
 package com.projectpop.quanta.email.service;
 
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -11,35 +14,49 @@ import com.projectpop.quanta.user.model.UserModel;
 
 @Service
 public class EmailServiceImpl implements EmailService{
+    private final ExecutorService executorService = Executors.newFixedThreadPool(10);
+
     @Autowired
     private JavaMailSender mailSender;
 
-@Override
+    @Override
     public void sendEmail(String emailPenerima, String subject, String body) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("quantum.research.assistant@gmail.com");
-        message.setTo(emailPenerima);
-        message.setText(body);
-        message.setSubject(subject);
+        CompletableFuture.runAsync(() -> {
+            try {
+                SimpleMailMessage message = new SimpleMailMessage();
+                message.setFrom("quantum.research.assistant@gmail.com");
+                message.setTo(emailPenerima);
+                message.setText(body);
+                message.setSubject(subject);
 
-        mailSender.send(message);
+                mailSender.send(message);
 
-        System.out.println("Mail Sent successfully...");
+                System.out.println("Mail sent successfully...");
+            } catch (Exception e) {
+                System.out.println("Error sending email: " + e.getMessage());
+            }
+        }, executorService);
     }
 
     @Override
     public void sendEmail(ArrayList<String> emailPenerimaArrayList, String subject, String body) {
         String[] emailPenerima = emailPenerimaArrayList.toArray(new String[emailPenerimaArrayList.size()]);
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("quantum.research.assistant@gmail.com");
-        message.setTo(emailPenerima);
-        message.setText(body);
-        message.setSubject(subject);
+        CompletableFuture.runAsync(() -> {
+            try {
+                SimpleMailMessage message = new SimpleMailMessage();
+                message.setFrom("quantum.research.assistant@gmail.com");
+                message.setTo(emailPenerima);
+                message.setText(body);
+                message.setSubject(subject);
 
-        mailSender.send(message);
+                mailSender.send(message);
 
-        System.out.println("Mail Sent successfully...");
+                System.out.println("Mail sent successfully...");
+            } catch (Exception e) {
+                System.out.println("Error sending email: " + e.getMessage());
+            }
+        }, executorService);
     }
 
     @Override
