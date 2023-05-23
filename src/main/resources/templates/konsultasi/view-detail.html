@@ -62,9 +62,9 @@
 </div>
 
 <div class="container" style=" margin-top:40px">
-    <a type="button" class="btn btn-link" onclick="history.back()" style="display: flex; align-items: center; text-decoration: none; color: #31318B; font-weight: normal">
+    <a type="button" class="btn btn-link" href="/konsultasi" style="display: flex; align-items: center; text-decoration: none; color: #31318B; font-weight: normal">
         <span class="material-icons md-18"> arrow_back_ios </span>
-        Kembali
+        Lihat Daftar Konsultasi
     </a>
   <div class="row">
     <div class="col-lg-4">
@@ -291,14 +291,21 @@ line-height: 140%;">Data Konsultasi</h5>
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
+                                <form th:action="@{/konsultasi/tolak/} + ${konsultasi.id}" th:object="${konsultasi}" method="POST">
                                 <div class="modal-body">
-                                    Verivikasi penolakan tidak dapat diubah.
-                                    <br>
+                                      <div class="form-group">
+                                          Alasan penolakan:
+                                          <input type="text" class="form-control" placeholder="Alasan penolakan..." id="inputFieldPlaceTolak" name="rejectionReason" th:value="${rejectionReason}" th:text="${rejectionReason}" required/>
+                                          <br>
+                                      </div>
+                                        Verifikasi konsultasi tidak data diganti!
+                                    <!-- Additional input fields as needed -->
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                    <a class="btn btn-primary"  style="background-color: #31318B; border-color: #31318B" th:href="@{/konsultasi/tolak/} + ${konsultasi.id}">Yakin</a>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Kembali</button>
+                                    <button class="btn btn-primary" type="submit" name="save" style="background-color: #31318B; border-color: #31318B">Yakin</button>
                                 </div>
+                                    </form>
                             </div>
                             <br>
                         </div>
@@ -346,7 +353,7 @@ line-height: 140%;">Data Konsultasi</h5>
                             <span class="dot"></span>
                         </div>
                         <div class="col" >
-                            <h7 style="font-weight: bold" th:text="${konsultasi.rejectionReason}"></h7>
+                            <h7 style="font-weight: bold" th:text="${'Ditolak oleh ' + konsultasi.rejectionReason}"></h7>
                             <br>
                             <h7 style="font-size: 0.8em" th:text="${#temporals.format(konsultasi.rejectedTime, 'dd MMMM yyyy, HH.mm')}"></h7>
                         </div>
@@ -363,14 +370,14 @@ line-height: 140%;">Data Konsultasi</h5>
                         </div>
                     </div>
 
-                    <div th:if="${konsultasi.status.toString().equals('EXPIRED')}" class="row">
+                    <div th:if="${konsultasi.status.toString().equals('KADALUARSA')}" class="row">
                         <div class="col-1">
                             <span class="dot"></span>
                         </div>
                         <div class="col">
-                            <h7 style="font-weight: bold" th:text="${konsultasi.rejectionReason}"></h7>
+                            <h7 style="font-weight: bold">Kadaluarsa</h7>
                             <br>
-                            <h7 style="font-size: 0.8em" th:text="${#temporals.format(konsultasi.rejectedTime, 'dd MMMM yyyy, HH.mm')}"></h7>
+                            <h7 style="font-size: 0.8em" th:text="${#temporals.format(konsultasi.expiredTime, 'dd MMMM yyyy, HH.mm')}"></h7>
                         </div>
                     </div>
 
