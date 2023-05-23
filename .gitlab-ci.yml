@@ -8,26 +8,7 @@ variables:
   IMAGE_OPENJDK_GRADLE: gradle:7.3.3-jdk17-alpine
 
 stages:
-  - clean
-  - build
   - deploy
-
-clean:
-  image: $IMAGE_OPENJDK_GRADLE
-  stage: clean
-  script:
-    - echo "Cleaning leftovers from previous builds"
-    - sh $CI_PROJECT_DIR/gradlew clean
-
-build:
-  image: $IMAGE_OPENJDK_GRADLE
-  stage: build
-  script:
-    - echo "Compiling the code..."
-    - sh $CI_PROJECT_DIR/gradlew assemble
-  artifacts:
-    paths:
-      - build/libs/quanta-0.0.1-SNAPSHOT.jar
 
 deploy-railway:
   stage: deploy

@@ -78,9 +78,18 @@ public class KonsulStatsServiceImpl implements KonsulStatsService{
         System.arraycopy(data, 0, dataStatsCopy, 0, data.length);
 
         Arrays.sort(dataStatsCopy);
+        
+        String lowestData;
+        String highestData;
+        if (dataStatsCopy.length == 0){
+            lowestData = "-";
+            highestData = "-";
 
-        String lowestData = dataStatsCopy[0].getName();
-        String highestData = dataStatsCopy[dataStatsCopy.length-1].getName();
+        } else {
+            lowestData = dataStatsCopy[0].getName();
+            highestData = dataStatsCopy[dataStatsCopy.length-1].getName();
+        }
+       
 
         mapOverview.put("Konsultasi " + jenjang + " Tertinggi", highestData);
         mapOverview.put("Konsultasi " + jenjang + " Terendah", lowestData);
