@@ -327,6 +327,10 @@ public class KonsultasiServiceImpl implements KonsultasiService{
     public boolean isInRangeTimeExtend(LocalDateTime waktuAwalKonsul, LocalDateTime waktuAkirKonsulExtend) {
         int hari = waktuAwalKonsul.getDayOfWeek().getValue();
 
+        if (!waktuAwalKonsul.isBefore(LocalDateTime.now()) || !waktuAkirKonsulExtend.minusHours(1).isAfter(LocalDateTime.now())){
+            return false;
+        }
+
         if ((hari >= 1) && (hari <= 5)) {
             LocalDateTime maxWaktuAkhirExtend = LocalDateTime.of(waktuAwalKonsul.toLocalDate(), LocalTime.parse("20:00"));
             if (waktuAkirKonsulExtend.isAfter(maxWaktuAkhirExtend)){
