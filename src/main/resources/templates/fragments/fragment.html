@@ -169,12 +169,8 @@
         </ul>
         <div sec:authorize="hasRole('ORTU')">
             <ul class="navbar-nav ml-auto navbar-right" style="padding-right: 150px;">
-<<<<<<< Updated upstream
-                <li class="nav-item dropdown col-auto" style="margin-right: 24px">
-=======
                 <li class="nav-item dropdown col-auto" id="dropdown-anak" style="margin-right: 24px" value="anak">
                     Pilih Anak:
->>>>>>> Stashed changes
                     <a href="/" class="dropdown" id="navbarDropdownMenuLink listAnak" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #2d3748; flex-direction: column;"
                     th:data-value="${anak.id}"
                     th:text="${anak.name}"
@@ -185,8 +181,6 @@
                         /*<![CDATA[*/  
                         userEmail = /*[[${#authentication.getPrincipal().username}]]*/ 'default'; 
                         /*]]>*/
-<<<<<<< Updated upstream
-=======
                         // let idAnak = document.getElementById('navbarDropdownMenuLink listAnak').data('value');
                         var idAnak = $('#dropdown-anak a').data('value');
                         console.log("cek id");
@@ -214,7 +208,6 @@
                         // });
 
                         
->>>>>>> Stashed changes
                     
                         var json_url = "/api/v1/ortu/list-anak/" + userEmail;
                         console.log(json_url);
@@ -222,11 +215,7 @@
                             jQuery.getJSON(json_url, function(data){
                             $("#list-anak").html("");
                                                 
-<<<<<<< Updated upstream
-                            jQuery.each(data, function(key, val){
-=======
                             jQuery.each(data, function(key,val){
->>>>>>> Stashed changes
                                 var url = '/anak/' + val.id;
                                 $("#list-anak").append("<a class='dropdown-item' href=" + url + ">"+ val.name + "</a>")
                             });
@@ -258,23 +247,7 @@
                             });
                         });
     
-<<<<<<< Updated upstream
-                        var theLocation = window.location;
-                        var lastPart = (theLocation.href).split('/').slice(-1)[0];
-                        console.log(lastPart);
-    
-                        var homeUrl = "/anak/" + lastPart
-    
-                        $("#home-ortu").attr('href', homeUrl);
-    
-                        var jadwalURL = "/jadwal-kelas/anak/" + lastPart
-                        $("#jadwal-ortu").attr('href', jadwalURL);
-
-                        var raporAnakURL = "/siswa/rapor-siswa/" + lastPart
-                        $("#rapor-anak").attr('href', raporAnakURL);
-=======
                        
->>>>>>> Stashed changes
 
                     </script>
                     <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink listAnak">
