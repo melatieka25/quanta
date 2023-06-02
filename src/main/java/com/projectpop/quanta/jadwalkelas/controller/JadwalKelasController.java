@@ -17,13 +17,10 @@ import com.projectpop.quanta.siswa.model.SiswaModel;
 import com.projectpop.quanta.siswa.service.SiswaService;
 import com.projectpop.quanta.user.model.UserModel;
 import com.projectpop.quanta.user.model.UserRole;
-import com.projectpop.quanta.user.service.UserService;
 
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
 
-
-import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -69,7 +66,7 @@ public class JadwalKelasController {
     @GetMapping("")
     public String viewAllJadwalKelas(Principal principal, Model model) {
         UserModel user = userService.getUserByEmail(principal.getName());
-        pengajarService.checkIsPengajarDanKakakAsuh(user,model);
+        pengajarService.checkIsPengajarDanKakakAsuh(user, model);
 
         // ADMIN
         List<JadwalKelasModel> listJadwalKelas = jadwalKelasService.getListJadwalKelas();
@@ -77,7 +74,7 @@ public class JadwalKelasController {
         // ORTU
         if (user.getRole() == UserRole.ORTU) {
             OrtuModel ortu = ortuService.getOrtuById(user.getId());
-           
+
             SiswaModel anak = ortuService.getDefaultAnakTerpilih(ortu);
             model.addAttribute("anak", anak);
             return "redirect:/jadwal-kelas/anak/" + anak.getId();
@@ -108,7 +105,8 @@ public class JadwalKelasController {
     @GetMapping("/anak/{idSiswa}")
     public String viewAllJadwalKelasOrtu(@PathVariable("idSiswa") Integer idSiswa, Principal principal, Model model) {
         SiswaModel siswa = siswaService.getSiswaById(idSiswa);
-        List<JadwalKelasModel> listJadwalAnak = jadwalKelasService.getListJadwalKelasByKelas(siswaService.getKelasBimbel(siswa));
+        List<JadwalKelasModel> listJadwalAnak = jadwalKelasService
+                .getListJadwalKelasByKelas(siswaService.getKelasBimbel(siswa));
         model.addAttribute("listJadwal", listJadwalAnak);
 
         List<JadwalKelasModel> listHariIni = jadwalKelasService.getListJadwalHariIni(siswa);
@@ -135,7 +133,7 @@ public class JadwalKelasController {
     @GetMapping("/{id}")
     public String viewDetailJadwalKelas(@PathVariable("id") Integer id, Model model, Principal principal) {
         var userModel = userService.getUserByEmail(principal.getName());
-        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel, model);
         JadwalKelasModel jadwal = jadwalKelasService.getJadwalKelasById(id);
         LocalDateTime now = LocalDateTime.now();
         boolean canUpdate = true;
@@ -143,7 +141,7 @@ public class JadwalKelasController {
             canUpdate = false;
         } else if (now.isEqual(jadwal.getStartDateClass())) {
             canUpdate = false;
-        } 
+        }
         model.addAttribute("jadwal", jadwal);
         model.addAttribute("canUpdate", canUpdate);
         model.addAttribute("anak", userModel);
@@ -154,16 +152,17 @@ public class JadwalKelasController {
     @GetMapping("/add")
     public String addJadwalKelasFormPage(Model model, Principal principal) {
         var userModel = userService.getUserByEmail(principal.getName());
-        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel, model);
         JadwalKelasModel jadwalKelas = new JadwalKelasModel();
         getAllDropdownList(jadwalKelas, model);
         return "jadwalkelas/jadwalkelas-add-form";
     }
 
     // SUBMIT CREATE
-    @PostMapping(value = "/add", params = {"save"})
-    public String submitJadwalKelas(@ModelAttribute JadwalKelasModel jadwalKelas, String tanggal, String jam_mulai, String jam_selesai, 
-    String kelasDiajar, String mapel, String pengajar,Model model, RedirectAttributes redirectAttrs) {
+    @PostMapping(value = "/add", params = { "save" })
+    public String submitJadwalKelas(@ModelAttribute JadwalKelasModel jadwalKelas, String tanggal, String jam_mulai,
+            String jam_selesai,
+            String kelasDiajar, String mapel, String pengajar, Model model, RedirectAttributes redirectAttrs) {
         // set atttribute
         jadwalKelas.setKelas(kelasService.getKelasById(Integer.parseInt(kelasDiajar)));
         jadwalKelas.setMapelJadwal(mapelService.getMapelById(Integer.parseInt(mapel)));
@@ -194,7 +193,8 @@ public class JadwalKelasController {
         LocalDateTime jadwalSelesai = jadwalKelas.getEndDateClass();
         LocalDate date = LocalDate.of(jadwalMulai.getYear(), jadwalMulai.getMonth(), jadwalMulai.getDayOfMonth());
         LocalTime jamMulai = LocalTime.of(jadwalMulai.getHour(), jadwalMulai.getMinute(), jadwalMulai.getSecond());
-        LocalTime jamSelesai = LocalTime.of(jadwalSelesai.getHour(), jadwalSelesai.getMinute(), jadwalSelesai.getSecond());
+        LocalTime jamSelesai = LocalTime.of(jadwalSelesai.getHour(), jadwalSelesai.getMinute(),
+                jadwalSelesai.getSecond());
 
         int day = jadwalKelas.getStartDateClass().getDayOfWeek().getValue();
         model.addAttribute("listKelas", kelasService.getListKelasByDays(day));
@@ -215,14 +215,14 @@ public class JadwalKelasController {
         model.addAttribute("tanggal", date);
         model.addAttribute("jamMulai", jamMulai);
         model.addAttribute("jamSelesai", jamSelesai);
-        model.addAttribute("jadwalKelas", jadwalKelas); 
+        model.addAttribute("jadwalKelas", jadwalKelas);
     }
 
     // FORM UPDATE
     @GetMapping("/update/{id}")
     public String updateJadwalKelasFormPage(@PathVariable("id") Integer id, Model model, Principal principal) {
         var userModel = userService.getUserByEmail(principal.getName());
-        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel, model);
         JadwalKelasModel jadwalKelas = jadwalKelasService.getJadwalKelasById(id);
         getAllDropdownList(jadwalKelas, model);
 
@@ -230,13 +230,15 @@ public class JadwalKelasController {
         LocalDateTime jadwalSelesai = jadwalKelas.getEndDateClass();
         LocalDate date = LocalDate.of(jadwalMulai.getYear(), jadwalMulai.getMonth(), jadwalMulai.getDayOfMonth());
         LocalTime jamMulai = LocalTime.of(jadwalMulai.getHour(), jadwalMulai.getMinute(), jadwalMulai.getSecond());
-        LocalTime jamSelesai = LocalTime.of(jadwalSelesai.getHour(), jadwalSelesai.getMinute(), jadwalSelesai.getSecond());
+        LocalTime jamSelesai = LocalTime.of(jadwalSelesai.getHour(), jadwalSelesai.getMinute(),
+                jadwalSelesai.getSecond());
 
         int day = jadwalKelas.getStartDateClass().getDayOfWeek().getValue();
         model.addAttribute("listKelas", kelasService.getListKelasByDays(day));
 
         // PengajarModel pengajar = jadwalKelas.getPengajarKelas();
-        // model.addAttribute("listMapel", pengajarMapelService.getListMapelByPengajar(pengajar));
+        // model.addAttribute("listMapel",
+        // pengajarMapelService.getListMapelByPengajar(pengajar));
 
         MataPelajaranModel mapel = jadwalKelas.getMapelJadwal();
         model.addAttribute("listPengajar", pengajarMapelService.getListPengajarByMapel(mapel));
@@ -244,7 +246,7 @@ public class JadwalKelasController {
         model.addAttribute("tanggal", date);
         model.addAttribute("jamMulai", jamMulai);
         model.addAttribute("jamSelesai", jamSelesai);
-        model.addAttribute("jadwalKelas", jadwalKelas);  
+        model.addAttribute("jadwalKelas", jadwalKelas);
 
         // reset list presensi and delete presensimodel
         jadwalKelasService.updateJadwalKelas(jadwalKelas);
@@ -253,24 +255,26 @@ public class JadwalKelasController {
     }
 
     // SUBMIT FORM
-    @PostMapping(value="/update", params={"update"})
-    public String updateJadwalKelasSubmit(@ModelAttribute JadwalKelasModel jadwalKelas, String tanggal, String jam_mulai, String jam_selesai,
-    String kelasDiajar, String mapel, String pengajar, Model model, RedirectAttributes redirectAttrs) {
-         // set atttribute
-         jadwalKelas.setKelas(kelasService.getKelasById(Integer.parseInt(kelasDiajar)));
-         jadwalKelas.setMapelJadwal(mapelService.getMapelById(Integer.parseInt(mapel)));
-         jadwalKelas.setPengajarKelas(pengajarService.getPengajarById(Integer.parseInt(pengajar)));
- 
-         // parsing waktu mulai dan selesai
-         LocalDateTime waktuMulai = LocalDateTime.of(LocalDate.parse(tanggal), LocalTime.parse(jam_mulai));
-         LocalDateTime waktuSelesai = LocalDateTime.of(LocalDate.parse(tanggal), LocalTime.parse(jam_selesai));
-         jadwalKelas.setStartDateClass(waktuMulai);
-         jadwalKelas.setEndDateClass(waktuSelesai);
- 
+    @PostMapping(value = "/update", params = { "update" })
+    public String updateJadwalKelasSubmit(@ModelAttribute JadwalKelasModel jadwalKelas, String tanggal,
+            String jam_mulai, String jam_selesai,
+            String kelasDiajar, String mapel, String pengajar, Model model, RedirectAttributes redirectAttrs) {
+        // set atttribute
+        jadwalKelas.setKelas(kelasService.getKelasById(Integer.parseInt(kelasDiajar)));
+        jadwalKelas.setMapelJadwal(mapelService.getMapelById(Integer.parseInt(mapel)));
+        jadwalKelas.setPengajarKelas(pengajarService.getPengajarById(Integer.parseInt(pengajar)));
+
+        // parsing waktu mulai dan selesai
+        LocalDateTime waktuMulai = LocalDateTime.of(LocalDate.parse(tanggal), LocalTime.parse(jam_mulai));
+        LocalDateTime waktuSelesai = LocalDateTime.of(LocalDate.parse(tanggal), LocalTime.parse(jam_selesai));
+        jadwalKelas.setStartDateClass(waktuMulai);
+        jadwalKelas.setEndDateClass(waktuSelesai);
+
         // cek waktu update
         LocalDateTime now = LocalDateTime.now();
         if (now.isAfter(jadwalKelas.getStartDateClass())) {
-            redirectAttrs.addFlashAttribute("message", "Jadwal sedang atau sudah berlangsung! Perubahan jadwal gagal dilakukan");
+            redirectAttrs.addFlashAttribute("message",
+                    "Jadwal sedang atau sudah berlangsung! Perubahan jadwal gagal dilakukan");
             getAllDropdownList(jadwalKelas, model);
             createUpdateList(jadwalKelas, model);
             return "redirect:/jadwal-kelas/update/" + jadwalKelas.getId();
@@ -300,8 +304,8 @@ public class JadwalKelasController {
         List<JadwalKelasModel> listJadwalKelas = jadwalKelasService.getListJadwalKelas();
         for (JadwalKelasModel jadwalFromDb : listJadwalKelas) {
 
-            if (jadwalFromDb.getId() != jadwalKelas.getId()){    
-                //cek kesamaan yang mungkin menyebabkan bentrok
+            if (jadwalFromDb.getId() != jadwalKelas.getId()) {
+                // cek kesamaan yang mungkin menyebabkan bentrok
                 // System.out.println(jadwalFromDb.getId() + "======" +jadwalKelas.getId());
 
                 // cek kesamaan pengajar
@@ -309,12 +313,13 @@ public class JadwalKelasController {
                 if (jadwalKelas.getPengajarKelas().getId().equals(jadwalFromDb.getPengajarKelas().getId())) {
                     message = "Jadwal bentrok! Pengajar sudah mengajar kelas lain di hari tersebut. Penyimpanan jadwal gagal dilakukan.";
                     isPossible = true;
-                // cek kesamaan kelas
-                } else if (jadwalKelas.getKelas().getId().equals(jadwalFromDb.getKelas().getId())){
+                    // cek kesamaan kelas
+                } else if (jadwalKelas.getKelas().getId().equals(jadwalFromDb.getKelas().getId())) {
                     message = "Jadwal bentrok! Kelas sudah memiliki jadwal belajar di hari tersebut. Penyimpanan jadwal gagal dilakukan.";
                     isPossible = true;
-                // cek kesamaan ruang kelas
-                } else if (jadwalKelas.getRuangKelas().toLowerCase().equals(jadwalFromDb.getRuangKelas().toLowerCase())) {
+                    // cek kesamaan ruang kelas
+                } else if (jadwalKelas.getRuangKelas().toLowerCase()
+                        .equals(jadwalFromDb.getRuangKelas().toLowerCase())) {
                     message = "Jadwal bentrok! Ruang kelas sudah dipakai di hari tersebut. Penyimpanan jadwal gagal dilakukan.";
                     isPossible = true;
                 }
@@ -327,16 +332,16 @@ public class JadwalKelasController {
                     if (waktuMulai.isEqual(startDateFromDB) || waktuSelesai.isEqual(endDateFromDB)) {
                         isBentrok = true;
                         break;
-                    }else if (waktuMulai.isAfter(startDateFromDB) && waktuMulai.isBefore(endDateFromDB)) {
+                    } else if (waktuMulai.isAfter(startDateFromDB) && waktuMulai.isBefore(endDateFromDB)) {
                         isBentrok = true;
                         break;
-                    }else if (waktuSelesai.isAfter(startDateFromDB) && waktuSelesai.isBefore(endDateFromDB)) {
+                    } else if (waktuSelesai.isAfter(startDateFromDB) && waktuSelesai.isBefore(endDateFromDB)) {
                         isBentrok = true;
                         break;
-                    }else if (waktuMulai.isAfter(startDateFromDB) && waktuSelesai.isBefore(endDateFromDB)) {
+                    } else if (waktuMulai.isAfter(startDateFromDB) && waktuSelesai.isBefore(endDateFromDB)) {
                         isBentrok = true;
                         break;
-                    }else if (waktuMulai.isBefore(startDateFromDB) && waktuSelesai.isAfter(endDateFromDB)) {
+                    } else if (waktuMulai.isBefore(startDateFromDB) && waktuSelesai.isAfter(endDateFromDB)) {
                         isBentrok = true;
                         break;
                     }
@@ -359,31 +364,31 @@ public class JadwalKelasController {
     }
 
     public void getAllDropdownList(JadwalKelasModel jadwalKelas, Model model) {
-           // list dropdown
-           List<KelasModel> listKelas = kelasService.getListKelas();
-           List<PengajarModel> listPengajar = pengajarService.getListPengajarActive();
-           List<MataPelajaranModel> listMapel = mapelService.getAllMapel();
-           List<String> listRuangKelas = new ArrayList<>();
-           listRuangKelas.add("ferarri");
-           listRuangKelas.add("Subaru");
-           listRuangKelas.add("Lambo");
-           listRuangKelas.add("toyota");
-           listRuangKelas.add("mazda");
-           listRuangKelas.add("kijang");
-           
-           // pass data
-           model.addAttribute("jadwalKelas", jadwalKelas);
-           model.addAttribute("listMapel", listMapel);
-           model.addAttribute("listPengajar", listPengajar);
-           model.addAttribute("listRuangKelas", listRuangKelas);
-           model.addAttribute("listKelas", listKelas);
+        // list dropdown
+        List<KelasModel> listKelas = kelasService.getListKelas();
+        List<PengajarModel> listPengajar = pengajarService.getListPengajarActive();
+        List<MataPelajaranModel> listMapel = mapelService.getAllMapel();
+        List<String> listRuangKelas = new ArrayList<>();
+        listRuangKelas.add("ferarri");
+        listRuangKelas.add("Subaru");
+        listRuangKelas.add("Lambo");
+        listRuangKelas.add("toyota");
+        listRuangKelas.add("mazda");
+        listRuangKelas.add("kijang");
+
+        // pass data
+        model.addAttribute("jadwalKelas", jadwalKelas);
+        model.addAttribute("listMapel", listMapel);
+        model.addAttribute("listPengajar", listPengajar);
+        model.addAttribute("listRuangKelas", listRuangKelas);
+        model.addAttribute("listKelas", listKelas);
     }
 
-
     @GetMapping("/delete/{id}")
-    public String deleteJadwalKelas(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttrs, Principal principal) {
+    public String deleteJadwalKelas(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttrs,
+            Principal principal) {
         var userModel = userService.getUserByEmail(principal.getName());
-        pengajarService.checkIsPengajarDanKakakAsuh(userModel,model);
+        pengajarService.checkIsPengajarDanKakakAsuh(userModel, model);
         JadwalKelasModel jadwalKelas = jadwalKelasService.getJadwalKelasById(id);
         LocalDateTime now = LocalDateTime.now();
         boolean isOngoing = false;
@@ -397,21 +402,22 @@ public class JadwalKelasController {
         }
 
         if (isOngoing) {
-            redirectAttrs.addFlashAttribute("deletefailed", "Jadwal sedang berlangsung! Penghapusan jadwal gagal dilakukan");
+            redirectAttrs.addFlashAttribute("deletefailed",
+                    "Jadwal sedang berlangsung! Penghapusan jadwal gagal dilakukan");
             return "redirect:/jadwal-kelas/" + id;
-        } else if (hasPassed){
-            redirectAttrs.addFlashAttribute("deletefailed", "Jadwal sudah selesai berlangsung! Penghapusan jadwal gagal dilakukan");
+        } else if (hasPassed) {
+            redirectAttrs.addFlashAttribute("deletefailed",
+                    "Jadwal sudah selesai berlangsung! Penghapusan jadwal gagal dilakukan");
             return "redirect:/jadwal-kelas/" + id;
-        }else {
+        } else {
             redirectAttrs.addFlashAttribute("message", "Jadwal berhasil dihapus!");
             jadwalKelasService.deleteJadwalKelas(jadwalKelas);
         }
 
-        // List<JadwalKelasModel> listJadwalKelas = jadwalKelasService.getListJadwalKelas();
+        // List<JadwalKelasModel> listJadwalKelas =
+        // jadwalKelasService.getListJadwalKelas();
         // model.addAttribute("listJadwal", listJadwalKelas);
         return "redirect:/jadwal-kelas/";
     }
-
-
 
 }
