@@ -2,8 +2,12 @@
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
     <title>Daftar Konsultasi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <object th:include="fragments/fragment :: css" th:remove="tag"></object>
     <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+    <object th:include="fragments/fragment :: style" th:remove="tag"></object>
+
 </head>
 <body>
 <nav sec:authorize="hasRole('SISWA')" th:replace="fragments/fragment :: navbar (${'konsultasi'},${isKakakAsuh})"></nav>
@@ -31,7 +35,6 @@
             <thead style="background-color: #31318B; color: #ffffff">
             <tr>
                 <th scope="col">No</th>
-                <th scope="col">Pengajar</th>
                 <th scope="col">Mata Pelajaran</th>
                 <th scope="col">Topik</th>
                 <th scope="col">Tanggal</th>
@@ -42,7 +45,6 @@
             <tbody>
             <tr th:each="konsultasi, iterationStatus : ${listRequestKonsultasi}">
                 <td th:text="${iterationStatus.count}"></td>
-                <td th:text="${konsultasi.pengajarKonsul.name + ' (' + konsultasi.pengajarKonsul.email + ') '}"></td>
                 <td th:text="${konsultasi.mapelKonsul.name}"></td>
                 <td th:text="${konsultasi.topic}"></td>
                 <td th:text="${#temporals.format(konsultasi.startTime, 'dd MMMM yyyy')}"></td>
@@ -94,14 +96,21 @@
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <div class="modal-body">
-                                    Verivikasi penolakan tidak dapat diubah.
-                                    <br>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                    <a class="btn btn-primary"  style="background-color: #31318B; border-color: #31318B" th:href="@{/konsultasi/tolak/} + ${konsultasi.id}">Yakin</a>
-                                </div>
+                                <form th:action="@{/konsultasi/tolak/} + ${konsultasi.id}" th:object="${konsultasi}" method="POST">
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            Alasan penolakan:
+                                            <input type="text" class="form-control" placeholder="Alasan penolakan..." id="inputFieldPlaceTolak" name="rejectionReason" th:value="${rejectionReason}" th:text="${rejectionReason}" required/>
+                                            <br>
+                                        </div>
+                                        Verifikasi konsultasi tidak data diganti!
+                                        <!-- Additional input fields as needed -->
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Kembali</button>
+                                        <button class="btn btn-primary" type="submit" name="save" style="background-color: #31318B; border-color: #31318B">Yakin</button>
+                                    </div>
+                                </form>
                             </div>
                             <br>
                         </div>
@@ -115,13 +124,6 @@
             </tbody>
         </table>
     </div>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-<div class="alert alert-success alert-dismissible d-flex align-items-center" role="alert" th:if="${message}" >
-    <div class="d-flex align-items-center">
-        <p th:text="${message}" style="margin-bottom: 0px; margin-top: 0px;"></p>
-    </div>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 
 <br>
@@ -130,7 +132,7 @@
         <div style="margin-top: 3rem; margin-bottom: 2rem; text-align: center;">
             <h2 style="font-weight: bold; margin-bottom: 0.75rem;" >Daftar Semua Konsultasi</h2>
         </div>
-        <div class="col-2 justify-content-center" style="margin: auto; padding: 12px; text-align: center">
+        <div class="col" style="margin: auto; padding: 12px; text-align: center">
             Pilih Status
             <select  type="search" class="select-table-filter" data-table="my-konsultasi-table" id="status-dropdown">
                 <option th:each="statusOpt : ${listStatus}"
@@ -143,7 +145,6 @@
             <thead style="background-color: #31318B; color: #ffffff">
             <tr>
                 <th scope="col">No</th>
-                <th scope="col">Pengajar</th>
                 <th scope="col">Mata Pelajaran</th>
                 <th scope="col">Topik</th>
                 <th scope="col">Tanggal</th>
@@ -156,7 +157,6 @@
             <div th:if="*{myListKonsultasi.size() != 0}">
                 <tr th:each="konsultasi, iterationStatus : ${myListKonsultasi}">
                     <td th:text="${iterationStatus.count}"></td>
-                    <td th:text="${konsultasi.pengajarKonsul.name + ' (' + konsultasi.pengajarKonsul.email + ') '}"></td>
                     <td th:text="${konsultasi.mapelKonsul.name}"></td>
                     <td th:text="${konsultasi.topic}"></td>
                     <td th:text="${#temporals.format(konsultasi.startTime, 'dd MMMM yyyy')}"></td>
@@ -198,20 +198,14 @@
             $('#konsultasi-hari-ini-table').DataTable({});
             $('#permintaan-konsultasi-table').DataTable({});
 
-            var today = new Date();
-            var formattedDate = today.getDate() + ' ' + today.toLocaleString('default', { month: 'long' }) + ' ' + today.getFullYear()
-
             var table = $('#data-table-big').DataTable();
             $('#status-dropdown').change(function () {
                 if (this.value === "Semua") {
-                    table.columns(6).search('').draw();
-                    table.columns(4).search('').draw();
-                } else if (this.value === "Hari Ini"){
-                    table.columns(6).search('Diterima').draw();
-                    table.columns(4).search(formattedDate).draw();
+                    table.columns(5).search('').draw();
+                    table.columns(3).search('').draw();
                 } else {
-                    table.columns(6).search(this.value).draw();
-                    table.columns(4).search('').draw();
+                    table.columns(5).search(this.value).draw();
+                    table.columns(3).search('').draw();
                 }
             } );
         });

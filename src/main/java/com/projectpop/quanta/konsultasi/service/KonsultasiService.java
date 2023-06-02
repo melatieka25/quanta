@@ -66,8 +66,6 @@ public interface KonsultasiService {
 
     void reloadRequestKonsultasi();
 
-    List<KonsultasiModel> getListKonsultasiByPengajar(PengajarModel pengajar);
-
     List<KonsultasiModel> getListKonsultasiPengajarHariIni(PengajarModel pengajar);
     List<KonsultasiModel> getListKonsultasiByTahunAjarAndMonth(TahunAjarModel tahunAjar, Integer month);
     List<KonsultasiModel> getListKonsultasiByTahunAjar(TahunAjarModel tahunAjar);

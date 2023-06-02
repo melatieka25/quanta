@@ -2,8 +2,12 @@
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
     <title>Daftar Konsultasi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <object th:include="fragments/fragment :: css" th:remove="tag"></object>
     <object th:include="fragments/fragment :: js" th:remove="tag"></object>
+    <object th:include="fragments/fragment :: style" th:remove="tag"></object>
+
 </head>
 <body>
 <nav sec:authorize="hasRole('SISWA')" th:replace="fragments/fragment :: navbar (${'konsultasi'},${isKakakAsuh})"></nav>
@@ -35,7 +39,7 @@
             </select>
         </div>
 
-        <table style="margin: 20px;" class="table table-striped my-konsultasi-table align-middle" id="data-table-big">
+        <table class="table table-striped my-konsultasi-table align-middle" id="data-table-big">
             <thead style="background-color: #31318B; color: #ffffff">
             <tr>
                 <th scope="col">No</th>
@@ -109,8 +113,6 @@
                     table.columns(6).search(this.value).draw();
                     table.columns(4).search('').draw();
                 }
-                console.log(this.value);
-
             } );
         });
 
