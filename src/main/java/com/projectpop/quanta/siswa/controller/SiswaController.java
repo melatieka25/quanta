@@ -367,7 +367,12 @@ public class SiswaController {
         List<SiswaKonsultasiModel> listKonsultasiSiswa = siswaModel.getListKonsultasiSiswa();
         Integer countDurationKonsul = 0;
         for (SiswaKonsultasiModel siswaKonsultasiModel : listKonsultasiSiswa){
-            countDurationKonsul += siswaKonsultasiModel.getKonsultasi().getDuration();
+            if (siswaKonsultasiModel.getDurasiHadir() == null){
+                countDurationKonsul += 0;
+            }
+            else{
+                countDurationKonsul += siswaKonsultasiModel.getDurasiHadir();
+            }
         }
         float persentaseKehadiranKelas = 0;
         float countHadir = 0;
@@ -442,7 +447,12 @@ public class SiswaController {
             Integer countDurationKonsul = 0;
             for (SiswaKonsultasiModel siswaKonsultasiModel : listKonsultasiSiswa){
 //                durasinya tuh dari siswakonsultasi
-                countDurationKonsul += siswaKonsultasiModel.getDurasiHadir();
+                if (siswaKonsultasiModel.getDurasiHadir() == null){
+                    countDurationKonsul += 0;
+                }
+                else{
+                    countDurationKonsul += siswaKonsultasiModel.getDurasiHadir();
+                }
             }
             float persentaseKehadiranKelas = 0;
             float countHadir = 0;
