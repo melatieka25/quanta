@@ -12,15 +12,15 @@
 <body>
 <nav sec:authorize="hasRole('SISWA')" th:replace="fragments/fragment :: navbar (${'konsultasi'},${isKakakAsuh})"></nav>
 <nav sec:authorize="hasAnyRole('ADMIN', 'PENGAJAR')" th:replace="fragments/fragment :: navbar (${'konsultasi'},${isKakakAsuh})"></nav>
-<div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${error}" >
+<div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert" th:if="${errorMessage}" >
     <div class="d-flex align-items-center">
-        <p th:text="${error}" style="margin-bottom: 0px; margin-top: 0px;"></p>
+        <p th:text="${errorMessage}" style="margin-bottom: 0px; margin-top: 0px;"></p>
     </div>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
-<div class="alert alert-success alert-dismissible d-flex align-items-center" role="alert" th:if="${success}" >
+<div class="alert alert-success alert-dismissible d-flex align-items-center" role="alert" th:if="${message}" >
     <div class="d-flex align-items-center">
-        <p th:text="${success}" style="margin-bottom: 0px; margin-top: 0px;"></p>
+        <p th:text="${message}" style="margin-bottom: 0px; margin-top: 0px;"></p>
     </div>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
