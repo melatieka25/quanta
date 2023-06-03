@@ -249,35 +249,30 @@
       var today = new Date();
       var futureDate = new Date();
       futureDate.setDate(today.getDate() + (6 - today.getDay())); // Calculate date 7 days ahead
-      var maxDate = futureDate.getFullYear() + "-" + (('0'+(futureDate.getMonth()+1)).slice(-2)) + "-" + futureDate.getDate()
+
+      var maxDate = futureDate.toISOString().split('T')[0]; // Format as yyyy-mm-dd
 
       if (today.getDay()===0){
           var tommorow = new Date();
           tommorow.setDate(today.getDate() + 1);
-          var minDate = tommorow.getFullYear() + "-" + (('0'+(tommorow.getMonth()+1)).slice(-2)) + "-" + tommorow.getDate()
-
+          var minDate = tommorow.toISOString().split('T')[0]; // Format as yyyy-mm-dd
           document.getElementById('tanggal').setAttribute('min', minDate);
           document.getElementById('tanggal').setAttribute('max', maxDate);
       } else if (today.getDay()===6){
-          var sundayDate = new Date();
-          sundayDate.setDate(today.getDate() + 2); // Calculate date 7 days ahead
-          var monday = sundayDate.getFullYear() + "-" + (('0'+(sundayDate.getMonth()+1)).slice(-2)) + "-" + sundayDate.getDate()
-
-          document.getElementById('tanggal').setAttribute('min', monday);
+          var minDate = today.toISOString().split('T')[0]; // Format as yyyy-mm-dd
+          document.getElementById('tanggal').setAttribute('min', minDate);
 
           futureDate.setDate(today.getDate() + 7); // Calculate date 7 days ahead
-          maxDate = futureDate.getFullYear() + "-" + (('0'+(futureDate.getMonth()+1)).slice(-2)) + "-" + futureDate.getDate()
-
+          maxDate = futureDate.toISOString().split('T')[0]; // Format as yyyy-mm-dd
           document.getElementById('tanggal').setAttribute('max', maxDate);
       } else {
-          var minDate = today.getFullYear() + "-" + (('0'+(today.getMonth()+1)).slice(-2)) + "-" + today.getDate()
-
-          document.getElementById('tanggal').setAttribute('min', minDate);
+          document.getElementById('tanggal').setAttribute('min', today.toISOString().split('T')[0]);
           document.getElementById('tanggal').setAttribute('max', maxDate);
       }
 
 
   }
+
 
 </script>
 

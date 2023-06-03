@@ -71,7 +71,7 @@ public class KonsultasiModel implements Serializable {
     @JoinColumn(name="tahun_ajar_id")
     private TahunAjarModel tahunAjarKonsul;
 
-    @OneToMany(mappedBy = "konsultasi", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "konsultasi")
     private List<SiswaKonsultasiModel> listSiswaKonsultasi;
 
     @ManyToOne
