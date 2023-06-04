@@ -121,8 +121,8 @@ public class KelasController {
         if (kelas.getListSiswaKelas() == null ||kelas.getListSiswaKelas().size() == 0) {
             kelas.setListSiswaKelas(new ArrayList<>());
         } else {
-            Set<Integer> listIdSiswa = new HashSet<Integer>();
-            List<SiswaKelasModel> listSiswaKelasUpdated = new ArrayList<SiswaKelasModel>();
+            Set<Integer> listIdSiswa = new HashSet<>();
+            List<SiswaKelasModel> listSiswaKelasUpdated = new ArrayList<>();
 
 
             for (SiswaKelasModel siswaKelas : kelas.getListSiswaKelas()){
@@ -161,8 +161,6 @@ public class KelasController {
             kelas.setListSiswaKelas(new ArrayList<>());
         }
 
-        List<SiswaKelasModel>listSiswaKelasEx = kelas.getListSiswaKelas();
-
         List<SiswaModel> listSiswa = siswaService.getListSiswa();
         List<TahunAjarModel> listTahunAjar = tahunAjarService.getAllTahunAjar();
         List<PengajarModel> listKakakAsuh = pengajarService.getListKakakAsuh();
@@ -185,14 +183,12 @@ public class KelasController {
             @RequestParam("deleteRowSiswa") Integer row,
             Model model
     ){
-        final Integer rowId = Integer.valueOf(row);
+        final Integer rowId = row;
         kelas.getListSiswaKelas().remove(rowId.intValue());
 
         if (kelas.getListSiswaKelas() == null || kelas.getListSiswaKelas().size() == 0) {
             kelas.setListSiswaKelas(new ArrayList<>());
         }
-
-        List<SiswaKelasModel>listSiswaKelasEx = kelas.getListSiswaKelas();
 
         List<SiswaModel> listSiswa = siswaService.getListSiswa();
         List<TahunAjarModel> listTahunAjar = tahunAjarService.getAllTahunAjar();
@@ -266,10 +262,10 @@ public class KelasController {
             kelasExs.setIsSMA(true);
         }
 
-        Set<Integer> listIdSiswaLama = new HashSet<Integer>();
-        Set<Integer> listIdSiswaBaru = new HashSet<Integer>();
+        Set<Integer> listIdSiswaLama = new HashSet<>();
+        Set<Integer> listIdSiswaBaru = new HashSet<>();
 
-        List<SiswaKelasModel> listSiswaKelasUpdated = new ArrayList<SiswaKelasModel>();
+        List<SiswaKelasModel> listSiswaKelasUpdated = new ArrayList<>();
 
         for (SiswaKelasModel siswaKelas : kelasExs.getListSiswaKelas()){
             listIdSiswaLama.add(siswaKelas.getSiswa().getId());
@@ -324,15 +320,25 @@ public class KelasController {
         KelasModel courseDeleted = kelasService.getKelasById(Integer.valueOf(id));
 
         List<JadwalKelasModel> listJadwalKelas = jadwalKelasService.getListJadwalKelasByKelas(courseDeleted);
+        List<SiswaKelasModel> listSiswaKelas = courseDeleted.getListSiswaKelas();
 
-        if (listJadwalKelas == null || listJadwalKelas.size() == 0){
-            kelasService.deleteKelas(courseDeleted);
-            redirectAttrs.addFlashAttribute("success", "Kelas berhasil dihapus");
-            return "redirect:/kelas";
+        if (listJadwalKelas.size() != 0){
+            redirectAttrs.addFlashAttribute("error", "Kelas memiliki jadwal pembelajaran");
+            redirectAttrs.addFlashAttribute("errorBold", "Kelas Gagal dihapus! ");
+            return "redirect:/kelas/detail/{id}";
+
         }
-        redirectAttrs.addFlashAttribute("error", " Kelas memiliki jadwal pembelajaran");
-        redirectAttrs.addFlashAttribute("errorBold", " Kelas Gagal dihapus!");
-        return "redirect:/kelas/detail/{id}";
+
+        if (listSiswaKelas.size() != 0){
+            redirectAttrs.addFlashAttribute("error", "Kelas memiliki siswa");
+            redirectAttrs.addFlashAttribute("errorBold", "Kelas Gagal dihapus! ");
+            return "redirect:/kelas/detail/{id}";
+        }
+
+        kelasService.deleteKelas(courseDeleted);
+        redirectAttrs.addFlashAttribute("success", "Kelas berhasil dihapus!");
+        return "redirect:/kelas";
+
     }
 
     @PostMapping(value="/edit", params = {"addRowSiswaUpdate"})
@@ -343,8 +349,6 @@ public class KelasController {
         if (kelas.getListSiswaKelas() == null || kelas.getListSiswaKelas().size() == 0) {
             kelas.setListSiswaKelas(new ArrayList<>());
         }
-
-        List<SiswaKelasModel>listSiswaKelasEx = kelas.getListSiswaKelas();
 
         List<SiswaModel> listSiswa = siswaService.getListSiswa();
         List<TahunAjarModel> listTahunAjar = tahunAjarService.getAllTahunAjar();
@@ -368,7 +372,7 @@ public class KelasController {
             @RequestParam("deleteRowSiswaUpdate") Integer row,
             Model model
     ){
-        final Integer rowId = Integer.valueOf(row);
+        final Integer rowId = row;
         kelas.getListSiswaKelas().remove(rowId.intValue());
 
         List<SiswaModel> listSiswa = siswaService.getListSiswa();

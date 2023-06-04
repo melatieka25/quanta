@@ -83,7 +83,7 @@ line-height: 140%;">Data Kelas</h5>
       </div>
       <div class="d-grid gap-2 mt-3">
         <a class="btn btn-primary w-100" style="background-color: #31318B; border: none" th:href="@{/kelas/edit/} + ${kelas.id}">Ubah Data Kelas</a>
-        <a th:styleappend="${#lists.isEmpty(kelas.listSiswaKelas)} ? 'display:block; border-color: #dc3545; background-color: white; color:  #dc3545' : 'display:none' " class="btn btn-danger w-100" data-toggle="modal" data-target="#modal-hapus">Hapus Kelas</a>
+        <a style="display:block; border-color: #dc3545; background-color: white; color:  #dc3545;" class="btn btn-danger w-100" data-toggle="modal" data-target="#modal-hapus">Hapus Kelas</a>
       </div>
     </div>
     <div class="col">

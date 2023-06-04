@@ -68,10 +68,6 @@ public class MapelController {
         MataPelajaranModel mapel = mapelService.getMapelById(Integer.valueOf(mapel_id));
         String jenjangMapel = mapelService.getJenjangMapel(mapel);
 
-        if (jenjangMapel.equals("smpsma")){
-            jenjangMapel = "SMP & SMA";
-        }
-
         model.addAttribute("mapel", mapel);
         model.addAttribute("jenjangMapel", jenjangMapel.toUpperCase());
         return "mapel/detail";
@@ -224,9 +220,6 @@ public class MapelController {
         for (MataPelajaranModel mapelDb : mapelService.getAllMapel()){
             if (mapel.getName().equals(mapelDb.getName()) && !(mapel.getName().equals(oldName))){
                 redirectAttrs.addFlashAttribute("error", "Mapel dengan nama " + mapel.getName() + " tidak bisa ditambahkan karena sudah ada di database");
-                return "redirect:/mapel/edit/" + mapelExs.getId();
-            }else if (mapel.getAbbr().equals(mapelDb.getAbbr())){
-                redirectAttrs.addFlashAttribute("error", "Mata pelajaran dengan singkatan " + mapel.getAbbr() + " tidak bisa ditambahkan karena sudah ada di database");
                 return "redirect:/mapel/edit/" + mapelExs.getId();
             }
         }
